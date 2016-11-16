@@ -43,10 +43,55 @@ namespace Light.DataStructures.Tests
         public static readonly TestData ContainsKeyData =
             new[]
             {
-                new object[] {new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(5, null)), 5, true},
-                new object[] {new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(14, null)), 14, true},
-                new object[] {new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(7, null)), 3, false},
-                new object[] {new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(42, null)), 1, false}
+                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(5, null)), 5, true },
+                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(14, null)), 14, true },
+                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(7, null)), 3, false },
+                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(42, null)), 1, false }
+            };
+
+        [Theory]
+        [MemberData(nameof(CountData))]
+        public void CountMustReflectNumberOfAddedItems(KeyValuePair<string, object>[] itemsToAdd)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<string, object>();
+            foreach (var keyValuePair in itemsToAdd)
+            {
+                dictionary.Add(keyValuePair);
+            }
+
+            dictionary.Count.Should().Be(itemsToAdd.Length);
+        }
+
+        public static readonly TestData CountData =
+            new[]
+            {
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<string, object>("Foo", null)
+                    }
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<string, object>("Foo", null),
+                        new KeyValuePair<string, object>("Bar", null),
+                        new KeyValuePair<string, object>("Baz", null),
+                    }
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<string, object>("Foo", null),
+                        new KeyValuePair<string, object>("Bar", null),
+                        new KeyValuePair<string, object>("Baz", null),
+                        new KeyValuePair<string, object>("Qux", null),
+                        new KeyValuePair<string, object>("Quux", null),
+                    }
+                },
             };
     }
 }

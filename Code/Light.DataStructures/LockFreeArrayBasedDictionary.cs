@@ -6,7 +6,7 @@ using Light.GuardClauses.FrameworkExtensions;
 
 namespace Light.DataStructures
 {
-    public sealed class LockFreeArrayBasedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    public class LockFreeArrayBasedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly IEqualityComparer<TKey> _equalityComparer = EqualityComparer<TKey>.Default;
         private int _count;

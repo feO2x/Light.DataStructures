@@ -9,11 +9,14 @@ namespace Light.DataStructures.Tests
     public sealed class LockFreeArrayBasedDictionaryTests
     {
         [Fact]
-        public void KickOff()
+        public void AddAndRetrieve()
         {
-            var dictionary = new LockFreeArrayBasedDictionary<string, string> { { "Foo", "Bar" } };
+            var dictionary = new LockFreeArrayBasedDictionary<string, string>();
+
+            var result = dictionary.Add("Foo", "Bar");
 
             dictionary["Foo"].Should().Be("Bar");
+            result.Should().BeSameAs(dictionary);
         }
 
         [Fact]

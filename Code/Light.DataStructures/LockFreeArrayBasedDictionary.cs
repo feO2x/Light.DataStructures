@@ -43,7 +43,7 @@ namespace Light.DataStructures
         }
 
         public int Count => _count;
-        public bool IsReadOnly { get; }
+        public bool IsReadOnly => false;
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
@@ -52,7 +52,19 @@ namespace Light.DataStructures
 
         public bool ContainsKey(TKey key)
         {
-            throw new NotImplementedException();
+            var hashCode = _equalityComparer.GetHashCode(key);
+            var targetIndex = GetTargetBucketIndex(hashCode);
+
+            while (true)
+            {
+                var targetEntry = _internalArray[targetIndex];
+                if (targetEntry == null)
+                    return false;
+                if (hashCode == targetEntry.HashCode && _equalityComparer.Equals(key, targetEntry.Key))
+                    return true;
+
+                targetIndex = (targetIndex + 1) % _internalArray.Length;
+            }
         }
 
         public bool Remove(TKey key)

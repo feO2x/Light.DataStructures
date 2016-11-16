@@ -38,8 +38,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Light.GuardClauses, Version=1.2.0.0, Culture=neutral, PublicKeyToken=573727035c45e5b3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Light.GuardClauses.1.2.0\lib\portable-net45+netcore45+wpa81+wp8\Light.GuardClauses.dll</HintPath>
+    <Reference Include="Light.GuardClauses, Version=1.2.1.0, Culture=neutral, PublicKeyToken=573727035c45e5b3, processorArchitecture=MSIL">
+      <HintPath>..\packages\Light.GuardClauses.1.2.1\lib\portable-net45+netcore45+wpa81+wp8\Light.GuardClauses.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

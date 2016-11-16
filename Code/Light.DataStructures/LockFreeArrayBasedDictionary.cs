@@ -22,9 +22,14 @@ namespace Light.DataStructures
             Add(item.Key, item.Value);
         }
 
-        public void Clear()
+        public bool Clear()
         {
-            throw new NotImplementedException();
+            var newArray = new Entry[31];
+            var currentArray = Volatile.Read(ref _internalArray);
+            if (Interlocked.CompareExchange(ref _internalArray, newArray, currentArray) != currentArray) return false;
+
+            Interlocked.Exchange(ref _count, 0);
+            return true;
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -172,6 +177,11 @@ namespace Light.DataStructures
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
+        {
+            throw new NotImplementedException();
         }
     }
 }

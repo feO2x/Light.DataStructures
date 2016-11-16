@@ -50,7 +50,7 @@ namespace Light.DataStructures.Tests
             };
 
         [Theory]
-        [MemberData(nameof(CountData))]
+        [MemberData(nameof(ItemsToAddData))]
         public void CountMustReflectNumberOfAddedItems(KeyValuePair<string, object>[] itemsToAdd)
         {
             var dictionary = new LockFreeArrayBasedDictionary<string, object>();
@@ -62,7 +62,23 @@ namespace Light.DataStructures.Tests
             dictionary.Count.Should().Be(itemsToAdd.Length);
         }
 
-        public static readonly TestData CountData =
+        [Theory]
+        [MemberData(nameof(ItemsToAddData))]
+        public void Clear(KeyValuePair<string, object>[] itemsToAdd)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<string, object>();
+            foreach (var keyValuePair in itemsToAdd)
+            {
+                dictionary.Add(keyValuePair);
+            }
+
+            var result = dictionary.Clear();
+
+            dictionary.Count.Should().Be(0);
+            result.Should().BeTrue();
+        }
+
+        public static readonly TestData ItemsToAddData =
             new[]
             {
                 new object[]

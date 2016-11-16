@@ -52,7 +52,7 @@ namespace Light.DataStructures
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
-            throw new NotImplementedException();
+            Add(key, value);
         }
 
         public bool ContainsKey(TKey key)

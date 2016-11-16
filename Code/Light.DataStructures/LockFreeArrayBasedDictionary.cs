@@ -22,21 +22,6 @@ namespace Light.DataStructures
             Add(item.Key, item.Value);
         }
 
-        public LockFreeArrayBasedDictionary<TKey, TValue> Add(KeyValuePair<TKey, TValue> item)
-        {
-            return Add(item.Key, item.Value);
-        }
-
-        public bool Clear()
-        {
-            var newArray = new Entry[31];
-            var currentArray = Volatile.Read(ref _internalArray);
-            if (Interlocked.CompareExchange(ref _internalArray, newArray, currentArray) != currentArray) return false;
-
-            Interlocked.Exchange(ref _count, 0);
-            return true;
-        }
-
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
             throw new NotImplementedException();
@@ -94,6 +79,7 @@ namespace Light.DataStructures
         {
             get
             {
+                if (key == null) throw new ArgumentNullException(nameof(key));
                 var hashCode = _equalityComparer.GetHashCode(key);
                 var targetIndex = GetTargetBucketIndex(hashCode);
 
@@ -110,11 +96,43 @@ namespace Light.DataStructures
             }
             set
             {
-                
+                if (key == null) throw new ArgumentNullException(nameof(key));
+
+                throw new NotImplementedException();
             }
         }
 
-        public LockFreeArrayBasedDictionary <TKey, TValue> Add(TKey key, TValue value)
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
+        {
+            Clear();
+        }
+
+        public LockFreeArrayBasedDictionary<TKey, TValue> Add(KeyValuePair<TKey, TValue> item)
+        {
+            return Add(item.Key, item.Value);
+        }
+
+        public bool Clear()
+        {
+            var newArray = new Entry[31];
+            var currentArray = Volatile.Read(ref _internalArray);
+            if (Interlocked.CompareExchange(ref _internalArray, newArray, currentArray) != currentArray) return false;
+
+            Interlocked.Exchange(ref _count, 0);
+            return true;
+        }
+
+        public LockFreeArrayBasedDictionary<TKey, TValue> Add(TKey key, TValue value)
         {
             var hashCode = _equalityComparer.GetHashCode(key);
             var targetIndex = GetTargetBucketIndex(hashCode); // TODO: how do I know which target I should use? What if the array size changes?
@@ -140,10 +158,10 @@ namespace Light.DataStructures
 
         private sealed class Entry : IEquatable<Entry>
         {
+            private readonly int _entryHashCode;
             public readonly int HashCode;
             public readonly TKey Key;
             public readonly TValue Value;
-            private readonly int _entryHashCode;
 
             public Entry(int hashCode, TKey key, TValue value)
             {
@@ -172,21 +190,6 @@ namespace Light.DataStructures
             {
                 return _entryHashCode;
             }
-        }
-
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
-        {
-            Clear();
         }
     }
 }

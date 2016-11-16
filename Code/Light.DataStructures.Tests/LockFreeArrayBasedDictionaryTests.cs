@@ -143,5 +143,32 @@ namespace Light.DataStructures.Tests
                     }
                 },
             };
+
+        [Fact]
+        public void IndexerSetKeyNull()
+        {
+            // ReSharper disable once CollectionNeverQueried.Local
+            var dictionary = new LockFreeArrayBasedDictionary<string, object>();
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Action act = () => dictionary[null] = new object();
+
+            act.ShouldThrow<ArgumentNullException>()
+               .And.ParamName.Should().Be("key");
+        }
+
+        [Fact]
+        public void IndexerGetKeyNull()
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<string, object>();
+
+            Action act = () =>
+                         {
+                             var value = dictionary[null];
+                         };
+
+            act.ShouldThrow<ArgumentNullException>()
+               .And.ParamName.Should().Be("key");
+        }
     }
 }

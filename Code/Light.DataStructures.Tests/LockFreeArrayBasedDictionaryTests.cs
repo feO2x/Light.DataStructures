@@ -57,12 +57,14 @@ namespace Light.DataStructures.Tests
         public void CountMustReflectNumberOfAddedItems(KeyValuePair<string, object>[] itemsToAdd)
         {
             var dictionary = new LockFreeArrayBasedDictionary<string, object>();
+            LockFreeArrayBasedDictionary<string, object> result = null;
             foreach (var keyValuePair in itemsToAdd)
             {
-                dictionary.Add(keyValuePair);
+                result = dictionary.Add(keyValuePair);
             }
 
             dictionary.Count.Should().Be(itemsToAdd.Length);
+            result.Should().BeSameAs(dictionary);
         }
 
         [Theory]

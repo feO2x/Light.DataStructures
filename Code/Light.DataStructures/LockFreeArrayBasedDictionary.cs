@@ -17,9 +17,14 @@ namespace Light.DataStructures
             _internalArray = new Entry[31];
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             Add(item.Key, item.Value);
+        }
+
+        public LockFreeArrayBasedDictionary<TKey, TValue> Add(KeyValuePair<TKey, TValue> item)
+        {
+            return Add(item.Key, item.Value);
         }
 
         public bool Clear()

@@ -1,22 +1,72 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Light.GuardClauses.FrameworkExtensions;
 
 namespace Light.DataStructures
 {
-    public sealed class LockFreeSortedDictionary<TKey, TValue>
+    public sealed class LockFreeArrayBasedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly IEqualityComparer<TKey> _equalityComparer = EqualityComparer<TKey>.Default;
         private int _count;
         private Entry[] _internalArray;
 
-        public LockFreeSortedDictionary()
+        public LockFreeArrayBasedDictionary()
         {
             _internalArray = new Entry[31];
         }
 
+        public void Add(KeyValuePair<TKey, TValue> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(KeyValuePair<TKey, TValue> item)
+        {
+            throw new NotImplementedException();
+        }
+
         public int Count => _count;
+        public bool IsReadOnly { get; }
+
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(TKey key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICollection<TKey> Keys { get; }
+        public ICollection<TValue> Values { get; }
 
         public TValue this[TKey key]
         {
@@ -36,9 +86,13 @@ namespace Light.DataStructures
                     targetIndex = (targetIndex + 1) % _internalArray.Length;
                 }
             }
+            set
+            {
+                
+            }
         }
 
-        public LockFreeSortedDictionary<TKey, TValue> Add(TKey key, TValue value)
+        public LockFreeArrayBasedDictionary <TKey, TValue> Add(TKey key, TValue value)
         {
             var hashCode = _equalityComparer.GetHashCode(key);
             var targetIndex = GetTargetBucketIndex(hashCode); // TODO: how do I know which target I should use? What if the array size changes?
@@ -98,5 +152,14 @@ namespace Light.DataStructures
             }
         }
 
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

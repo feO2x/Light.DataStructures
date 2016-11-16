@@ -181,7 +181,7 @@ namespace Light.DataStructures
 
         void ICollection<KeyValuePair<TKey, TValue>>.Clear()
         {
-            throw new NotImplementedException();
+            Clear();
         }
     }
 }

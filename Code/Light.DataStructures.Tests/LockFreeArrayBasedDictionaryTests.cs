@@ -78,6 +78,21 @@ namespace Light.DataStructures.Tests
             result.Should().BeTrue();
         }
 
+        [Theory]
+        [MemberData(nameof(ItemsToAddData))]
+        public void ClearViaInterface(KeyValuePair<string, object>[] itemsToAdd)
+        {
+            IDictionary<string, object> dictionary = new LockFreeArrayBasedDictionary<string, object>();
+            foreach (var keyValuePair in itemsToAdd)
+            {
+                dictionary.Add(keyValuePair);
+            }
+
+            dictionary.Clear();
+
+            dictionary.Count.Should().Be(0);
+        }
+
         public static readonly TestData ItemsToAddData =
             new[]
             {

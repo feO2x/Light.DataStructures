@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
 namespace Light.DataStructures.Tests
@@ -9,11 +8,11 @@ namespace Light.DataStructures.Tests
         [Fact]
         public void KickOff()
         {
-            var dictioanry = new LockFreeSortedDictionary<string, string>();
+            var dictionary = new LockFreeSortedDictionary<string, string>();
 
-            dictioanry.Add("Foo", "Bar");
+            dictionary.Add("Foo", "Bar");
 
-            dictioanry["Foo"].Should().Be("Bar");
+            dictionary["Foo"].Should().Be("Bar");
         }
     }
 }

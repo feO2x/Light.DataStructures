@@ -9,9 +9,7 @@ namespace Light.DataStructures.Tests
         [Fact]
         public void KickOff()
         {
-            var dictionary = new LockFreeArrayBasedDictionary<string, string>();
-
-            dictionary.Add("Foo", "Bar");
+            var dictionary = new LockFreeArrayBasedDictionary<string, string> { { "Foo", "Bar" } };
 
             dictionary["Foo"].Should().Be("Bar");
         }

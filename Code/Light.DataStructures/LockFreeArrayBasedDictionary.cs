@@ -210,7 +210,7 @@ namespace Light.DataStructures
             }
         }
 
-        private struct Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
+        private class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
         {
             private readonly Entry[] _array;
             private KeyValuePair<TKey, TValue> _current;

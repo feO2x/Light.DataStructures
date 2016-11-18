@@ -142,14 +142,14 @@ namespace Light.DataStructures
             }
         }
 
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
             return new Enumerator(Volatile.Read(ref _internalArray));
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return ((IEnumerable<KeyValuePair<TKey, TValue>>) this).GetEnumerator();
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Clear()

@@ -88,8 +88,8 @@ namespace Light.DataStructures
             throw new NotImplementedException();
         }
 
-        public ICollection<TKey> Keys { get; }
-        public ICollection<TValue> Values { get; }
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys { get; }
+        ICollection<TValue> IDictionary<TKey, TValue>.Values { get; }
 
         public TValue this[TKey key]
         {
@@ -144,7 +144,7 @@ namespace Light.DataStructures
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return new Enumerator(Volatile.Read(ref _internalArray));
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -208,6 +208,47 @@ namespace Light.DataStructures
                 Key = key;
                 Value = value;
             }
+        }
+
+        private struct Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
+        {
+            private readonly Entry[] _array;
+            private KeyValuePair<TKey, TValue> _current;
+            private int _currentIndex;
+
+            public Enumerator(Entry[] array)
+            {
+                _array = array;
+                _currentIndex = -1;
+            }
+
+            public bool MoveNext()
+            {
+                while(true)
+                {
+                    if (_currentIndex + 1 == _array.Length)
+                        return false;
+
+                    var targetNode = Volatile.Read(ref _array[++_currentIndex]);
+                    if (targetNode == null)
+                        continue;
+
+                    _current = new KeyValuePair<TKey, TValue>(targetNode.Key, targetNode.Value);
+                    return true;
+                }
+            }
+
+            public void Reset()
+            {
+                _current = default(KeyValuePair<TKey, TValue>);
+                _currentIndex = -1;
+            }
+
+            public KeyValuePair<TKey, TValue> Current => _current;
+
+            object IEnumerator.Current => Current;
+
+            public void Dispose() { }
         }
     }
 }

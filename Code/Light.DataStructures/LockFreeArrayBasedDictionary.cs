@@ -8,7 +8,9 @@ namespace Light.DataStructures
 {
     public class LockFreeArrayBasedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private readonly IEqualityComparer<TKey> _equalityComparer = EqualityComparer<TKey>.Default;
+        // TODO: the comparers should be configurable via the constructor
+        private readonly IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
+        private readonly IEqualityComparer<TValue> _valueComparer = EqualityComparer<TValue>.Default;
         private int _count;
         private Entry[] _internalArray;
 
@@ -24,7 +26,22 @@ namespace Light.DataStructures
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            var hashCode = _keyComparer.GetHashCode(item.Key);
+            var targetIndex = GetTargetBucketIndex(hashCode);
+
+            while (true)
+            {
+                var targetEntry = _internalArray[targetIndex];
+                if (targetEntry == null)
+                    return false;
+
+                if (targetEntry.HashCode == hashCode && 
+                    _keyComparer.Equals(item.Key, targetEntry.Key) &&
+                    _valueComparer.Equals(item.Value, targetEntry.Value))
+                    return true;
+
+                targetIndex = (targetIndex + 1) % _internalArray.Length;
+            }
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -47,7 +64,7 @@ namespace Light.DataStructures
 
         public bool ContainsKey(TKey key)
         {
-            var hashCode = _equalityComparer.GetHashCode(key);
+            var hashCode = _keyComparer.GetHashCode(key);
             var targetIndex = GetTargetBucketIndex(hashCode);
 
             while (true)
@@ -55,7 +72,7 @@ namespace Light.DataStructures
                 var targetEntry = _internalArray[targetIndex];
                 if (targetEntry == null)
                     return false;
-                if (hashCode == targetEntry.HashCode && _equalityComparer.Equals(key, targetEntry.Key))
+                if (hashCode == targetEntry.HashCode && _keyComparer.Equals(key, targetEntry.Key))
                     return true;
 
                 targetIndex = (targetIndex + 1) % _internalArray.Length;
@@ -80,7 +97,7 @@ namespace Light.DataStructures
             get
             {
                 if (key == null) throw new ArgumentNullException(nameof(key));
-                var hashCode = _equalityComparer.GetHashCode(key);
+                var hashCode = _keyComparer.GetHashCode(key);
                 var targetIndex = GetTargetBucketIndex(hashCode);
 
                 while (true)
@@ -88,7 +105,7 @@ namespace Light.DataStructures
                     var targetEntry = _internalArray[targetIndex];
                     if (targetEntry == null)
                         throw new ArgumentException($"There is no entry with key \"{key}\"", nameof(key));
-                    if (hashCode == targetEntry.HashCode && _equalityComparer.Equals(key, targetEntry.Key))
+                    if (hashCode == targetEntry.HashCode && _keyComparer.Equals(key, targetEntry.Key))
                         return targetEntry.Value;
 
                     targetIndex = (targetIndex + 1) % _internalArray.Length;
@@ -134,7 +151,7 @@ namespace Light.DataStructures
 
         public LockFreeArrayBasedDictionary<TKey, TValue> Add(TKey key, TValue value)
         {
-            var hashCode = _equalityComparer.GetHashCode(key);
+            var hashCode = _keyComparer.GetHashCode(key);
             var targetIndex = GetTargetBucketIndex(hashCode); // TODO: how do I know which target I should use? What if the array size changes?
             var entry = new Entry(hashCode, key, value);
 

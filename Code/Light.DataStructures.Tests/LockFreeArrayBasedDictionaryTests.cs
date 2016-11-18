@@ -169,5 +169,49 @@ namespace Light.DataStructures.Tests
             act.ShouldThrow<ArgumentNullException>()
                .And.ParamName.Should().Be("key");
         }
+
+        [Theory]
+        [MemberData(nameof(ContainsData))]
+        public void Contains(LockFreeArrayBasedDictionary<int, string> dictionary, KeyValuePair<int, string> targetPair, bool expected)
+        {
+            var result = dictionary.Contains(targetPair);
+
+            result.Should().Be(expected);
+        }
+
+        public static readonly TestData ContainsData =
+            new[]
+            {
+                new object[]
+                {
+                    new LockFreeArrayBasedDictionary<int, string> {[42] = "Foo"},
+                    new KeyValuePair<int, string>(42, "Foo"),
+                    true
+                },
+                new object[]
+                {
+                    new LockFreeArrayBasedDictionary<int, string> {[42] = "Foo"},
+                    new KeyValuePair<int, string>(43, "Foo"),
+                    false
+                },
+                new object[]
+                {
+                    new LockFreeArrayBasedDictionary<int, string> {[42] = "Foo"},
+                    new KeyValuePair<int, string>(42, "Bar"),
+                    false
+                },
+                new object[]
+                {
+                    new LockFreeArrayBasedDictionary<int, string> {[1] = "A", [2] = "B", [3] = "A"},
+                    new KeyValuePair<int, string>(3, "A"),
+                    true
+                },
+                new object[]
+                {
+                    new LockFreeArrayBasedDictionary<int, string> {[1] = "A", [2] = "B", [3] = "A"},
+                    new KeyValuePair<int, string>(58, "X"),
+                    false
+                }
+            };
     }
 }

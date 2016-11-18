@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Light.GuardClauses.FrameworkExtensions;
 
 namespace Light.DataStructures
 {
@@ -115,7 +114,31 @@ namespace Light.DataStructures
             {
                 if (key == null) throw new ArgumentNullException(nameof(key));
 
-                throw new NotImplementedException();
+                var hashCode = _keyComparer.GetHashCode(key);
+                var newEntry = new Entry(hashCode, key, value);
+                var targetIndex = GetTargetBucketIndex(hashCode);
+
+                while (true)
+                {
+                    var targetEntry = _internalArray[targetIndex];
+                    if (targetEntry == null)
+                    {
+                        if (Interlocked.CompareExchange(ref _internalArray[targetIndex], newEntry, null) == null)
+                            return; 
+
+                        goto UpdateIndex;
+                    }
+                    if (hashCode == targetEntry.HashCode && _keyComparer.Equals(key, targetEntry.Key))
+                    {
+                        if (Interlocked.CompareExchange(ref _internalArray[targetIndex], newEntry, targetEntry) == targetEntry)
+                            return;
+
+                        throw new InvalidOperationException($"Could not update entry with key {key} because another thread performed this action.");
+                    }
+
+                    UpdateIndex:
+                    targetIndex = (targetIndex + 1) % _internalArray.Length;
+                }
             }
         }
 
@@ -173,9 +196,8 @@ namespace Light.DataStructures
             return Math.Abs(hashCode) % _internalArray.Length;
         }
 
-        private sealed class Entry : IEquatable<Entry>
+        private sealed class Entry
         {
-            private readonly int _entryHashCode;
             public readonly int HashCode;
             public readonly TKey Key;
             public readonly TValue Value;
@@ -185,27 +207,6 @@ namespace Light.DataStructures
                 HashCode = hashCode;
                 Key = key;
                 Value = value;
-                _entryHashCode = Equality.CreateHashCode(HashCode, Key, Value);
-            }
-
-            public bool Equals(Entry other)
-            {
-                if (other == null)
-                    return false;
-
-                return HashCode == other.HashCode &&
-                       Key.Equals(other.Key) &&
-                       Value.Equals(other.Value);
-            }
-
-            public override bool Equals(object obj)
-            {
-                return Equals(obj as Entry);
-            }
-
-            public override int GetHashCode()
-            {
-                return _entryHashCode;
             }
         }
     }

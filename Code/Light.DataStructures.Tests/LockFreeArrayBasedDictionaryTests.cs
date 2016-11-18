@@ -160,12 +160,11 @@ namespace Light.DataStructures.Tests
         [Fact]
         public void IndexerGetKeyNull()
         {
+            // ReSharper disable once CollectionNeverUpdated.Local
             var dictionary = new LockFreeArrayBasedDictionary<string, object>();
 
-            Action act = () =>
-                         {
-                             var value = dictionary[null];
-                         };
+            // ReSharper disable once UnusedVariable
+            Action act = () => { var value = dictionary[null]; };
 
             act.ShouldThrow<ArgumentNullException>()
                .And.ParamName.Should().Be("key");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
+using System.Linq;
 
 namespace Light.DataStructures.Tests
 {
@@ -63,7 +64,7 @@ namespace Light.DataStructures.Tests
                 result = dictionary.Add(keyValuePair);
             }
 
-            dictionary.Count.Should().Be(itemsToAdd.Length);
+            dictionary.Count().Should().Be(itemsToAdd.Length);
             result.Should().BeSameAs(dictionary);
         }
 
@@ -79,7 +80,7 @@ namespace Light.DataStructures.Tests
 
             var result = dictionary.Clear();
 
-            dictionary.Count.Should().Be(0);
+            dictionary.Count().Should().Be(0);
             result.Should().BeTrue();
         }
 

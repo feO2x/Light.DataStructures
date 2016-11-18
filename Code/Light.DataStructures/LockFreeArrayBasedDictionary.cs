@@ -53,7 +53,7 @@ namespace Light.DataStructures
             throw new NotImplementedException();
         }
 
-        public int Count => _count;
+        int ICollection<KeyValuePair<TKey, TValue>>.Count => _count;
         public bool IsReadOnly => false;
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)

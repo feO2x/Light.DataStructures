@@ -29,7 +29,10 @@ namespace Light.DataStructures.Tests
         [Fact]
         public void IsNotReadonly()
         {
-            new LockFreeArrayBasedDictionary<string, object>().IsReadOnly.Should().BeFalse();
+            // ReSharper disable once CollectionNeverUpdated.Local
+            IDictionary<string, object> dictionary = new LockFreeArrayBasedDictionary<string, object>();
+
+            dictionary.IsReadOnly.Should().BeFalse();
         }
 
         [Theory]

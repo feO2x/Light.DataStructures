@@ -34,7 +34,7 @@ namespace Light.DataStructures
                 if (targetEntry == null)
                     return false;
 
-                if (targetEntry.HashCode == hashCode && 
+                if (targetEntry.HashCode == hashCode &&
                     _keyComparer.Equals(item.Key, targetEntry.Key) &&
                     _valueComparer.Equals(item.Value, targetEntry.Value))
                     return true;
@@ -54,7 +54,7 @@ namespace Light.DataStructures
         }
 
         int ICollection<KeyValuePair<TKey, TValue>>.Count => _count;
-        public bool IsReadOnly => false;
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
@@ -124,7 +124,7 @@ namespace Light.DataStructures
                     if (targetEntry == null)
                     {
                         if (Interlocked.CompareExchange(ref _internalArray[targetIndex], newEntry, null) == null)
-                            return; 
+                            return;
 
                         goto UpdateIndex;
                     }
@@ -224,7 +224,7 @@ namespace Light.DataStructures
 
             public bool MoveNext()
             {
-                while(true)
+                while (true)
                 {
                     if (_currentIndex + 1 == _array.Length)
                         return false;

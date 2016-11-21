@@ -34,7 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DoublingPrimeNumbers.cs" />
     <Compile Include="LockFreeArrayBasedDictionary.cs" />
+    <Compile Include="SieveOfEratosthenes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

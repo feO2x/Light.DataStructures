@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using Light.GuardClauses;
 
 namespace Light.DataStructures
 {
@@ -11,8 +13,12 @@ namespace Light.DataStructures
         private readonly IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
         private readonly IEqualityComparer<TValue> _valueComparer = EqualityComparer<TValue>.Default;
         private int _count;
+        private float _loadThreshold = DefaultLoadThreshold;
         private Entry[] _internalArray;
-
+        private Entry[] _newArray;
+        private Task _increaseCapacityTask;
+        private const float DefaultLoadThreshold = 0.7f;
+        
         public LockFreeArrayBasedDictionary()
         {
             _internalArray = new Entry[31];
@@ -26,11 +32,12 @@ namespace Light.DataStructures
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
             var hashCode = _keyComparer.GetHashCode(item.Key);
-            var targetIndex = GetTargetBucketIndex(hashCode);
+            var targetArray = GetTargetArray();
+            var targetIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
 
             while (true)
             {
-                var targetEntry = _internalArray[targetIndex];
+                var targetEntry = Volatile.Read(ref targetArray[targetIndex]);
                 if (targetEntry == null)
                     return false;
 
@@ -39,7 +46,7 @@ namespace Light.DataStructures
                     _valueComparer.Equals(item.Value, targetEntry.Value))
                     return true;
 
-                targetIndex = (targetIndex + 1) % _internalArray.Length;
+                targetIndex = IncrementTargetIndex(targetIndex, targetArray.Length);
             }
         }
 
@@ -64,17 +71,19 @@ namespace Light.DataStructures
         public bool ContainsKey(TKey key)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var targetIndex = GetTargetBucketIndex(hashCode);
+            var targetArray = GetTargetArray();
+            var targetIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
 
             while (true)
             {
-                var targetEntry = _internalArray[targetIndex];
+                var targetEntry = Volatile.Read(ref targetArray[targetIndex]);
                 if (targetEntry == null)
                     return false;
                 if (hashCode == targetEntry.HashCode && _keyComparer.Equals(key, targetEntry.Key))
                     return true;
 
-                targetIndex = (targetIndex + 1) % _internalArray.Length;
+                // TODO: we have to search both arrays if possible
+                targetIndex = IncrementTargetIndex(targetIndex, targetArray.Length);
             }
         }
 
@@ -91,23 +100,35 @@ namespace Light.DataStructures
         ICollection<TKey> IDictionary<TKey, TValue>.Keys { get; }
         ICollection<TValue> IDictionary<TKey, TValue>.Values { get; }
 
+        public float LoadThreshold
+        {
+            get { return _loadThreshold; }
+            set
+            {
+                value.MustNotBeLessThan(0f);
+                value.MustNotBeGreaterThan(1f);
+                _loadThreshold = value;
+            }
+        }
+
         public TValue this[TKey key]
         {
             get
             {
                 if (key == null) throw new ArgumentNullException(nameof(key));
                 var hashCode = _keyComparer.GetHashCode(key);
-                var targetIndex = GetTargetBucketIndex(hashCode);
+                var targetArray = GetTargetArray();
+                var targetIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
 
                 while (true)
                 {
                     var targetEntry = _internalArray[targetIndex];
                     if (targetEntry == null)
-                        throw new ArgumentException($"There is no entry with key \"{key}\"", nameof(key));
+                        throw new KeyNotFoundException($"There is no entry with key \"{key}\"");
                     if (hashCode == targetEntry.HashCode && _keyComparer.Equals(key, targetEntry.Key))
                         return targetEntry.Value;
 
-                    targetIndex = (targetIndex + 1) % _internalArray.Length;
+                    targetIndex = IncrementTargetIndex(targetIndex, targetArray.Length);
                 }
             }
             set
@@ -116,7 +137,8 @@ namespace Light.DataStructures
 
                 var hashCode = _keyComparer.GetHashCode(key);
                 var newEntry = new Entry(hashCode, key, value);
-                var targetIndex = GetTargetBucketIndex(hashCode);
+                var targetArray = GetTargetArray();
+                var targetIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
 
                 while (true)
                 {
@@ -175,25 +197,67 @@ namespace Light.DataStructures
         public LockFreeArrayBasedDictionary<TKey, TValue> Add(TKey key, TValue value)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var targetIndex = GetTargetBucketIndex(hashCode); // TODO: how do I know which target I should use? What if the array size changes?
             var entry = new Entry(hashCode, key, value);
 
+            var targetArray = GetTargetArray();
+            var targetIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
             while (true)
             {
-                if (_internalArray[targetIndex] == null &&
-                    Interlocked.CompareExchange(ref _internalArray[targetIndex], entry, null) == null)
-                {
-                    Interlocked.Increment(ref _count);
-                    return this;
-                }
+                if (targetArray[targetIndex] == null &&
+                    Interlocked.CompareExchange(ref targetArray[targetIndex], entry, null) == null)
+                        return IncrementCount();
 
-                targetIndex = (targetIndex + 1) % _internalArray.Length;
+                var previousArray = targetArray;
+                targetArray = GetTargetArray();
+                if (previousArray == targetArray)
+                    targetIndex = (targetIndex + 1) % targetArray.Length;
+                else
+                    targetIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
             }
         }
 
-        private int GetTargetBucketIndex(int hashCode)
+        private LockFreeArrayBasedDictionary<TKey, TValue> IncrementCount()
         {
-            return Math.Abs(hashCode) % _internalArray.Length;
+            // Increment the count
+            var newCount = Interlocked.Increment(ref _count);
+            
+            // Check if there is already an Increase Capacity Task active. If yes, then we do not need to check the load threshold
+            if (Volatile.Read(ref _increaseCapacityTask) != null)
+                return this;
+
+            // Check if the number of elements exceeds the load threshold of the current array
+            var array = Volatile.Read(ref _internalArray);
+            if ((float) newCount / array.Length < Volatile.Read(ref _loadThreshold))
+                return this;
+
+            // If yes, then create a task that will create a new array, copy all elements from the old to the new one and replace it.
+            var increaseCapacityTask = new Task(IncreaseCapacity);
+            if (Interlocked.CompareExchange(ref _increaseCapacityTask, increaseCapacityTask, null) != null) // If _increaseCapacityTask was not null, then another thread created the task already
+                return this;
+
+            _newArray = new Entry[67]; // TODO: exchange this with a proper algorithm to fetch the next prime number
+            increaseCapacityTask.Start();
+            return this;
+        }
+
+        private void IncreaseCapacity()
+        {
+
+        }
+
+        private Entry[] GetTargetArray()
+        {
+            return Volatile.Read(ref _newArray) ?? Volatile.Read(ref _internalArray);
+        }
+
+        private static int GetTargetBucketIndex(int hashCode, int arrayLength)
+        {
+            return Math.Abs(hashCode) % arrayLength;
+        }
+
+        private static int IncrementTargetIndex(int targetIndex, int arrayLenght)
+        {
+            return (targetIndex + 1) % arrayLenght;
         }
 
         private sealed class Entry

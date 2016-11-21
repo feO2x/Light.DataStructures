@@ -217,5 +217,19 @@ namespace Light.DataStructures.Tests
                     false
                 }
             };
+
+        [Fact(Skip = "Runs indefinitely")]
+        public void IncreaseCapacity()
+        {
+            var keys = Enumerable.Range(1, 100).ToArray();
+            var dictionary = new LockFreeArrayBasedDictionary<int, object>();
+
+            foreach (var key in keys)
+            {
+                dictionary.Add(key, new object());
+            }
+
+            dictionary.Should().ContainKeys(keys);
+        }
     }
 }

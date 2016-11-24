@@ -16,12 +16,13 @@ namespace Light.DataStructures
         private float _loadThreshold = DefaultLoadThreshold;
         private Entry[] _internalArray;
         private Entry[] _newArray;
-        private Task _increaseCapacityTask;
+        private Task _copyTask;
         private const float DefaultLoadThreshold = 0.7f;
+        private readonly IGrowArrayStrategy _growArrayStrategy = new DoublingPrimeNumbersStrategy();
         
         public LockFreeArrayBasedDictionary()
         {
-            _internalArray = new Entry[31];
+            _internalArray = new Entry[_growArrayStrategy.GetInitialSize()];
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
@@ -186,9 +187,10 @@ namespace Light.DataStructures
 
         public bool Clear()
         {
-            var newArray = new Entry[31];
+            var newArray = new Entry[_growArrayStrategy.GetInitialSize()];
             var currentArray = Volatile.Read(ref _internalArray);
-            if (Interlocked.CompareExchange(ref _internalArray, newArray, currentArray) != currentArray) return false;
+            if (Interlocked.CompareExchange(ref _internalArray, newArray, currentArray) != currentArray)
+                return false;
 
             Interlocked.Exchange(ref _count, 0);
             return true;
@@ -203,9 +205,8 @@ namespace Light.DataStructures
             var targetIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
             while (true)
             {
-                if (targetArray[targetIndex] == null &&
-                    Interlocked.CompareExchange(ref targetArray[targetIndex], entry, null) == null)
-                        return IncrementCount();
+                if (Interlocked.CompareExchange(ref targetArray[targetIndex], entry, null) == null)
+                    return IncrementCount();    // TODO: if a new array is created here, we might want to copy the entry to it, too
 
                 var previousArray = targetArray;
                 targetArray = GetTargetArray();
@@ -222,7 +223,7 @@ namespace Light.DataStructures
             var newCount = Interlocked.Increment(ref _count);
             
             // Check if there is already an Increase Capacity Task active. If yes, then we do not need to check the load threshold
-            if (Volatile.Read(ref _increaseCapacityTask) != null)
+            if (Volatile.Read(ref _copyTask) != null)
                 return this;
 
             // Check if the number of elements exceeds the load threshold of the current array
@@ -230,19 +231,41 @@ namespace Light.DataStructures
             if ((float) newCount / array.Length < Volatile.Read(ref _loadThreshold))
                 return this;
 
-            // If yes, then create a task that will create a new array, copy all elements from the old to the new one and replace it.
-            var increaseCapacityTask = new Task(IncreaseCapacity);
-            if (Interlocked.CompareExchange(ref _increaseCapacityTask, increaseCapacityTask, null) != null) // If _increaseCapacityTask was not null, then another thread created the task already
+            // If yes, then create a task that will copy all elements from the old array to the new one.
+            var copyTask = new Task(CopyFromOldToNewArray);
+            if (Interlocked.CompareExchange(ref _copyTask, copyTask, null) != null) // If _copyTask was not null, then another thread created the task already
                 return this;
 
-            _newArray = new Entry[67]; // TODO: exchange this with a proper algorithm to fetch the next prime number
-            increaseCapacityTask.Start();
+            var newArray = new Entry[_growArrayStrategy.GetNextSize(array.Length)];
+            Volatile.Write(ref _newArray, newArray);
+            copyTask.Start();
             return this;
         }
 
-        private void IncreaseCapacity()
+        private void CopyFromOldToNewArray()
         {
+            // Read both old array and new array
+            var oldArray = Volatile.Read(ref _internalArray);
+            var newArray = Volatile.Read(ref _newArray);
 
+            // Run through the old array and copy every entry to the new one
+            for (var i = 0; i < oldArray.Length; ++i)
+            {
+                var entry = Volatile.Read(ref oldArray[i]);
+                // If there is no entry, then go to the next one
+                if (entry == null)
+                    continue;
+
+                // Insert the entry in the new array
+                var targetIndex = GetTargetBucketIndex(entry.HashCode, newArray.Length);
+                while (true)
+                {
+                    if (Interlocked.CompareExchange(ref newArray[targetIndex], entry, null) == null)
+                        break;
+
+                    targetIndex = IncrementTargetIndex(targetIndex, newArray.Length);
+                }
+            }
         }
 
         private Entry[] GetTargetArray()
@@ -293,11 +316,11 @@ namespace Light.DataStructures
                     if (_currentIndex + 1 == _array.Length)
                         return false;
 
-                    var targetNode = Volatile.Read(ref _array[++_currentIndex]);
-                    if (targetNode == null)
+                    var currentEntry = Volatile.Read(ref _array[++_currentIndex]);
+                    if (currentEntry == null)
                         continue;
 
-                    _current = new KeyValuePair<TKey, TValue>(targetNode.Key, targetNode.Value);
+                    _current = new KeyValuePair<TKey, TValue>(currentEntry.Key, currentEntry.Value);
                     return true;
                 }
             }

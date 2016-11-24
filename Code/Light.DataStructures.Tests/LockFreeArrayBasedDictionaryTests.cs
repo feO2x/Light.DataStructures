@@ -218,10 +218,11 @@ namespace Light.DataStructures.Tests
                 }
             };
 
-        [Fact(Skip = "Runs indefinitely")]
-        public void IncreaseCapacity()
+        [Theory]
+        [InlineData(50)]
+        public void IncreaseCapacity(int numberOfItems)
         {
-            var keys = Enumerable.Range(1, 100).ToArray();
+            var keys = Enumerable.Range(1, numberOfItems).ToArray();
             var dictionary = new LockFreeArrayBasedDictionary<int, object>();
 
             foreach (var key in keys)

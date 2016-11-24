@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using FluentAssertions;
 using Light.GuardClauses;
 using Xunit;
@@ -32,18 +29,21 @@ namespace Light.DataStructures.Tests
             actual.Should().BeEquivalentTo(expectedPrimeNumbers);
         }
 
-        [Fact(Skip = "Only used to create doubling prime numbers.")]
+        [Fact(Skip = "Only used to determine prime numbers for DoublingPrimeNUmbersStrategy.")]
         public void PrintAllPrimesThatAreAtLeastTheDoulbeOfThePrevious()
         {
-            const int targetNumber = 2000000000;
-            var allPrimesForInt = SieveOfEratosthenes.GetAllPrimeNumbers(targetNumber).ToArray();
-            var doubledPrimes = FilterDoublePrimes(allPrimesForInt);
+            const int startPrime = 31;
+            //           Int32.Max = 2147483647
+            const int targetNumber = 2100000000;
+            var primes = SieveOfEratosthenes.GetAllPrimeNumbers(targetNumber)
+                                            .SkipWhile(number => number < startPrime)
+                                            .ToArray();
+            var doubledPrimes = FilterDoublePrimes(primes);
 
-            var targetNumberText = targetNumber.ToString("N0", CultureInfo.InvariantCulture);
-            _output.WriteLine($"All primes up to {targetNumberText} that are at least double the previous prime.");
+            _output.WriteLine($"All primes from {startPrime} up to {targetNumber} that are at least double the previous prime.");
             foreach (var doubledPrime in doubledPrimes)
             {
-                _output.WriteLine(doubledPrime.ToString("N0", CultureInfo.InvariantCulture));
+                _output.WriteLine($"{doubledPrime},");
             }
         }
 
@@ -62,7 +62,7 @@ namespace Light.DataStructures.Tests
                     continue;
 
                 yield return currentPrime;
-                
+
                 newDouble = currentPrime * 2L;
             }
         }

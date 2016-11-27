@@ -27,7 +27,7 @@ namespace Light.DataStructures
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
-            Add(item.Key, item.Value);
+            TryAdd(item.Key, item.Value);
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -47,7 +47,7 @@ namespace Light.DataStructures
                     _valueComparer.Equals(item.Value, targetEntry.Value))
                     return true;
 
-                targetIndex = IncrementTargetIndex(targetIndex, targetArray.Length);
+                targetIndex = IncrementIndex(targetIndex, targetArray.Length);
             }
         }
 
@@ -66,7 +66,7 @@ namespace Light.DataStructures
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
-            Add(key, value);
+            TryAdd(key, value);
         }
 
         public bool ContainsKey(TKey key)
@@ -84,7 +84,7 @@ namespace Light.DataStructures
                     return true;
 
                 // TODO: we have to search both arrays if possible
-                targetIndex = IncrementTargetIndex(targetIndex, targetArray.Length);
+                targetIndex = IncrementIndex(targetIndex, targetArray.Length);
             }
         }
 
@@ -115,7 +115,86 @@ namespace Light.DataStructures
 
         public bool TryAdd(TKey key, TValue value)
         {
-            throw new NotImplementedException();
+            var hashCode = _keyComparer.GetHashCode(key);
+            var entry = new Entry(hashCode, key, value);
+
+            var targetArrayInfo = GetTargetArrayInfo();
+            var targetArray = targetArrayInfo.TargetArray;
+            var startIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
+            var currentIndex = startIndex;
+            while (true)
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                var previousEntry = Interlocked.CompareExchange(ref targetArray[currentIndex], entry, null);
+
+                // Check if the entry was set successfully
+                if (previousEntry == null)
+                {
+                    // If yes, then increment the count
+                    var newCount = Interlocked.Increment(ref _count);
+
+                    // Check if the element has to be added to a new array that might have been created while this method inserted the entry in the old one
+                    Entry[] newArray;
+                    if (targetArrayInfo.IsNewArray == false && (newArray = Volatile.Read(ref _newArray)) != null)
+                    {
+                        // If yes, then get the target bucket index 
+                        currentIndex = GetTargetBucketIndex(hashCode, newArray.Length);
+                        while (true)
+                        {
+                            // Try to add the entry
+                            previousEntry = Interlocked.CompareExchange(ref newArray[currentIndex], entry, null);
+                            if (previousEntry == null)
+                                break;
+
+                            // If the entry has already been copied over or there already is an entry with the same hash code and key, then do not set it on the new array
+                            if (previousEntry == entry || (previousEntry.HashCode == hashCode && _keyComparer.Equals(key, previousEntry.Key)))
+                                break;
+
+                            // If this is not the case, then try to set the value at the next index
+                            currentIndex = IncrementIndex(currentIndex, targetArray.Length);
+                        }
+                        return true;
+                    }
+
+                    // Else check if the dictionary needs to grow
+                    // ReSharper disable once PossibleNullReferenceException
+                    if ((float) newCount / targetArray.Length < Volatile.Read(ref _loadThreshold))
+                        return true;
+
+                    // If yes, then create a task that will copy all elements from the old array to the new one.
+                    var copyTask = new Task(CopyFromOldToNewArray);
+                    if (Interlocked.CompareExchange(ref _copyTask, copyTask, null) != null) // If _copyTask was not null, then another thread created the task already
+                        return true;    // If _copyTask was not null, then another thread created the task already
+
+                    newArray = new Entry[_growArrayStrategy.GetNextSize(targetArray.Length)];
+                    Volatile.Write(ref _newArray, newArray);
+                    copyTask.Start();
+                    return true;
+                }
+
+                // When the previous entry was not null, then check if it has the same hash code and key
+                if (previousEntry.HashCode == hashCode && _keyComparer.Equals(key, previousEntry.Key))
+                    return false;   // If this is the case, then do nothing and return false
+
+                // If this is not the case, then update the current index and try to add again
+                currentIndex = IncrementIndex(currentIndex, targetArray.Length);
+
+                // If we got to the start index, then this means that the target array is full
+                if (startIndex == currentIndex)
+                {
+                    if (targetArrayInfo.IsNewArray == false)
+                    {
+                        // Try to spin until the new array is ready
+                        while ((targetArray = Volatile.Read(ref _newArray)) != null) { }
+                        // ReSharper disable once PossibleNullReferenceException
+                        currentIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
+                        continue;
+                    }
+
+                    throw new InvalidOperationException("The new array is full and it was not exchanged with the internal one yet.");
+                }
+                    
+            }
         }
 
         public bool TryRemove(TKey key, out TValue value)
@@ -159,7 +238,7 @@ namespace Light.DataStructures
                     if (hashCode == targetEntry.HashCode && _keyComparer.Equals(key, targetEntry.Key))
                         return targetEntry.Value;
 
-                    targetIndex = IncrementTargetIndex(targetIndex, targetArray.Length);
+                    targetIndex = IncrementIndex(targetIndex, targetArray.Length);
                 }
             }
             set
@@ -210,11 +289,6 @@ namespace Light.DataStructures
             Clear();
         }
 
-        public LockFreeArrayBasedDictionary<TKey, TValue> Add(KeyValuePair<TKey, TValue> item)
-        {
-            return Add(item.Key, item.Value);
-        }
-
         public bool Clear()
         {
             var newArray = new Entry[_growArrayStrategy.GetInitialSize()];
@@ -226,51 +300,7 @@ namespace Light.DataStructures
             return true;
         }
 
-        public LockFreeArrayBasedDictionary<TKey, TValue> Add(TKey key, TValue value)
-        {
-            var hashCode = _keyComparer.GetHashCode(key);
-            var entry = new Entry(hashCode, key, value);
-
-            var targetArray = GetTargetArray();
-            var targetIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
-            while (true)
-            {
-                if (Interlocked.CompareExchange(ref targetArray[targetIndex], entry, null) == null)
-                    return IncrementCount();    // TODO: if a new array is created here, we might want to copy the entry to it, too
-
-                var previousArray = targetArray;
-                targetArray = GetTargetArray();
-                if (previousArray == targetArray)
-                    targetIndex = (targetIndex + 1) % targetArray.Length;
-                else
-                    targetIndex = GetTargetBucketIndex(hashCode, targetArray.Length);
-            }
-        }
-
-        private LockFreeArrayBasedDictionary<TKey, TValue> IncrementCount()
-        {
-            // Increment the count
-            var newCount = Interlocked.Increment(ref _count);
-            
-            // Check if there is already an Increase Capacity Task active. If yes, then we do not need to check the load threshold
-            if (Volatile.Read(ref _copyTask) != null)
-                return this;
-
-            // Check if the number of elements exceeds the load threshold of the current array
-            var array = Volatile.Read(ref _internalArray);
-            if ((float) newCount / array.Length < Volatile.Read(ref _loadThreshold))
-                return this;
-
-            // If yes, then create a task that will copy all elements from the old array to the new one.
-            var copyTask = new Task(CopyFromOldToNewArray);
-            if (Interlocked.CompareExchange(ref _copyTask, copyTask, null) != null) // If _copyTask was not null, then another thread created the task already
-                return this;
-
-            var newArray = new Entry[_growArrayStrategy.GetNextSize(array.Length)];
-            Volatile.Write(ref _newArray, newArray);
-            copyTask.Start();
-            return this;
-        }
+        
 
         private void CopyFromOldToNewArray()
         {
@@ -293,9 +323,19 @@ namespace Light.DataStructures
                     if (Interlocked.CompareExchange(ref newArray[targetIndex], entry, null) == null)
                         break;
 
-                    targetIndex = IncrementTargetIndex(targetIndex, newArray.Length);
+                    targetIndex = IncrementIndex(targetIndex, newArray.Length);
                 }
             }
+        }
+
+        private TargetArrayInfo GetTargetArrayInfo()
+        {
+            var targetArray = Volatile.Read(ref _newArray);
+            if (targetArray != null)
+                return new TargetArrayInfo(targetArray, true);
+
+            targetArray = Volatile.Read(ref _internalArray);
+            return new TargetArrayInfo(targetArray, false);
         }
 
         private Entry[] GetTargetArray()
@@ -308,7 +348,7 @@ namespace Light.DataStructures
             return Math.Abs(hashCode) % arrayLength;
         }
 
-        private static int IncrementTargetIndex(int targetIndex, int arrayLenght)
+        private static int IncrementIndex(int targetIndex, int arrayLenght)
         {
             return (targetIndex + 1) % arrayLenght;
         }
@@ -366,6 +406,17 @@ namespace Light.DataStructures
             object IEnumerator.Current => Current;
 
             public void Dispose() { }
+        }
+
+        private struct TargetArrayInfo
+        {
+            public readonly Entry[] TargetArray;
+            public readonly bool IsNewArray;
+            public TargetArrayInfo(Entry[] targetArray, bool isNewArray)
+            {
+                TargetArray = targetArray;
+                IsNewArray = isNewArray;
+            }
         }
     }
 }

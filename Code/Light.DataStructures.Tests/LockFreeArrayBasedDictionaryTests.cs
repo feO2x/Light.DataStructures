@@ -15,10 +15,11 @@ namespace Light.DataStructures.Tests
         {
             var dictionary = new LockFreeArrayBasedDictionary<string, string>();
 
-            var result = dictionary.Add("Foo", "Bar");
+            var result = dictionary.TryAdd("Foo", "Bar");
 
+            result.Should().BeTrue();
             dictionary["Foo"].Should().Be("Bar");
-            result.Should().BeSameAs(dictionary);
+            
         }
 
         [Fact]
@@ -51,41 +52,38 @@ namespace Light.DataStructures.Tests
         public static readonly TestData ContainsKeyData =
             new[]
             {
-                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(5, null)), 5, true },
-                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(14, null)), 14, true },
-                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(7, null)), 3, false },
-                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.Add(42, null)), 1, false }
+                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.TryAdd(5, null)), 5, true },
+                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.TryAdd(14, null)), 14, true },
+                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.TryAdd(7, null)), 3, false },
+                new object[] { new Action<LockFreeArrayBasedDictionary<int, object>>(testTarget => testTarget.TryAdd(42, null)), 1, false }
             };
 
         [Theory]
         [MemberData(nameof(ItemsToAddData))]
         public void CountMustReflectNumberOfAddedItems(KeyValuePair<string, object>[] itemsToAdd)
         {
-            var dictionary = new LockFreeArrayBasedDictionary<string, object>();
-            LockFreeArrayBasedDictionary<string, object> result = null;
+            IDictionary<string, object> dictionary = new LockFreeArrayBasedDictionary<string, object>();
             foreach (var keyValuePair in itemsToAdd)
             {
-                result = dictionary.Add(keyValuePair);
+                dictionary.Add(keyValuePair);
             }
 
-            dictionary.Count().Should().Be(itemsToAdd.Length);
-            result.Should().BeSameAs(dictionary);
+            dictionary.Count.Should().Be(itemsToAdd.Length);
         }
 
         [Theory]
         [MemberData(nameof(ItemsToAddData))]
         public void Clear(KeyValuePair<string, object>[] itemsToAdd)
         {
-            var dictionary = new LockFreeArrayBasedDictionary<string, object>();
+            IDictionary<string, object> dictionary = new LockFreeArrayBasedDictionary<string, object>();
             foreach (var keyValuePair in itemsToAdd)
             {
                 dictionary.Add(keyValuePair);
             }
 
-            var result = dictionary.Clear();
+            dictionary.Clear();
 
-            dictionary.Count().Should().Be(0);
-            result.Should().BeTrue();
+            dictionary.Count.Should().Be(0);
         }
 
         [Theory]
@@ -221,6 +219,7 @@ namespace Light.DataStructures.Tests
 
         [Theory]
         [InlineData(50)]
+        [InlineData(100)]
         public void IncreaseCapacity(int numberOfItems)
         {
             var keys = Enumerable.Range(1, numberOfItems).ToArray();
@@ -228,7 +227,7 @@ namespace Light.DataStructures.Tests
 
             foreach (var key in keys)
             {
-                dictionary.Add(key, new object());
+                dictionary.TryAdd(key, new object());
             }
 
             dictionary.Should().ContainKeys(keys);

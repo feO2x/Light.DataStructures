@@ -7,7 +7,7 @@ using Light.GuardClauses;
 
 namespace Light.DataStructures
 {
-    public class LockFreeArrayBasedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    public class LockFreeArrayBasedDictionary<TKey, TValue> : IConcurrentDictionary<TKey, TValue>, IDictionary<TKey, TValue>
     {
         // TODO: the comparers should be configurable via the constructor
         private readonly IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
@@ -88,7 +88,37 @@ namespace Light.DataStructures
             }
         }
 
+        public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool GetOrAdd(TKey key, Func<TValue> createValue, out TValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TValue GetOrAdd(TKey key, Func<TValue> createValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AddOrUpdate(TKey key, TValue value)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Remove(TKey key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryAdd(TKey key, TValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryRemove(TKey key, out TValue value)
         {
             throw new NotImplementedException();
         }

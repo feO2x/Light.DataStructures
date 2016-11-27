@@ -244,5 +244,11 @@ namespace Light.DataStructures.Tests
 
             dictionary.LoadThreshold.Should().Be(newThreshold);
         }
+
+        [Fact]
+        public void ImplementsIConcurrentDictionary()
+        {
+            typeof(LockFreeArrayBasedDictionary<string, object>).Should().Implement<IConcurrentDictionary<string, object>>();
+        }
     }
 }

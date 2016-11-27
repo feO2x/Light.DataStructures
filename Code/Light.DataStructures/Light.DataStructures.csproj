@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="DoublingPrimeNumbersStrategy.cs" />
     <Compile Include="IConcurrentDictionary.cs" />
+    <Compile Include="IGrowArrayStrategy.cs" />
     <Compile Include="LockFreeArrayBasedDictionary.cs" />
     <Compile Include="SieveOfEratosthenes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

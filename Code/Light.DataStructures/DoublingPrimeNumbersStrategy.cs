@@ -3,12 +3,6 @@ using System.Collections.Generic;
 
 namespace Light.DataStructures
 {
-    public interface IGrowArrayStrategy
-    {
-        int GetInitialSize();
-        int GetNextSize(int currentSize);
-    }
-
     public sealed class DoublingPrimeNumbersStrategy : IGrowArrayStrategy
     {
         public static readonly IReadOnlyList<int> DoublingPrimeNumbers =

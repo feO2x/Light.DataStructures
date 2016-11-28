@@ -2,7 +2,12 @@
 
 namespace Light.DataStructures
 {
-    public interface IConcurrentDictionary<TKey, TValue>
+    /// <summary>
+    /// Represents a dictionary that can be accessed by several threads simultaneously.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the keys.</typeparam>
+    /// <typeparam name="TValue">The type of the values.</typeparam>
+    public interface IConcurrentDictionary<in TKey, TValue>
     {
         /// <summary>
         ///     Attempts to add the specified key and value to the <see cref="IConcurrentDictionary{TKey, TValue}" />.
@@ -112,7 +117,8 @@ namespace Light.DataStructures
         bool AddOrUpdate(TKey key, TValue value);
 
         /// <summary>
-        ///     Removes all keys and values from the <see cref="IConcurrentDictionary{TKey,TValue}" />.
+        ///     Tries to remove all keys and values from the <see cref="IConcurrentDictionary{TKey,TValue}" />.
+        ///     This operation will not succeed if the internal structure that holds the key-value-pairs is currently manipulated.
         /// </summary>
         /// <returns>True if the clear operation was successful, else false.</returns>
         bool Clear();

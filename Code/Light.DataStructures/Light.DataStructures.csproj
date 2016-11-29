@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AddResult.cs" />
     <Compile Include="ConcurrentArray.cs" />
     <Compile Include="DoublingPrimeNumbersStrategy.cs" />
     <Compile Include="Entry.cs" />

@@ -8,14 +8,14 @@ namespace Light.DataStructures.Tests
     {
         [Theory]
         [MemberData(nameof(AddAndRetrieveData))]
-        public void AddAndRetrieve(Entry<string, string> entry)
+        public void SimpleAddAndRetrieve(Entry<string, string> entry)
         {
-            var concurrentArray = new ConcurrentArray<string, string>();
+            var concurrentArray = CreateDefaultConcurrentArray<string, string>();
 
             var tryAddResult = concurrentArray.TryAdd(entry);
             var foundEntry = concurrentArray.Find(entry.HashCode, entry.Key);
 
-            tryAddResult.Should().BeTrue();
+            tryAddResult.OperationResult.Should().Be(AddResult.Successful);
             foundEntry.Should().BeSameAs(entry);
         }
 
@@ -38,12 +38,52 @@ namespace Light.DataStructures.Tests
             concurrentArray.Capacity.Should().Be(initialCapacity);
         }
 
-        [Fact]
-        public void DefaultCapacity()
+        [Theory]
+        [MemberData(nameof(AddAndRetrieveAllData))]
+        public void AddAndRetrieveAll(Entry<int, string>[] entries)
         {
-            var concurrentArray = new ConcurrentArray<int, object>();
+            var concurrentArray = CreateDefaultConcurrentArray<int, string>();
+            foreach (var entry in entries)
+            {
+                concurrentArray.TryAdd(entry);
+            }
 
-            concurrentArray.Capacity.Should().Be(ConcurrentArray<int, object>.DefaultCapacity);
+            foreach (var entry in entries)
+            {
+                var foundEntry = concurrentArray.Find(entry.HashCode, entry.Key);
+                foundEntry.Should().BeSameAs(entry);
+            }
+            
+        }
+
+        public static readonly TestData AddAndRetrieveAllData =
+            new[]
+            {
+                new object[]
+                {
+                    new []
+                    {
+                        new Entry<int, string>(42, 42, "Foo"),
+                        new Entry<int, string>(12, 12, "Bar"),
+                        new Entry<int, string>(88, 88, "Baz")
+                    }
+                },
+                new object[]
+                {
+                    new []
+                    {
+                        new Entry<int, string>(42, 42, "Foo"),
+                        new Entry<int, string>(12, 12, "Bar"),
+                        new Entry<int, string>(88, 88, "Baz"),
+                        new Entry<int, string>(90, 90, "Qux"),
+                        new Entry<int, string>(-116, -116, "Quux")
+                    }
+                }
+            };
+
+        private static ConcurrentArray<TKey, TValue> CreateDefaultConcurrentArray<TKey, TValue>()
+        {
+            return new ConcurrentArray<TKey, TValue>(31);
         }
     }
 }

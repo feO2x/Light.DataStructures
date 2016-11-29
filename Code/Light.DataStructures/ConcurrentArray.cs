@@ -3,6 +3,18 @@
     public class ConcurrentArray<TKey, TValue>
     {
         private Entry<TKey, TValue> _entry;
+        private int _capacity;
+
+        public ConcurrentArray()
+        {
+        }
+
+        public ConcurrentArray(int capacity)
+        {
+            _capacity = capacity;
+        }
+
+        public int Capacity => _capacity;
 
         public bool TryAdd(Entry<TKey, TValue> entry)
         {

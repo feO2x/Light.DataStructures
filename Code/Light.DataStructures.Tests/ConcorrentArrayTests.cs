@@ -25,5 +25,17 @@ namespace Light.DataStructures.Tests
                 new object[] { new Entry<string, string>(1, "Foo", "Bar") },
                 new object[] { new Entry<string, string>(42, "Bar", "Baz") }
             };
+
+        [Theory]
+        [InlineData(31)]
+        [InlineData(2)]
+        [InlineData(4)]
+        [InlineData(143483)]
+        public void InitialCapacity(int initialCapacity)
+        {
+            var concurrentArray = new ConcurrentArray<string, object>(initialCapacity);
+
+            concurrentArray.Capacity.Should().Be(initialCapacity);
+        }
     }
 }

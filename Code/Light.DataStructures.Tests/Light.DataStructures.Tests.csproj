@@ -69,6 +69,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConcorrentArrayTests.cs" />
+    <Compile Include="EntryTests.cs" />
     <Compile Include="LockFreeArrayBasedDictionaryTests.cs" />
     <Compile Include="PrimeNumberGeneration.cs" />
     <Compile Include="SieveOfEratosthenesTests.cs" />

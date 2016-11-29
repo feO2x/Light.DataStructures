@@ -353,19 +353,7 @@ namespace Light.DataStructures
             return (targetIndex + 1) % arrayLenght;
         }
 
-        private sealed class Entry
-        {
-            public readonly int HashCode;
-            public readonly TKey Key;
-            public readonly TValue Value;
-
-            public Entry(int hashCode, TKey key, TValue value)
-            {
-                HashCode = hashCode;
-                Key = key;
-                Value = value;
-            }
-        }
+        
 
         private class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
         {
@@ -416,6 +404,20 @@ namespace Light.DataStructures
             {
                 TargetArray = targetArray;
                 IsNewArray = isNewArray;
+            }
+        }
+
+        private sealed class Entry
+        {
+            public readonly int HashCode;
+            public readonly TKey Key;
+            public readonly TValue Value;
+
+            public Entry(int hashCode, TKey key, TValue value)
+            {
+                HashCode = hashCode;
+                Key = key;
+                Value = value;
             }
         }
     }

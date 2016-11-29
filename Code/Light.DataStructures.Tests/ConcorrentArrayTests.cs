@@ -37,5 +37,13 @@ namespace Light.DataStructures.Tests
 
             concurrentArray.Capacity.Should().Be(initialCapacity);
         }
+
+        [Fact]
+        public void DefaultCapacity()
+        {
+            var concurrentArray = new ConcurrentArray<int, object>();
+
+            concurrentArray.Capacity.Should().Be(ConcurrentArray<int, object>.DefaultCapacity);
+        }
     }
 }

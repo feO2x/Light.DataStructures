@@ -2,12 +2,11 @@
 {
     public class ConcurrentArray<TKey, TValue>
     {
+        public const int DefaultCapacity = 31;
+        private readonly int _capacity;
         private Entry<TKey, TValue> _entry;
-        private int _capacity;
 
-        public ConcurrentArray()
-        {
-        }
+        public ConcurrentArray() : this (DefaultCapacity) { }
 
         public ConcurrentArray(int capacity)
         {

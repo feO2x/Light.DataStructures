@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
@@ -95,9 +96,42 @@ namespace Light.DataStructures.Tests
                .And.ParamName.Should().Be(nameof(capacity));
         }
 
+        [Fact]
+        public void CustomKeyComparer()
+        {
+            var keyComparerMock = new KeyComparerMock();
+            var concurrentArray = new ConcurrentArray<int, object>(4, keyComparerMock);
+            concurrentArray.TryAdd(new Entry<int, object>(6, 6, null));
+
+            concurrentArray.Find(6, 6);
+
+            keyComparerMock.EqualsMustHaveBeenCalledAtLeastOnce();
+        }
+
         private static ConcurrentArray<TKey, TValue> CreateDefaultConcurrentArray<TKey, TValue>()
         {
             return new ConcurrentArray<TKey, TValue>(31);
+        }
+
+        private sealed class KeyComparerMock : IEqualityComparer<int>
+        {
+            private int _equalsCallCount;
+
+            public bool Equals(int x, int y)
+            {
+                ++_equalsCallCount;
+                return x == y;
+            }
+
+            public  int GetHashCode(int value)
+            {
+                return value;
+            }
+
+            public void EqualsMustHaveBeenCalledAtLeastOnce()
+            {
+                _equalsCallCount.Should().BeGreaterThan(0);
+            }
         }
     }
 }

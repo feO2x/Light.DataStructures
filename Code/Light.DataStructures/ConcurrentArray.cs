@@ -8,12 +8,16 @@ namespace Light.DataStructures
     public class ConcurrentArray<TKey, TValue>
     {
         private readonly Entry<TKey, TValue>[] _internalArray;
-        private readonly IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
+        private readonly IEqualityComparer<TKey> _keyComparer;
 
-        public ConcurrentArray(int capacity)
+        public ConcurrentArray(int capacity) : this(capacity, EqualityComparer<TKey>.Default) { }
+
+        public ConcurrentArray(int capacity, IEqualityComparer<TKey> keyComparer)
         {
             capacity.MustNotBeLessThan(0, nameof(capacity));
+
             _internalArray = new Entry<TKey, TValue>[capacity];
+            _keyComparer = keyComparer;
         }
 
         public int Capacity => _internalArray.Length;

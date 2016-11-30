@@ -3,6 +3,7 @@
     public enum AddResult
     {
         AddSuccessful,
-        ExistingEntryFound
+        ExistingEntryFound,
+        ArrayFull
     }
 }

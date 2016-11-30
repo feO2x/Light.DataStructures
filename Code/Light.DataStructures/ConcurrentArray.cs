@@ -25,7 +25,8 @@ namespace Light.DataStructures
 
         public AddInfo TryAdd(Entry<TKey, TValue> entry)
         {
-            var targetIndex = GetTargetBucketIndex(entry.HashCode);
+            var startIndex = GetTargetBucketIndex(entry.HashCode);
+            var targetIndex = startIndex;
 
             while (true)
             {
@@ -37,6 +38,8 @@ namespace Light.DataStructures
                     return new AddInfo(AddResult.ExistingEntryFound, previousEntry);
 
                 IncrementTargetIndex(ref targetIndex);
+                if (targetIndex == startIndex)
+                    return new AddInfo(AddResult.ArrayFull, null);
             }
         }
 
@@ -47,7 +50,7 @@ namespace Light.DataStructures
 
         private void IncrementTargetIndex(ref int targetIndex)
         {
-            targetIndex = targetIndex + 1 % _internalArray.Length;
+            targetIndex = (targetIndex + 1) % _internalArray.Length;
         }
 
         public Entry<TKey, TValue> Find(int hashCode, TKey key)

@@ -152,5 +152,21 @@ namespace Light.DataStructures.Tests
             addInfo.OperationResult.Should().Be(AddResult.ExistingEntryFound);
             addInfo.TargetEntry.Should().Be(existingEntry);
         }
+
+        [Fact]
+        public void ArrayFull()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<int, object>().WithCapacity(4)
+                                                                           .Build();
+            for (var i = 0; i < 4; i++)
+            {
+                concurrentArray.TryAdd(new Entry<int, object>(i, i, null));
+            }
+
+            var addInfo = concurrentArray.TryAdd(new Entry<int, object>(5, 5, null));
+
+            addInfo.OperationResult.Should().Be(AddResult.ArrayFull);
+            addInfo.TargetEntry.Should().BeNull();
+        }
     }
 }

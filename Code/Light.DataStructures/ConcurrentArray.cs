@@ -9,6 +9,7 @@ namespace Light.DataStructures
     {
         private readonly Entry<TKey, TValue>[] _internalArray;
         private readonly IEqualityComparer<TKey> _keyComparer;
+        private int _count;
 
         public ConcurrentArray(int capacity) : this(capacity, EqualityComparer<TKey>.Default) { }
 
@@ -22,6 +23,7 @@ namespace Light.DataStructures
         }
 
         public int Capacity => _internalArray.Length;
+        public int Count => Volatile.Read(ref _count);
 
         public AddInfo TryAdd(Entry<TKey, TValue> entry)
         {
@@ -32,7 +34,10 @@ namespace Light.DataStructures
             {
                 var previousEntry = Interlocked.CompareExchange(ref _internalArray[targetIndex], entry, null);
                 if (previousEntry == null)
+                {
+                    Interlocked.Increment(ref _count);
                     return new AddInfo(AddResult.AddSuccessful, entry);
+                }
 
                 if (entry.HashCode == previousEntry.HashCode && _keyComparer.Equals(entry.Key, previousEntry.Key))
                     return new AddInfo(AddResult.ExistingEntryFound, previousEntry);

@@ -42,7 +42,7 @@ namespace Light.DataStructures.Tests
         }
 
         [Theory]
-        [MemberData(nameof(AddAndRetrieveAllData))]
+        [MemberData(nameof(AddTestData))]
         public void AddAndRetrieveAll(Entry<int, string>[] entries)
         {
             var concurrentArray = new ConcurrentArrayBuilder<int, string>().Build();
@@ -58,7 +58,20 @@ namespace Light.DataStructures.Tests
             }
         }
 
-        public static readonly TestData AddAndRetrieveAllData =
+        [Theory]
+        [MemberData(nameof(AddTestData))]
+        public void CountMustReflectAddedEntries(Entry<int, string>[] entries)
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<int, string>().Build();
+            foreach (var entry in entries)
+            {
+                concurrentArray.TryAdd(entry);
+            }
+
+            concurrentArray.Count.Should().Be(entries.Length);
+        }
+
+        public static readonly TestData AddTestData =
             new[]
             {
                 new object[]

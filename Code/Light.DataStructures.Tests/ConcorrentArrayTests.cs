@@ -12,7 +12,7 @@ namespace Light.DataStructures.Tests
         [MemberData(nameof(AddAndRetrieveData))]
         public void SimpleAddAndRetrieve(Entry<string, string> entry)
         {
-            var concurrentArray = CreateDefaultConcurrentArray<string, string>();
+            var concurrentArray = new ConcurrentArrayBuilder<string, string>().Build();
 
             var tryAddResult = concurrentArray.TryAdd(entry);
             var foundEntry = concurrentArray.Find(entry.HashCode, entry.Key);
@@ -35,7 +35,8 @@ namespace Light.DataStructures.Tests
         [InlineData(143483)]
         public void InitialCapacity(int initialCapacity)
         {
-            var concurrentArray = new ConcurrentArray<string, object>(initialCapacity);
+            var concurrentArray = new ConcurrentArrayBuilder<string, object>().WithCapacity(initialCapacity)
+                                                                              .Build();
 
             concurrentArray.Capacity.Should().Be(initialCapacity);
         }
@@ -44,7 +45,7 @@ namespace Light.DataStructures.Tests
         [MemberData(nameof(AddAndRetrieveAllData))]
         public void AddAndRetrieveAll(Entry<int, string>[] entries)
         {
-            var concurrentArray = CreateDefaultConcurrentArray<int, string>();
+            var concurrentArray = new ConcurrentArrayBuilder<int, string>().Build();
             foreach (var entry in entries)
             {
                 concurrentArray.TryAdd(entry);
@@ -55,7 +56,6 @@ namespace Light.DataStructures.Tests
                 var foundEntry = concurrentArray.Find(entry.HashCode, entry.Key);
                 foundEntry.Should().BeSameAs(entry);
             }
-            
         }
 
         public static readonly TestData AddAndRetrieveAllData =
@@ -63,7 +63,7 @@ namespace Light.DataStructures.Tests
             {
                 new object[]
                 {
-                    new []
+                    new[]
                     {
                         new Entry<int, string>(42, 42, "Foo"),
                         new Entry<int, string>(12, 12, "Bar"),
@@ -72,7 +72,7 @@ namespace Light.DataStructures.Tests
                 },
                 new object[]
                 {
-                    new []
+                    new[]
                     {
                         new Entry<int, string>(42, 42, "Foo"),
                         new Entry<int, string>(12, 12, "Bar"),
@@ -100,7 +100,8 @@ namespace Light.DataStructures.Tests
         public void CustomKeyComparer()
         {
             var keyComparerMock = new KeyComparerMock();
-            var concurrentArray = new ConcurrentArray<int, object>(4, keyComparerMock);
+            var concurrentArray = new ConcurrentArrayBuilder<int, object>().WithKeyComparer(keyComparerMock)
+                                                                           .Build();
             concurrentArray.TryAdd(new Entry<int, object>(6, 6, null));
 
             concurrentArray.Find(6, 6);
@@ -111,15 +112,11 @@ namespace Light.DataStructures.Tests
         [Fact]
         public void KeyComparerNotNull()
         {
-            Action act = () => new ConcurrentArray<string, bool>(4, null);
+            Action act = () => new ConcurrentArrayBuilder<string, object>().WithKeyComparer(null)
+                                                                           .Build();
 
             act.ShouldThrow<ArgumentNullException>()
                .And.ParamName.Should().Be("keyComparer");
-        }
-
-        private static ConcurrentArray<TKey, TValue> CreateDefaultConcurrentArray<TKey, TValue>()
-        {
-            return new ConcurrentArray<TKey, TValue>(31);
         }
 
         private sealed class KeyComparerMock : IEqualityComparer<int>
@@ -132,7 +129,7 @@ namespace Light.DataStructures.Tests
                 return x == y;
             }
 
-            public  int GetHashCode(int value)
+            public int GetHashCode(int value)
             {
                 return value;
             }

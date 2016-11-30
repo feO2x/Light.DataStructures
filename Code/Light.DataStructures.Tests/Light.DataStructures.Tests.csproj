@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="ConcorrentArrayTests.cs" />
     <Compile Include="ConcurrentArrayBuilder.cs" />
+    <Compile Include="ConcurrentArrayExtensions.cs" />
     <Compile Include="EntryTests.cs" />
     <Compile Include="LockFreeArrayBasedDictionaryTests.cs" />
     <Compile Include="PrimeNumberGeneration.cs" />

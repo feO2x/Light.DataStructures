@@ -31,7 +31,10 @@ namespace Light.DataStructures
             {
                 var previousEntry = Interlocked.CompareExchange(ref _internalArray[targetIndex], entry, null);
                 if (previousEntry == null)
-                    return new AddInfo(AddResult.Successful, entry);
+                    return new AddInfo(AddResult.AddSuccessful, entry);
+
+                if (entry.HashCode == previousEntry.HashCode && _keyComparer.Equals(entry.Key, previousEntry.Key))
+                    return new AddInfo(AddResult.ExistingEntryFound, previousEntry);
 
                 IncrementTargetIndex(ref targetIndex);
             }

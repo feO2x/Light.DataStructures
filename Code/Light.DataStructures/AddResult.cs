@@ -2,6 +2,7 @@
 {
     public enum AddResult
     {
-        Successful
+        AddSuccessful,
+        ExistingEntryFound
     }
 }

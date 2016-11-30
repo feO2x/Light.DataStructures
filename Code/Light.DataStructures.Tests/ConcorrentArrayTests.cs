@@ -17,7 +17,7 @@ namespace Light.DataStructures.Tests
             var tryAddResult = concurrentArray.TryAdd(entry);
             var foundEntry = concurrentArray.Find(entry.HashCode, entry.Key);
 
-            tryAddResult.OperationResult.Should().Be(AddResult.Successful);
+            tryAddResult.OperationResult.Should().Be(AddResult.AddSuccessful);
             foundEntry.Should().BeSameAs(entry);
         }
 
@@ -138,6 +138,19 @@ namespace Light.DataStructures.Tests
             {
                 _equalsCallCount.Should().BeGreaterThan(0);
             }
+        }
+
+        [Fact]
+        public void TryAddEntryExists()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<string, object>().Build();
+            var existingEntry = new Entry<string, object>(42, "Foo", null);
+            concurrentArray.TryAdd(existingEntry);
+
+            var addInfo = concurrentArray.TryAdd(new Entry<string, object>(42, "Foo", "Bar"));
+
+            addInfo.OperationResult.Should().Be(AddResult.ExistingEntryFound);
+            addInfo.TargetEntry.Should().Be(existingEntry);
         }
     }
 }

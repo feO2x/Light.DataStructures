@@ -108,6 +108,15 @@ namespace Light.DataStructures.Tests
             keyComparerMock.EqualsMustHaveBeenCalledAtLeastOnce();
         }
 
+        [Fact]
+        public void KeyComparerNotNull()
+        {
+            Action act = () => new ConcurrentArray<string, bool>(4, null);
+
+            act.ShouldThrow<ArgumentNullException>()
+               .And.ParamName.Should().Be("keyComparer");
+        }
+
         private static ConcurrentArray<TKey, TValue> CreateDefaultConcurrentArray<TKey, TValue>()
         {
             return new ConcurrentArray<TKey, TValue>(31);

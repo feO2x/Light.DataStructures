@@ -96,6 +96,14 @@ namespace Light.DataStructures.Tests
                 }
             };
 
+        [Fact]
+        public void CountMustBeZeroAtBeginning()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<uint, string>().Build();
+
+            concurrentArray.Count.Should().Be(0);
+        }
+
         [Theory]
         [InlineData(-1)]
         [InlineData(-13)]

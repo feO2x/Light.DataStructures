@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Light.GuardClauses;
 
 namespace Light.DataStructures
 {
     public class ConcurrentArray<TKey, TValue>
     {
-        private readonly IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
         private readonly Entry<TKey, TValue>[] _internalArray;
+        private readonly IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
 
         public ConcurrentArray(int capacity)
         {
+            capacity.MustNotBeLessThan(0, nameof(capacity));
             _internalArray = new Entry<TKey, TValue>[capacity];
         }
 
@@ -57,6 +59,7 @@ namespace Light.DataStructures
         {
             public readonly AddResult OperationResult;
             public readonly Entry<TKey, TValue> TargetEntry;
+
             public AddInfo(AddResult operationResult, Entry<TKey, TValue> targetEntry)
             {
                 OperationResult = operationResult;

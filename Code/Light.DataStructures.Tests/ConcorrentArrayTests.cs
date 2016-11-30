@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
 
@@ -80,6 +81,19 @@ namespace Light.DataStructures.Tests
                     }
                 }
             };
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(-13)]
+        [InlineData(-10004)]
+        public void InvalidCapacity(int capacity)
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            Action act = () => new ConcurrentArray<string, object>(capacity);
+
+            act.ShouldThrow<ArgumentOutOfRangeException>()
+               .And.ParamName.Should().Be(nameof(capacity));
+        }
 
         private static ConcurrentArray<TKey, TValue> CreateDefaultConcurrentArray<TKey, TValue>()
         {

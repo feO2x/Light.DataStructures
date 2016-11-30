@@ -55,7 +55,8 @@ namespace Light.DataStructures
 
         public Entry<TKey, TValue> Find(int hashCode, TKey key)
         {
-            var targetIndex = GetTargetBucketIndex(hashCode);
+            var startIndex = GetTargetBucketIndex(hashCode);
+            var targetIndex = startIndex;
             while (true)
             {
                 var targetEntry = Volatile.Read(ref _internalArray[targetIndex]);
@@ -63,6 +64,8 @@ namespace Light.DataStructures
                     return targetEntry;
 
                 IncrementTargetIndex(ref targetIndex);
+                if (startIndex == targetIndex)
+                    return null;
             }
         }
 

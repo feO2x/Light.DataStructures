@@ -154,7 +154,7 @@ namespace Light.DataStructures.Tests
         }
 
         [Fact]
-        public void ArrayFull()
+        public void TryAddWhenArrayFull()
         {
             var concurrentArray = new ConcurrentArrayBuilder<int, object>().WithCapacity(4)
                                                                            .Build();
@@ -167,6 +167,27 @@ namespace Light.DataStructures.Tests
 
             addInfo.OperationResult.Should().Be(AddResult.ArrayFull);
             addInfo.TargetEntry.Should().BeNull();
+        }
+
+        [Theory]
+        [InlineData(1, true)]
+        [InlineData(2, true)]
+        [InlineData(19, false)]
+        public void FindWhenArrayFull(int targetKey, bool shouldBeFound)
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<int, object>().WithCapacity(3)
+                                                                           .Build();
+            for (var i = 0; i < 3; i++)
+            {
+                concurrentArray.TryAdd(new Entry<int, object>(i.GetHashCode(), i, null));
+            }
+
+            var foundEntry = concurrentArray.Find(targetKey.GetHashCode(), targetKey);
+
+            if (shouldBeFound)
+                foundEntry.Key.Should().Be(targetKey);
+            else
+                foundEntry.Should().BeNull();
         }
     }
 }

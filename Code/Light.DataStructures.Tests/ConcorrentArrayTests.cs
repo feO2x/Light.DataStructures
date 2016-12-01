@@ -204,5 +204,15 @@ namespace Light.DataStructures.Tests
             else
                 foundEntry.Should().BeNull();
         }
+
+        [Fact]
+        public void FindWhenEmpty()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<int, object>().Build();
+
+            var foundEntry = concurrentArray.Find(42, 42);
+
+            foundEntry.Should().BeNull();
+        }
     }
 }

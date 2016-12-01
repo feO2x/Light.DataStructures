@@ -65,6 +65,8 @@ namespace Light.DataStructures
             while (true)
             {
                 var targetEntry = Volatile.Read(ref _internalArray[targetIndex]);
+                if (targetEntry == null)
+                    return null;
                 if (targetEntry.HashCode == hashCode && _keyComparer.Equals(key, targetEntry.Key))
                     return targetEntry;
 

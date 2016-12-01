@@ -29,5 +29,19 @@ namespace Light.DataStructures.Tests
             act.ShouldThrow<ArgumentNullException>()
                .And.ParamName.Should().Be("key");
         }
+
+        [Theory]
+        [InlineData(42, "Foo", "Bar")]
+        [InlineData(87, "Baz", null)]
+        [InlineData("Bar", -111, 10203)]
+        public void ChangeValue<TKey, TValue>(TKey key, TValue value, TValue newValue)
+        {
+            var entry = new Entry<TKey, TValue>(key.GetHashCode(), key, value);
+
+            var result = entry.TryUpdateValue(newValue);
+
+            entry.Value.Should().Be(newValue);
+            result.Should().BeTrue();
+        }
     }
 }

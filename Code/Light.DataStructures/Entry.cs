@@ -19,5 +19,11 @@ namespace Light.DataStructures
         }
 
         public TValue Value => (TValue) Volatile.Read(ref _value);
+
+        public bool TryUpdateValue(TValue newValue)
+        {
+            var currentValue = Volatile.Read(ref _value);
+            return Interlocked.CompareExchange(ref _value, newValue, currentValue) == currentValue;
+        }
     }
 }

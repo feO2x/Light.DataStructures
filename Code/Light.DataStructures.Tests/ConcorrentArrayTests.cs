@@ -8,6 +8,7 @@ using TestData = System.Collections.Generic.IEnumerable<object[]>;
 
 namespace Light.DataStructures.Tests
 {
+    [Trait("Category", Traits.FunctionalTests)]
     public sealed class ConcorrentArrayTests
     {
         [Theory]

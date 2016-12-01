@@ -4,6 +4,7 @@ using Xunit;
 
 namespace Light.DataStructures.Tests
 {
+    [Trait("Category", Traits.FunctionalTests)]
     public sealed class EntryTests
     {
         [Theory]

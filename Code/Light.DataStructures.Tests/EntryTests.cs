@@ -10,7 +10,7 @@ namespace Light.DataStructures.Tests
         [InlineData(42, 42, "Foo")]
         [InlineData(-2, "Bar", "Baz")]
         [InlineData(int.MinValue / 2, 44.0002, true)]
-        public void ParametersMustBeRetrievable<TKey, TValue>(int hashCode, TKey key, TValue value)
+        public void ParametersMustBeRetrievable<TKey, TValue>(int hashCode, TKey key, TValue value) where TValue : class
         {
             var entry = new Entry<TKey, TValue>(hashCode, key, value);
 
@@ -22,6 +22,7 @@ namespace Light.DataStructures.Tests
         [Fact]
         public void KeyNotNull()
         {
+            // ReSharper disable once ObjectCreationAsStatement
             Action act  = () => new Entry<string, object>(0, null, new object());
 
             act.ShouldThrow<ArgumentNullException>()

@@ -5,7 +5,7 @@ using Light.GuardClauses;
 
 namespace Light.DataStructures
 {
-    public class ConcurrentArray<TKey, TValue>
+    public class ConcurrentArray<TKey, TValue> where TValue : class
     {
         private readonly Entry<TKey, TValue>[] _internalArray;
         private readonly IEqualityComparer<TKey> _keyComparer;

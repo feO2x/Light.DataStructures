@@ -24,7 +24,7 @@ namespace Light.DataStructures.Tests
         public void KeyNotNull()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            Action act  = () => new Entry<string, object>(0, null, new object());
+            Action act = () => new Entry<string, object>(0, null, new object());
 
             act.ShouldThrow<ArgumentNullException>()
                .And.ParamName.Should().Be("key");

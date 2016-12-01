@@ -69,6 +69,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoxingTriangulationTests.cs" />
     <Compile Include="ConcorrentArrayTests.cs" />
     <Compile Include="ConcurrentArrayBuilder.cs" />
     <Compile Include="ConcurrentArrayExtensions.cs" />

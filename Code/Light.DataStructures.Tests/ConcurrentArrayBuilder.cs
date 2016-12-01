@@ -2,7 +2,7 @@
 
 namespace Light.DataStructures.Tests
 {
-    public sealed class ConcurrentArrayBuilder<TKey, TValue> where TValue : class
+    public sealed class ConcurrentArrayBuilder<TKey, TValue>
     {
         private int _capacity = 31;
         private IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;

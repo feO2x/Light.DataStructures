@@ -3,11 +3,11 @@ using System.Threading;
 
 namespace Light.DataStructures
 {
-    public sealed class Entry<TKey, TValue> where TValue : class
+    public sealed class Entry<TKey, TValue>
     {
         public readonly int HashCode;
         public readonly TKey Key;
-        private TValue _value;
+        private object _value;
 
         public Entry(int hashCode, TKey key, TValue value)
         {
@@ -18,6 +18,6 @@ namespace Light.DataStructures
             _value = value;
         }
 
-        public TValue Value => Volatile.Read(ref _value);
+        public TValue Value => (TValue) Volatile.Read(ref _value);
     }
 }

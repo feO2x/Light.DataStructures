@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
@@ -213,6 +215,34 @@ namespace Light.DataStructures.Tests
             var foundEntry = concurrentArray.Find(42, 42);
 
             foundEntry.Should().BeNull();
+        }
+
+        [Fact]
+        public void ConcurrentAddTest()
+        {
+            var primeStrategy = new DoublingPrimeNumbersStrategy();
+            var processorCount = Environment.ProcessorCount;
+            var entryCount = processorCount * 100000;
+            var allNumbers = Enumerable.Range(1, entryCount).ToArray();
+            var groupsPerTask = allNumbers.GroupBy(number => number % processorCount)
+                                          .ToArray();
+            var concurrentArray = new ConcurrentArrayBuilder<int, object>().WithCapacity(primeStrategy.GetNextSize(entryCount))
+                                                                           .Build();
+            Parallel.ForEach(groupsPerTask, group =>
+                                            {
+                                                foreach (var number in group)
+                                                {
+                                                    var addResult = concurrentArray.TryAdd(new Entry<int, object>(number.GetHashCode(), number, null));
+                                                    addResult.OperationResult.Should().Be(AddResult.AddSuccessful);
+                                                }
+                                            });
+
+            concurrentArray.Count.Should().Be(allNumbers.Length);
+            foreach (var number in allNumbers)
+            {
+                var entry = concurrentArray.Find(number.GetHashCode(), number);
+                entry.Should().NotBeNull();
+            }
         }
     }
 }

@@ -163,21 +163,8 @@ namespace Light.DataStructures
 
             if (addInfo.OperationResult == AddResult.AddSuccessful)
             {
-                // If the add was successful, check if a new array is currently created
-                var growArrayProcess = Volatile.Read(ref _growArrayProcess);
-                if (growArrayProcess == null)
-                {
-                    // If not, then check, if the internal array has to grow
-                    growArrayProcess = _arrayService.CreateGrowProcessIfNecessary(array, _setNewArrayDelegate);
-                    if (growArrayProcess == null ||
-                        Interlocked.CompareExchange(ref _growArrayProcess, growArrayProcess, null) != null)
-                        return addInfo;
-
-                    growArrayProcess.StartCopying();
-                    return addInfo;
-                }
-                
-                growArrayProcess.HelpCopying();
+                Interlocked.Increment(ref _count);
+                HelpCopying(array);
                 return addInfo;
             }
 
@@ -192,10 +179,22 @@ namespace Light.DataStructures
             goto TryAdd;
         }
 
-        private void SetNewArray(ConcurrentArray<TKey, TValue> newArray)
+        private void HelpCopying(ConcurrentArray<TKey, TValue> array)
         {
-            Volatile.Write(ref _growArrayProcess, null);
-            Volatile.Write(ref _internalArray, newArray);
+            var growArrayProcess = Volatile.Read(ref _growArrayProcess);
+            if (growArrayProcess == null)
+            {
+                // If not, then check, if the internal array has to grow
+                growArrayProcess = _arrayService.CreateGrowProcessIfNecessary(array, _setNewArrayDelegate);
+                if (growArrayProcess == null ||
+                    Interlocked.CompareExchange(ref _growArrayProcess, growArrayProcess, null) != null)
+                    return;
+
+                growArrayProcess.StartCopying();
+                return;
+            }
+
+            growArrayProcess.HelpCopying();
         }
 
         private void EscalateCopying(ConcurrentArray<TKey, TValue> array)
@@ -209,6 +208,12 @@ namespace Light.DataStructures
             }
 
             growArrayProcess.CopyToTheBitterEnd();
+        }
+
+        private void SetNewArray(ConcurrentArray<TKey, TValue> newArray)
+        {
+            Volatile.Write(ref _growArrayProcess, null);
+            Volatile.Write(ref _internalArray, newArray);
         }
 
         public bool TryRemove(TKey key, out TValue value)

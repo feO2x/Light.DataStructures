@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Light.DataStructures.LockFreeArrayBasedServices;
 using Xunit;
 
 namespace Light.DataStructures.Tests

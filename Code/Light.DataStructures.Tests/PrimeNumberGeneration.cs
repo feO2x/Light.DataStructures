@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Light.DataStructures.LockFreeArrayBasedServices;
 using Light.GuardClauses;
 using Xunit;
 using Xunit.Abstractions;

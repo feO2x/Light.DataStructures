@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Light.GuardClauses;
 
-namespace Light.DataStructures
+namespace Light.DataStructures.LockFreeArrayBasedServices
 {
     public static class SieveOfEratosthenes
     {

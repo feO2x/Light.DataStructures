@@ -1,4 +1,4 @@
-﻿namespace Light.DataStructures
+﻿namespace Light.DataStructures.LockFreeArrayBasedServices
 {
     public enum AddResult
     {

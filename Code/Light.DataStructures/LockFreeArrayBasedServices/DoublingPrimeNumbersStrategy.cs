@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Light.DataStructures
+namespace Light.DataStructures.LockFreeArrayBasedServices
 {
     public sealed class DoublingPrimeNumbersStrategy : IGrowArrayStrategy
     {

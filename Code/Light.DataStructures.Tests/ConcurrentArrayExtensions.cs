@@ -1,4 +1,6 @@
-﻿namespace Light.DataStructures.Tests
+﻿using Light.DataStructures.LockFreeArrayBasedServices;
+
+namespace Light.DataStructures.Tests
 {
     public static class ConcurrentArrayExtensions
     {

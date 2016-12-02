@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Light.GuardClauses;
 
-namespace Light.DataStructures
+namespace Light.DataStructures.LockFreeArrayBasedServices
 {
     public class ConcurrentArray<TKey, TValue>
     {

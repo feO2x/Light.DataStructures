@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Light.DataStructures.LockFreeArrayBasedServices;
 
 namespace Light.DataStructures.Tests
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Light.DataStructures
+namespace Light.DataStructures.LockFreeArrayBasedServices
 {
     public abstract class Entry
     {

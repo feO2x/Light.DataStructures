@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Light.DataStructures.LockFreeArrayBasedServices;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
 

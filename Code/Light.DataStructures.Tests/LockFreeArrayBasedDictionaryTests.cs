@@ -233,17 +233,6 @@ namespace Light.DataStructures.Tests
             dictionary.Should().ContainKeys(keys);
         }
 
-        [Theory]
-        [InlineData(0.3f)]
-        [InlineData(0.55f)]
-        [InlineData(0.9f)]
-        public void LoadThresholdCanBeChanged(float newThreshold)
-        {
-            var dictionary = new LockFreeArrayBasedDictionary<string, object> { LoadThreshold = newThreshold };
-
-            dictionary.LoadThreshold.Should().Be(newThreshold);
-        }
-
         [Fact]
         public void ImplementsIConcurrentDictionary()
         {

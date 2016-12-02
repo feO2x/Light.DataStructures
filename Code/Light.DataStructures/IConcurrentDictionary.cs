@@ -3,7 +3,7 @@
 namespace Light.DataStructures
 {
     /// <summary>
-    /// Represents a dictionary that can be accessed by several threads simultaneously.
+    ///     Represents a dictionary that can be accessed by several threads simultaneously.
     /// </summary>
     /// <typeparam name="TKey">The type of the keys.</typeparam>
     /// <typeparam name="TValue">The type of the values.</typeparam>
@@ -66,13 +66,12 @@ namespace Light.DataStructures
         ///     The value that replaces the value of the element with <paramref name="key" />
         ///     if the comparison results in equality.
         /// </param>
-        /// <param name="comparisonValue">The value that is compared to the value of the element with <paramref name="key" />.</param>
         /// <returns>
         ///     true if the value with <paramref name="key" /> was equal to <paramref name="comparisonValue" />
         ///     and replaced with <paramref name="newValue" />; otherwise, false.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="key" /> is a null reference.</exception>
-        bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue);
+        bool TryUpdate(TKey key, TValue newValue);
 
         /// <summary>
         ///     Adds a key/value pair to the <see cref="IConcurrentDictionary{TKey,TValue}" />

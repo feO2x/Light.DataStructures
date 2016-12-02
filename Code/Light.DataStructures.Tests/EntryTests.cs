@@ -18,7 +18,7 @@ namespace Light.DataStructures.Tests
 
             entry.HashCode.Should().Be(hashCode);
             entry.Key.Should().Be(key);
-            entry.Value.Should().Be(value);
+            entry.ReadValueVolatile().Should().Be(value);
         }
 
         [Fact]
@@ -41,8 +41,8 @@ namespace Light.DataStructures.Tests
 
             var result = entry.TryUpdateValue(newValue);
 
-            entry.Value.Should().Be(newValue);
-            result.Should().BeTrue();
+            entry.ReadValueVolatile().Should().Be(newValue);
+            result.WasUpdateSuccessful.Should().BeTrue();
         }
 
         [Theory]
@@ -55,8 +55,8 @@ namespace Light.DataStructures.Tests
 
             var result = entry.TryMarkAsRemoved();
 
-            result.Should().BeTrue();
-            entry.Value.Should().Be(Entry.Tombstone);
+            result.WasUpdateSuccessful.Should().BeTrue();
+            entry.ReadValueVolatile().Should().Be(Entry.Tombstone);
         }
     }
 }

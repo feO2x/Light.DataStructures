@@ -8,7 +8,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
     public class ConcurrentArray<TKey, TValue>
     {
         private readonly Entry<TKey, TValue>[] _internalArray;
-        private readonly IEqualityComparer<TKey> _keyComparer;
+        public readonly IEqualityComparer<TKey> KeyComparer;
         private int _count;
 
         public ConcurrentArray(int capacity) : this(capacity, EqualityComparer<TKey>.Default) { }
@@ -19,7 +19,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             keyComparer.MustNotBeNull(nameof(keyComparer));
 
             _internalArray = new Entry<TKey, TValue>[capacity];
-            _keyComparer = keyComparer;
+            KeyComparer = keyComparer;
         }
 
         public int Capacity => _internalArray.Length;
@@ -41,7 +41,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
                     return new AddInfo(AddResult.AddSuccessful, entry);
                 }
 
-                if (entry.HashCode == previousEntry.HashCode && _keyComparer.Equals(entry.Key, previousEntry.Key))
+                if (entry.HashCode == previousEntry.HashCode && KeyComparer.Equals(entry.Key, previousEntry.Key))
                     return new AddInfo(AddResult.ExistingEntryFound, previousEntry);
 
                 IncrementTargetIndex(ref targetIndex);
@@ -71,7 +71,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
                 var targetEntry = Volatile.Read(ref _internalArray[targetIndex]);
                 if (targetEntry == null)
                     return null;
-                if (targetEntry.HashCode == hashCode && _keyComparer.Equals(key, targetEntry.Key))
+                if (targetEntry.HashCode == hashCode && KeyComparer.Equals(key, targetEntry.Key))
                     return targetEntry;
 
                 IncrementTargetIndex(ref targetIndex);

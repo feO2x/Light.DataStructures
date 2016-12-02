@@ -62,6 +62,8 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
         public Entry<TKey, TValue> Find(int hashCode, TKey key)
         {
+            if (key == null) throw new ArgumentNullException(nameof(key));
+
             var startIndex = GetTargetBucketIndex(hashCode);
             var targetIndex = startIndex;
             while (true)

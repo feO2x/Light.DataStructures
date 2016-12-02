@@ -258,6 +258,15 @@ namespace Light.DataStructures.Tests
                .And.ParamName.Should().Be("entry");
         }
 
-        
+        [Fact]
+        public void FindKeyNull()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<string, object>().Build();
+
+            Action act = () => concurrentArray.Find(42, null);
+
+            act.ShouldThrow<ArgumentNullException>()
+               .And.ParamName.Should().Be("key");
+        }
     }
 }

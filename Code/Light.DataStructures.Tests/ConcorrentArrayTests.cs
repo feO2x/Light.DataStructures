@@ -246,5 +246,18 @@ namespace Light.DataStructures.Tests
                 entry.Should().NotBeNull();
             }
         }
+
+        [Fact]
+        public void TryAddParameterNull()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<string, object>().Build();
+
+            Action act = () => concurrentArray.TryAdd(null);
+
+            act.ShouldThrow<ArgumentNullException>()
+               .And.ParamName.Should().Be("entry");
+        }
+
+        
     }
 }

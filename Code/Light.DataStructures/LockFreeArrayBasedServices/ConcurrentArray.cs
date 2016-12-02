@@ -27,6 +27,8 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
         public AddInfo TryAdd(Entry<TKey, TValue> entry)
         {
+            entry.MustNotBeNull(nameof(entry));
+
             var startIndex = GetTargetBucketIndex(entry.HashCode);
             var targetIndex = startIndex;
 

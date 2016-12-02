@@ -43,5 +43,19 @@ namespace Light.DataStructures.Tests
             entry.Value.Should().Be(newValue);
             result.Should().BeTrue();
         }
+
+        [Theory]
+        [InlineData(42, "Foo")]
+        [InlineData("Foo", "Bar")]
+        [InlineData("Baz", 42.22)]
+        public void MarkAsRemoved<TKey, TValue>(TKey key, TValue value)
+        {
+            var entry = new Entry<TKey, TValue>(key.GetHashCode(), key, value);
+
+            var result = entry.TryMarkAsRemoved();
+
+            result.Should().BeTrue();
+            entry.Value.Should().Be(Entry.Tombstone);
+        }
     }
 }

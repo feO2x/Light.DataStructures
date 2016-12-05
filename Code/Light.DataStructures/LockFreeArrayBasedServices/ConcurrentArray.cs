@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Light.GuardClauses;
@@ -83,6 +84,64 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         public Entry<TKey, TValue> ReadVolatileFromIndex(int index)
         {
             return Volatile.Read(ref _internalArray[index]);
+        }
+
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(_internalArray);
+        }
+
+        public struct Enumerator : IEnumerator<Entry<TKey, TValue>>
+        {
+            private readonly Entry<TKey, TValue>[] _internalArray;
+            private Entry<TKey, TValue> _current;
+            private int _currentIndex;
+
+            public Enumerator(Entry<TKey, TValue>[] internalArray)
+            {
+                internalArray.MustNotBeNull(nameof(internalArray));
+
+                _internalArray = internalArray;
+                _currentIndex = -1;
+                _current = null;
+            }
+
+            public bool MoveNext()
+            {
+                while (true)
+                {
+                    ++_currentIndex;
+                    if (_currentIndex == _internalArray.Length)
+                    {
+                        --_currentIndex;
+                        _current = null;
+                        return false;
+                    }
+
+                    var entry = Volatile.Read(ref _internalArray[_currentIndex]);
+                    if (entry == null)
+                        continue;
+
+                    var value = entry.ReadValueVolatile();
+                    if (value == Entry.Tombstone)
+                        continue;
+
+                    _current = entry;
+                    return true;
+                }
+            }
+
+            public void Reset()
+            {
+                _currentIndex = -1;
+                _current = null;
+            }
+
+            public Entry<TKey, TValue> Current => _current;
+
+            object IEnumerator.Current => _current;
+
+            public void Dispose() { }
         }
 
         public struct AddInfo

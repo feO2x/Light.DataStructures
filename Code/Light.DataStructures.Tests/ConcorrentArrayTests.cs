@@ -268,5 +268,21 @@ namespace Light.DataStructures.Tests
             act.ShouldThrow<ArgumentNullException>()
                .And.ParamName.Should().Be("key");
         }
+
+        [Fact]
+        public void Foreach()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<int, object>().WithCapacity(5)
+                                                                           .Build()
+                                                                           .FillArray();
+
+            var readNumbers = new List<int>();
+            foreach (var entry in concurrentArray)
+            {
+                readNumbers.Add(entry.Key);
+            }
+
+            readNumbers.Should().Contain(Enumerable.Range(0, 5));
+        }
     }
 }

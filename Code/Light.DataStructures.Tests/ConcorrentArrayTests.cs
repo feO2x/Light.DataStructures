@@ -284,5 +284,11 @@ namespace Light.DataStructures.Tests
 
             readNumbers.Should().Contain(Enumerable.Range(0, 5));
         }
+
+        [Fact]
+        public void ImplementsIReadOnlyList()
+        {
+            typeof(ConcurrentArray<string, string>).Should().Implement<IReadOnlyList<Entry<string, string>>>();
+        }
     }
 }

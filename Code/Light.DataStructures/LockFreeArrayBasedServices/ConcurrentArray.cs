@@ -6,7 +6,7 @@ using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
 {
-    public class ConcurrentArray<TKey, TValue>
+    public class ConcurrentArray<TKey, TValue> : IReadOnlyList<Entry<TKey, TValue>>
     {
         private readonly Entry<TKey, TValue>[] _internalArray;
         public readonly IEqualityComparer<TKey> KeyComparer;
@@ -86,6 +86,11 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             return Volatile.Read(ref _internalArray[index]);
         }
 
+        IEnumerator<Entry<TKey, TValue>> IEnumerable<Entry<TKey, TValue>>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public Enumerator GetEnumerator()
         {
             return new Enumerator(_internalArray);
@@ -155,5 +160,12 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
                 TargetEntry = targetEntry;
             }
         }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public Entry<TKey, TValue> this[int index] => ReadVolatileFromIndex(index);
     }
 }

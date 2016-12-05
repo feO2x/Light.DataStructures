@@ -14,7 +14,7 @@ namespace Light.DataStructures
         private int _count;
         private ConcurrentArray<TKey, TValue> _internalArray;
         private readonly IConcurrentArrayService<TKey, TValue> _arrayService;
-        private IGrowArrayProcess _growArrayProcess;
+        private IGrowArrayProcess<TKey, TValue> _growArrayProcess;
         private readonly Action<ConcurrentArray<TKey, TValue>> _setNewArrayDelegate;
 
         public LockFreeArrayBasedDictionary() : this(Options.Default) { }
@@ -164,7 +164,7 @@ namespace Light.DataStructures
             if (addInfo.OperationResult == AddResult.AddSuccessful)
             {
                 Interlocked.Increment(ref _count);
-                HelpCopying(array);
+                HelpCopying(array, entry);
                 return addInfo;
             }
 
@@ -179,21 +179,30 @@ namespace Light.DataStructures
             goto TryAdd;
         }
 
-        private void HelpCopying(ConcurrentArray<TKey, TValue> array)
+        private void HelpCopying(ConcurrentArray<TKey, TValue> array, Entry<TKey, TValue> addedEntry)
         {
             var growArrayProcess = Volatile.Read(ref _growArrayProcess);
             if (growArrayProcess == null)
             {
                 // If not, then check, if the internal array has to grow
                 growArrayProcess = _arrayService.CreateGrowProcessIfNecessary(array, _setNewArrayDelegate);
-                if (growArrayProcess == null ||
-                    Interlocked.CompareExchange(ref _growArrayProcess, growArrayProcess, null) != null)
+
+                // If not, then do nothing
+                if (growArrayProcess == null)
                     return;
 
-                growArrayProcess.StartCopying();
+                // If a grow array process was created, then try to establish and start it
+                var previousProcess = Interlocked.CompareExchange(ref _growArrayProcess, growArrayProcess, null);
+                if (previousProcess == null)
+                {
+                    growArrayProcess.StartCopying();
+                    return;
+                }
+                previousProcess.HelpCopying();
                 return;
             }
 
+            growArrayProcess.CopySingleEntry(addedEntry);
             growArrayProcess.HelpCopying();
         }
 

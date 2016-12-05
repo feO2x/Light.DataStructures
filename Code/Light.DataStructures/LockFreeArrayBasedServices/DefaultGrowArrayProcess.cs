@@ -5,7 +5,7 @@ using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
 {
-    public class DefaultGrowArrayProcess<TKey, TValue> : IGrowArrayProcess
+    public class DefaultGrowArrayProcess<TKey, TValue> : IGrowArrayProcess<TKey, TValue>
     {
         private const int MaximumNumberOfItemsCopiedDuringHelp = 100;
         private readonly int _newArraySize;
@@ -58,6 +58,12 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             {
                 shouldContinue = CopySingleEntry(newArray);
             }
+        }
+
+        public void CopySingleEntry(Entry<TKey, TValue> entry)
+        {
+            var newArray = SpinGetNewArray();
+            newArray.TryAdd(entry);
         }
 
         private bool CopySingleEntry(ConcurrentArray<TKey, TValue> newArray)

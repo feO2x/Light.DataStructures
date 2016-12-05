@@ -6,7 +6,6 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
     public interface IConcurrentArrayService<TKey, TValue>
     {
         ConcurrentArray<TKey, TValue> CreateInitial(IEqualityComparer<TKey> keyComparer);
-
-        IGrowArrayProcess CreateGrowProcessIfNecessary(ConcurrentArray<TKey, TValue> currentArray, Action<ConcurrentArray<TKey, TValue>> setNewArray);
+        IGrowArrayProcess<TKey, TValue> CreateGrowProcessIfNecessary(ConcurrentArray<TKey, TValue> currentArray, Action<ConcurrentArray<TKey, TValue>> setNewArray);
     }
 }

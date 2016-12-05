@@ -15,13 +15,12 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             return new ConcurrentArray<TKey, TValue>(GrowArrayStrategy.GetInitialSize(), keyComparer);
         }
 
-        public IGrowArrayProcess CreateGrowProcessIfNecessary(ConcurrentArray<TKey, TValue> currentArray, Action<ConcurrentArray<TKey, TValue>> setNewArray)
+        public IGrowArrayProcess<TKey, TValue> CreateGrowProcessIfNecessary(ConcurrentArray<TKey, TValue> currentArray, Action<ConcurrentArray<TKey, TValue>> setNewArray)
         {
             currentArray.MustNotBeNull(nameof(currentArray));
 
             var currentLoad = (float) currentArray.Count / currentArray.Capacity;
-            var newArraySize = GrowArrayStrategy.GetNextSize(currentArray.Capacity);
-            return currentLoad > LoadThreshhold ? new DefaultGrowArrayProcess<TKey, TValue>(currentArray, newArraySize, setNewArray) : null;
+            return currentLoad > LoadThreshhold ? new DefaultGrowArrayProcess<TKey, TValue>(currentArray, GrowArrayStrategy.GetNextSize(currentArray.Capacity), setNewArray) : null;
         }
     }
 }

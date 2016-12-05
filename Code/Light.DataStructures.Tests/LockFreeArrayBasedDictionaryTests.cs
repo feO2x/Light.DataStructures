@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
-using System.Linq;
 
 namespace Light.DataStructures.Tests
 {
@@ -19,7 +19,6 @@ namespace Light.DataStructures.Tests
 
             result.Should().BeTrue();
             dictionary["Foo"].Should().Be("Bar");
-            
         }
 
         [Fact]
@@ -131,7 +130,7 @@ namespace Light.DataStructures.Tests
                     {
                         new KeyValuePair<string, object>("Foo", null),
                         new KeyValuePair<string, object>("Bar", null),
-                        new KeyValuePair<string, object>("Baz", null),
+                        new KeyValuePair<string, object>("Baz", null)
                     }
                 },
                 new object[]
@@ -142,9 +141,9 @@ namespace Light.DataStructures.Tests
                         new KeyValuePair<string, object>("Bar", null),
                         new KeyValuePair<string, object>("Baz", null),
                         new KeyValuePair<string, object>("Qux", null),
-                        new KeyValuePair<string, object>("Quux", null),
+                        new KeyValuePair<string, object>("Quux", null)
                     }
-                },
+                }
             };
 
         [Fact]
@@ -167,7 +166,10 @@ namespace Light.DataStructures.Tests
             var dictionary = new LockFreeArrayBasedDictionary<string, object>();
 
             // ReSharper disable once UnusedVariable
-            Action act = () => { var value = dictionary[null]; };
+            Action act = () =>
+                         {
+                             var value = dictionary[null];
+                         };
 
             act.ShouldThrow<ArgumentNullException>()
                .And.ParamName.Should().Be("key");
@@ -187,31 +189,31 @@ namespace Light.DataStructures.Tests
             {
                 new object[]
                 {
-                    new LockFreeArrayBasedDictionary<int, string> {[42] = "Foo"},
+                    new LockFreeArrayBasedDictionary<int, string> { [42] = "Foo" },
                     new KeyValuePair<int, string>(42, "Foo"),
                     true
                 },
                 new object[]
                 {
-                    new LockFreeArrayBasedDictionary<int, string> {[42] = "Foo"},
+                    new LockFreeArrayBasedDictionary<int, string> { [42] = "Foo" },
                     new KeyValuePair<int, string>(43, "Foo"),
                     false
                 },
                 new object[]
                 {
-                    new LockFreeArrayBasedDictionary<int, string> {[42] = "Foo"},
+                    new LockFreeArrayBasedDictionary<int, string> { [42] = "Foo" },
                     new KeyValuePair<int, string>(42, "Bar"),
                     false
                 },
                 new object[]
                 {
-                    new LockFreeArrayBasedDictionary<int, string> {[1] = "A", [2] = "B", [3] = "A"},
+                    new LockFreeArrayBasedDictionary<int, string> { [1] = "A", [2] = "B", [3] = "A" },
                     new KeyValuePair<int, string>(3, "A"),
                     true
                 },
                 new object[]
                 {
-                    new LockFreeArrayBasedDictionary<int, string> {[1] = "A", [2] = "B", [3] = "A"},
+                    new LockFreeArrayBasedDictionary<int, string> { [1] = "A", [2] = "B", [3] = "A" },
                     new KeyValuePair<int, string>(58, "X"),
                     false
                 }

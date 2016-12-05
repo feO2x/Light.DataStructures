@@ -75,5 +75,12 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             var downcastedValue = (TValue) currentValue;
             return valueComparer.Equals(downcastedValue, other);
         }
+
+        public override string ToString()
+        {
+            var value = ReadValueVolatile();
+            var valueText = value == null ? "null" : value == Tombstone ? "removed" : value.ToString();
+            return $"Entry {Key} - {valueText} (hash code {HashCode})";
+        }
     }
 }

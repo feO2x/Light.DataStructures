@@ -80,7 +80,10 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             }
         }
 
-        public Entry<TKey, TValue> this[int index] => Volatile.Read(ref _internalArray[index]);
+        public Entry<TKey, TValue> ReadVolatileFromIndex(int index)
+        {
+            return Volatile.Read(ref _internalArray[index]);
+        }
 
         public struct AddInfo
         {

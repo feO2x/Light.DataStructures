@@ -75,7 +75,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
                 return false;
             }
 
-            var entry = _oldArray[currentIndex];
+            var entry = _oldArray.ReadVolatileFromIndex(currentIndex);
             if (entry == null)
                 return true;
 

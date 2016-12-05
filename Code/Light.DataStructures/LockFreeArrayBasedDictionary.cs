@@ -317,7 +317,7 @@ namespace Light.DataStructures
                     if (_currentIndex + 1 == _array.Capacity)
                         return false;
 
-                    var currentEntry = _array[++_currentIndex];
+                    var currentEntry = _array.ReadVolatileFromIndex(++_currentIndex);
                     if (currentEntry == null)
                         continue;
 

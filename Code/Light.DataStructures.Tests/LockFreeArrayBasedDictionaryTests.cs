@@ -268,5 +268,89 @@ namespace Light.DataStructures.Tests
             dictionary.Should().Contain(key, value2);
             dictionary.Should().NotContain(key, value1);
         }
+
+        [Theory]
+        [MemberData(nameof(SuccessfulTryGetValueData))]
+        public void SuccessfulTryGetValue<TKey, TValue>(TKey searchedKey, TValue expectedValue, IEnumerable<KeyValuePair<TKey, TValue>> existingEntries)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<TKey, TValue>();
+            foreach (var existingEntry in existingEntries)
+            {
+                dictionary.TryAdd(existingEntry.Key, existingEntry.Value);
+            }
+
+            TValue foundValue;
+            var wasFound = dictionary.TryGetValue(searchedKey, out foundValue);
+
+            wasFound.Should().BeTrue();
+            foundValue.Should().Be(expectedValue);
+        }
+
+        public static readonly TestData SuccessfulTryGetValueData =
+            new[]
+            {
+                new object[]
+                {
+                    42,
+                    "Foo",
+                    new []
+                    {
+                        new KeyValuePair<int, string>(42, "Foo"),
+                        new KeyValuePair<int, string>(43, "Bar"),
+                        new KeyValuePair<int, string>(44, "Baz")
+                    }
+                },
+                new object[]
+                {
+                    "Bar",
+                    false,
+                    new []
+                    {
+                        new KeyValuePair<string, bool>("Foo", true),
+                        new KeyValuePair<string, bool>("Bar", false)
+                    }
+                }
+            };
+
+        [Theory]
+        [MemberData(nameof(UnsuccessfulTryGetValueData))]
+        public void UnsuccessfulTryGetValue<TKey>(TKey searchedKey, IEnumerable<KeyValuePair<TKey, object>> existingEntries)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<TKey, object>();
+            foreach (var existingEntry in existingEntries)
+            {
+                dictionary.TryAdd(existingEntry.Key, existingEntry.Value);
+            }
+
+            object foundValue;
+            var wasFound = dictionary.TryGetValue(searchedKey, out foundValue);
+
+            wasFound.Should().BeFalse();
+            foundValue.Should().Be(default(object));
+        }
+
+        public static readonly TestData UnsuccessfulTryGetValueData =
+            new[]
+            {
+                new object[]
+                {
+                    19992,
+                    new []
+                    {
+                        new KeyValuePair<int, object>(1, new object()),
+                        new KeyValuePair<int, object>(2, new object())
+                    }
+                },
+                new object[]
+                {
+                    "thud",
+                    new []
+                    {
+                        new KeyValuePair<string, object>("Foo", new object()),
+                        new KeyValuePair<string, object>("Bar", new object()),
+                        new KeyValuePair<string, object>("Baz", new object())
+                    }
+                }
+            };
     }
 }

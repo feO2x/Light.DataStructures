@@ -237,7 +237,22 @@ namespace Light.DataStructures
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            throw new NotImplementedException();
+            var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
+            if (foundEntry == null)
+            {
+                value = default(TValue);
+                return false;
+            }
+
+            var readValue = foundEntry.ReadValueVolatile();
+            if (readValue == Entry.Tombstone)
+            {
+                value = default(TValue);
+                return false;
+            }
+
+            value = (TValue) readValue;
+            return true;
         }
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys { get; }

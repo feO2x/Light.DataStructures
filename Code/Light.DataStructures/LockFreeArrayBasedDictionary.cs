@@ -136,7 +136,12 @@ namespace Light.DataStructures
 
         public bool AddOrUpdate(TKey key, TValue value)
         {
-            throw new NotImplementedException();
+            var addResult = TryAddinternal(new Entry<TKey, TValue>(_keyComparer.GetHashCode(key), key, value));
+            if (addResult.OperationResult == AddResult.AddSuccessful)
+                return true;
+
+            addResult.TargetEntry.TryUpdateValue(value);
+            return false;
         }
 
         public bool Remove(TKey key)

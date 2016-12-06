@@ -240,5 +240,33 @@ namespace Light.DataStructures.Tests
         {
             typeof(LockFreeArrayBasedDictionary<string, object>).Should().Implement<IConcurrentDictionary<string, object>>();
         }
+
+        [Theory]
+        [InlineData("Foo", "Bar")]
+        [InlineData(42, new[] {"1", "2", "3"})]
+        public void AddOrUpdateNonExistingEntry<TKey, TValue>(TKey key, TValue value)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<TKey, TValue>();
+
+            var wasAdded = dictionary.AddOrUpdate(key, value);
+
+            wasAdded.Should().BeTrue();
+            dictionary.Should().Contain(key, value);
+        }
+
+        [Theory]
+        [InlineData("Foo", "Bar", "Baz")]
+        [InlineData("qux", 1, 2)]
+        public void AddOrUpdateExistingEntry<TKey, TValue>(TKey key, TValue value1, TValue value2)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<TKey, TValue>();
+            dictionary.TryAdd(key, value1);
+
+            var wasAdded = dictionary.AddOrUpdate(key, value2);
+
+            wasAdded.Should().BeFalse();
+            dictionary.Should().Contain(key, value2);
+            dictionary.Should().NotContain(key, value1);
+        }
     }
 }

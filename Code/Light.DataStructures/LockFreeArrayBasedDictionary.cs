@@ -50,9 +50,17 @@ namespace Light.DataStructures
             throw new NotImplementedException();
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            var foundEntry = FindEntry(_keyComparer.GetHashCode(item.Key), item.Key);
+            if (foundEntry == null)
+                return false;
+
+            var value = foundEntry.ReadValueVolatile();
+            if (value == Entry.Tombstone || _valueComparer.Equals(item.Value, (TValue) value) == false)
+                return false;
+
+            return foundEntry.TryMarkAsRemoved().WasUpdateSuccessful;
         }
 
         int ICollection<KeyValuePair<TKey, TValue>>.Count => _count;

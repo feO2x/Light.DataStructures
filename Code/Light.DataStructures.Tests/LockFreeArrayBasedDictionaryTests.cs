@@ -356,7 +356,7 @@ namespace Light.DataStructures.Tests
         [Theory]
         [InlineData(42, "Foo")]
         [InlineData("Bar", new object[] { })]
-        public void RemoveExisting<TKey, TValue>(TKey key, TValue value)
+        public void RemoveExistingKey<TKey, TValue>(TKey key, TValue value)
         {
             var dictionary = new LockFreeArrayBasedDictionary<TKey, TValue>();
             dictionary.TryAdd(key, value);
@@ -368,8 +368,22 @@ namespace Light.DataStructures.Tests
         }
 
         [Theory]
+        [InlineData(42, "Foo")]
+        [InlineData("Bar", new object[] { })]
+        public void RemoveExistingKvp<TKey, TValue>(TKey key, TValue value)
+        {
+            ICollection<KeyValuePair<TKey, TValue>> dictionary = new LockFreeArrayBasedDictionary<TKey, TValue>();
+            dictionary.Add(new KeyValuePair<TKey, TValue>(key, value));
+
+            var wasRemoved = dictionary.Remove(new KeyValuePair<TKey, TValue>(key, value));
+
+            wasRemoved.Should().BeTrue();
+            dictionary.Should().NotContain(new KeyValuePair<TKey, TValue>(key, value));
+        }
+
+        [Theory]
         [MemberData(nameof(RemoveNonExistingData))]
-        public void RemoveNonExisting(string key, KeyValuePair<string, object>[] existingEntries)
+        public void RemoveNonExistingKey(string key, KeyValuePair<string, object>[] existingEntries)
         {
             var dictionary = new LockFreeArrayBasedDictionary<string, object>();
             foreach (var existingEntry in existingEntries)
@@ -379,8 +393,25 @@ namespace Light.DataStructures.Tests
 
             var wasRemoved = dictionary.Remove(key);
 
-            wasRemoved.Should().Be(false);
+            wasRemoved.Should().BeFalse();
             dictionary.Should().NotContainKey(key);
+        }
+
+        [Theory]
+        [MemberData(nameof(RemoveNonExistingData))]
+        public void RemoveNonExistingKvp(string key, KeyValuePair<string, object>[] existingEntries)
+        {
+            ICollection<KeyValuePair<string, object>> dictionary = new LockFreeArrayBasedDictionary<string, object>();
+            foreach (var existingEntry in existingEntries)
+            {
+                dictionary.Add(existingEntry);
+            }
+
+            var entry = new KeyValuePair<string, object>(key, new object());
+            var wasRemoved = dictionary.Remove(entry);
+
+            wasRemoved.Should().BeFalse();
+            dictionary.Should().NotContain(entry);
         }
 
         public static readonly TestData RemoveNonExistingData =

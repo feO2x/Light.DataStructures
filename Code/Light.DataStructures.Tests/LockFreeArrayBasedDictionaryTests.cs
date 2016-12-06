@@ -243,7 +243,7 @@ namespace Light.DataStructures.Tests
 
         [Theory]
         [InlineData("Foo", "Bar")]
-        [InlineData(42, new[] {"1", "2", "3"})]
+        [InlineData(42, new[] { "1", "2", "3" })]
         public void AddOrUpdateNonExistingEntry<TKey, TValue>(TKey key, TValue value)
         {
             var dictionary = new LockFreeArrayBasedDictionary<TKey, TValue>();
@@ -293,7 +293,7 @@ namespace Light.DataStructures.Tests
                 {
                     42,
                     "Foo",
-                    new []
+                    new[]
                     {
                         new KeyValuePair<int, string>(42, "Foo"),
                         new KeyValuePair<int, string>(43, "Bar"),
@@ -304,7 +304,7 @@ namespace Light.DataStructures.Tests
                 {
                     "Bar",
                     false,
-                    new []
+                    new[]
                     {
                         new KeyValuePair<string, bool>("Foo", true),
                         new KeyValuePair<string, bool>("Bar", false)
@@ -335,7 +335,7 @@ namespace Light.DataStructures.Tests
                 new object[]
                 {
                     19992,
-                    new []
+                    new[]
                     {
                         new KeyValuePair<int, object>(1, new object()),
                         new KeyValuePair<int, object>(2, new object())
@@ -344,11 +344,67 @@ namespace Light.DataStructures.Tests
                 new object[]
                 {
                     "thud",
-                    new []
+                    new[]
                     {
                         new KeyValuePair<string, object>("Foo", new object()),
                         new KeyValuePair<string, object>("Bar", new object()),
                         new KeyValuePair<string, object>("Baz", new object())
+                    }
+                }
+            };
+
+        [Theory]
+        [InlineData(42, "Foo")]
+        [InlineData("Bar", new object[] { })]
+        public void RemoveExisting<TKey, TValue>(TKey key, TValue value)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<TKey, TValue>();
+            dictionary.TryAdd(key, value);
+
+            var wasRemoved = dictionary.Remove(key);
+
+            wasRemoved.Should().BeTrue();
+            dictionary.Should().NotContainKey(key);
+        }
+
+        [Theory]
+        [MemberData(nameof(RemoveNonExistingData))]
+        public void RemoveNonExisting(string key, KeyValuePair<string, object>[] existingEntries)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<string, object>();
+            foreach (var existingEntry in existingEntries)
+            {
+                dictionary.TryAdd(existingEntry.Key, existingEntry.Value);
+            }
+
+            var wasRemoved = dictionary.Remove(key);
+
+            wasRemoved.Should().Be(false);
+            dictionary.Should().NotContainKey(key);
+        }
+
+        public static readonly TestData RemoveNonExistingData =
+            new[]
+            {
+                new object[]
+                {
+                    "Qux",
+                    new[]
+                    {
+                        new KeyValuePair<string, object>("Foo", new object()),
+                        new KeyValuePair<string, object>("Bar", new object()),
+                        new KeyValuePair<string, object>("Baz", new object())
+                    }
+                },
+                new object[]
+                {
+                    "thud",
+                    new[]
+                    {
+                        new KeyValuePair<string, object>("1", "Foo"),
+                        new KeyValuePair<string, object>("2", "Bar"),
+                        new KeyValuePair<string, object>("3", "Baz"),
+                        new KeyValuePair<string, object>("4", "Qux")
                     }
                 }
             };

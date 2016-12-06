@@ -67,7 +67,11 @@ namespace Light.DataStructures
         {
             var hashCode = _keyComparer.GetHashCode(key);
             var targetEntry = FindEntry(hashCode, key);
-            return targetEntry != null && _keyComparer.Equals(key, targetEntry.Key);
+            if (targetEntry == null)
+                return false;
+
+            var value = targetEntry.ReadValueVolatile();
+            return value != Entry.Tombstone;
         }
 
         public bool TryUpdate(TKey key, TValue newValue)
@@ -146,7 +150,8 @@ namespace Light.DataStructures
 
         public bool Remove(TKey key)
         {
-            throw new NotImplementedException();
+            var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
+            return foundEntry != null && foundEntry.TryMarkAsRemoved().WasUpdateSuccessful;
         }
 
         public bool TryAdd(TKey key, TValue value)

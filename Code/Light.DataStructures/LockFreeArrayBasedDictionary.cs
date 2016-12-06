@@ -9,13 +9,13 @@ namespace Light.DataStructures
 {
     public class LockFreeArrayBasedDictionary<TKey, TValue> : IConcurrentDictionary<TKey, TValue>, IDictionary<TKey, TValue>
     {
+        private readonly IConcurrentArrayService<TKey, TValue> _arrayService;
         private readonly IEqualityComparer<TKey> _keyComparer;
+        private readonly ExchangeArray<TKey, TValue> _setNewArray;
         private readonly IEqualityComparer<TValue> _valueComparer;
         private int _count;
-        private ConcurrentArray<TKey, TValue> _internalArray;
-        private readonly IConcurrentArrayService<TKey, TValue> _arrayService;
         private IGrowArrayProcess<TKey, TValue> _growArrayProcess;
-        private readonly ExchangeArray<TKey, TValue> _setNewArray;
+        private ConcurrentArray<TKey, TValue> _internalArray;
 
         public LockFreeArrayBasedDictionary() : this(Options.Default) { }
 
@@ -28,6 +28,105 @@ namespace Light.DataStructures
             _setNewArray = SetNewArray;
         }
 
+        public bool ContainsKey(TKey key)
+        {
+            var targetEntry = FindEntry(_keyComparer.GetHashCode(key), key);
+            if (targetEntry == null)
+                return false;
+
+            var value = targetEntry.ReadValueVolatile();
+            return value != Entry.Tombstone;
+        }
+
+        public bool TryUpdate(TKey key, TValue newValue)
+        {
+            var targetEntry = FindEntry(_keyComparer.GetHashCode(key), key);
+            return targetEntry != null && targetEntry.TryUpdateValue(newValue).WasUpdateSuccessful;
+        }
+
+        public bool GetOrAdd(TKey key, Func<TValue> createValue, out TValue value)
+        {
+            var hashCode = _keyComparer.GetHashCode(key);
+
+            // Find the target entry
+            var targetEntry = FindEntry(hashCode, key);
+            // If there is one, then try to read its current value
+            if (targetEntry != null)
+                return GetOrAddOnExistingEntry(targetEntry, createValue, out value);
+
+            // Else try to add a new entry
+            var createdValue = createValue();
+            var addInfo = TryAddinternal(new Entry<TKey, TValue>(hashCode, key, createdValue));
+
+            // If an entry was found during the add operation, try to get its value or update it when it is a tomb stone
+            if (addInfo.OperationResult == AddResult.ExistingEntryFound)
+                return GetOrAddOnExistingEntry(addInfo.TargetEntry, () => createdValue, out value);
+
+            // Else the add operation was performed successfully
+            value = createdValue;
+            return true;
+        }
+
+        public TValue GetOrAdd(TKey key, Func<TValue> createValue)
+        {
+            TValue returnValue;
+            GetOrAdd(key, createValue, out returnValue);
+            return returnValue;
+        }
+
+        public bool AddOrUpdate(TKey key, TValue value)
+        {
+            var addResult = TryAddinternal(new Entry<TKey, TValue>(_keyComparer.GetHashCode(key), key, value));
+            if (addResult.OperationResult == AddResult.AddSuccessful)
+                return true;
+
+            addResult.TargetEntry.TryUpdateValue(value);
+            return false;
+        }
+
+        public bool TryAdd(TKey key, TValue value)
+        {
+            var hashCode = _keyComparer.GetHashCode(key);
+            return TryAddinternal(new Entry<TKey, TValue>(hashCode, key, value)).OperationResult == AddResult.AddSuccessful;
+        }
+
+        public bool TryRemove(TKey key, out TValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
+            if (foundEntry == null)
+            {
+                value = default(TValue);
+                return false;
+            }
+
+            var readValue = foundEntry.ReadValueVolatile();
+            if (readValue == Entry.Tombstone)
+            {
+                value = default(TValue);
+                return false;
+            }
+
+            value = (TValue) readValue;
+            return true;
+        }
+
+        public bool Clear()
+        {
+            Volatile.Read(ref _growArrayProcess)?.Abort();
+            var emptyArray = _arrayService.CreateInitial(_keyComparer);
+            var currentArray = Volatile.Read(ref _internalArray);
+            if (Interlocked.CompareExchange(ref _internalArray, emptyArray, currentArray) != currentArray)
+                return false;
+
+            Interlocked.Exchange(ref _count, 0);
+            return true;
+        }
+
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             TryAdd(item.Key, item.Value);
@@ -38,11 +137,6 @@ namespace Light.DataStructures
             var hashCode = _keyComparer.GetHashCode(item.Key);
             var targetEntry = FindEntry(hashCode, item.Key);
             return targetEntry?.IsValueEqualTo(item.Value, _valueComparer) ?? false;
-        }
-
-        private Entry<TKey, TValue> FindEntry(int hashCode, TKey key)
-        {
-            return Volatile.Read(ref _internalArray).Find(hashCode, key);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -71,45 +165,66 @@ namespace Light.DataStructures
             TryAdd(key, value);
         }
 
-        public bool ContainsKey(TKey key)
+        public bool Remove(TKey key)
         {
-            var hashCode = _keyComparer.GetHashCode(key);
-            var targetEntry = FindEntry(hashCode, key);
-            if (targetEntry == null)
-                return false;
-
-            var value = targetEntry.ReadValueVolatile();
-            return value != Entry.Tombstone;
+            var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
+            return foundEntry != null && foundEntry.TryMarkAsRemoved().WasUpdateSuccessful;
         }
 
-        public bool TryUpdate(TKey key, TValue newValue)
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys { get; }
+        ICollection<TValue> IDictionary<TKey, TValue>.Values { get; }
+
+        public TValue this[TKey key]
         {
-            var hashCode = _keyComparer.GetHashCode(key);
-            var targetEntry = FindEntry(hashCode, key);
-            return targetEntry != null && targetEntry.TryUpdateValue(newValue).WasUpdateSuccessful;
+            get
+            {
+                if (key == null) throw new ArgumentNullException(nameof(key));
+
+                var hashCode = _keyComparer.GetHashCode(key);
+                var targetEntry = FindEntry(hashCode, key);
+                if (targetEntry == null)
+                    throw new KeyNotFoundException($"There is no entry with key \"{key}\"");
+
+                var value = targetEntry.ReadValueVolatile();
+                if (value == Entry.Tombstone)
+                    throw new KeyNotFoundException($"There is no entry with key \"{key}\"");
+
+                return (TValue) value;
+            }
+            set
+            {
+                if (key == null) throw new ArgumentNullException(nameof(key));
+
+                var hashCode = _keyComparer.GetHashCode(key);
+                var entry = new Entry<TKey, TValue>(hashCode, key, value);
+                var addInfo = TryAddinternal(entry);
+                if (addInfo.OperationResult == AddResult.AddSuccessful)
+                    return;
+
+                var updateInfo = addInfo.TargetEntry.TryUpdateValue(value);
+                if (updateInfo.WasUpdateSuccessful == false)
+                    throw new InvalidOperationException($"Could not update entry with key {key} because another thread performed this action.");
+            }
         }
 
-        public bool GetOrAdd(TKey key, Func<TValue> createValue, out TValue value)
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            var hashCode = _keyComparer.GetHashCode(key);
+            return new Enumerator(Volatile.Read(ref _internalArray));
+        }
 
-            // Find the target entry
-            var targetEntry = FindEntry(hashCode, key);
-            // If there is one, then try to read its current value
-            if (targetEntry != null)
-                return GetOrAddOnExistingEntry(targetEntry, createValue, out value);
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<KeyValuePair<TKey, TValue>>) this).GetEnumerator();
+        }
 
-            // Else try to add a new entry
-            var createdValue = createValue();
-            var addInfo = TryAddinternal(new Entry<TKey, TValue>(hashCode, key, createdValue));
+        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
+        {
+            Clear();
+        }
 
-            // If an entry was found during the add operation, try to get its value or update it when it is a tomb stone
-            if (addInfo.OperationResult == AddResult.ExistingEntryFound)
-                return GetOrAddOnExistingEntry(addInfo.TargetEntry, () => createdValue, out value);
-
-            // Else the add operation was performed successfully
-            value = createdValue;
-            return true;
+        private Entry<TKey, TValue> FindEntry(int hashCode, TKey key)
+        {
+            return Volatile.Read(ref _internalArray).Find(hashCode, key);
         }
 
         private static bool GetOrAddOnExistingEntry(Entry<TKey, TValue> targetEntry, Func<TValue> createValue, out TValue value)
@@ -139,36 +254,7 @@ namespace Light.DataStructures
             return false;
         }
 
-        public TValue GetOrAdd(TKey key, Func<TValue> createValue)
-        {
-            TValue returnValue;
-            GetOrAdd(key, createValue, out returnValue);
-            return returnValue;
-        }
-
-        public bool AddOrUpdate(TKey key, TValue value)
-        {
-            var addResult = TryAddinternal(new Entry<TKey, TValue>(_keyComparer.GetHashCode(key), key, value));
-            if (addResult.OperationResult == AddResult.AddSuccessful)
-                return true;
-
-            addResult.TargetEntry.TryUpdateValue(value);
-            return false;
-        }
-
-        public bool Remove(TKey key)
-        {
-            var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
-            return foundEntry != null && foundEntry.TryMarkAsRemoved().WasUpdateSuccessful;
-        }
-
-        public bool TryAdd(TKey key, TValue value)
-        {
-            var hashCode = _keyComparer.GetHashCode(key);
-            return TryAddinternal(new Entry<TKey, TValue>(hashCode, key, value)).OperationResult == AddResult.AddSuccessful;
-        }
-
-        private ConcurrentArray<TKey,TValue>.AddInfo TryAddinternal(Entry<TKey, TValue> entry)
+        private ConcurrentArray<TKey, TValue>.AddInfo TryAddinternal(Entry<TKey, TValue> entry)
         {
             // Get the default array and try to add the entry to it
             var array = Volatile.Read(ref _internalArray);
@@ -243,95 +329,6 @@ namespace Light.DataStructures
             Interlocked.CompareExchange(ref _internalArray, newArray, oldArray);
         }
 
-        public bool TryRemove(TKey key, out TValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
-            if (foundEntry == null)
-            {
-                value = default(TValue);
-                return false;
-            }
-
-            var readValue = foundEntry.ReadValueVolatile();
-            if (readValue == Entry.Tombstone)
-            {
-                value = default(TValue);
-                return false;
-            }
-
-            value = (TValue) readValue;
-            return true;
-        }
-
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys { get; }
-        ICollection<TValue> IDictionary<TKey, TValue>.Values { get; }
-
-        public TValue this[TKey key]
-        {
-            get
-            {
-                if (key == null) throw new ArgumentNullException(nameof(key));
-
-                var hashCode = _keyComparer.GetHashCode(key);
-                var targetEntry = FindEntry(hashCode, key);
-                if (targetEntry == null)
-                    throw new KeyNotFoundException($"There is no entry with key \"{key}\"");
-
-                var value = targetEntry.ReadValueVolatile();
-                if (value == Entry.Tombstone)
-                    throw new KeyNotFoundException($"There is no entry with key \"{key}\"");
-
-                return (TValue) value;
-            }
-            set
-            {
-                if (key == null) throw new ArgumentNullException(nameof(key));
-
-                var hashCode = _keyComparer.GetHashCode(key);
-                var entry = new Entry<TKey,TValue>(hashCode, key, value);
-                var addInfo = TryAddinternal(entry);
-                if (addInfo.OperationResult == AddResult.AddSuccessful)
-                    return;
-
-                var updateInfo = addInfo.TargetEntry.TryUpdateValue(value);
-                if (updateInfo.WasUpdateSuccessful == false)
-                    throw new InvalidOperationException($"Could not update entry with key {key} because another thread performed this action.");
-            }
-        }
-
-        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
-        {
-            return new Enumerator(Volatile.Read(ref _internalArray));
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<KeyValuePair<TKey, TValue>>)this).GetEnumerator();
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
-        {
-            Clear();
-        }
-
-        public bool Clear()
-        {
-            var growArrayProcess = Volatile.Read(ref _growArrayProcess);
-            growArrayProcess?.Abort();
-            var emptyArray = _arrayService.CreateInitial(_keyComparer);
-            var currentArray = Volatile.Read(ref _internalArray);
-            if (Interlocked.CompareExchange(ref _internalArray, emptyArray, currentArray) != currentArray)
-                return false;
-
-            Interlocked.Exchange(ref _count, 0);
-            return true;
-        }
-
         private class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
         {
             private readonly ConcurrentArray<TKey, TValue> _array;
@@ -380,9 +377,9 @@ namespace Light.DataStructures
         public class Options
         {
             public static readonly Options Default = new Options();
+            private IConcurrentArrayService<TKey, TValue> _arrayService = new DefaultConcurrentArrayService<TKey, TValue>();
             private IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
             private IEqualityComparer<TValue> _valueComparer = EqualityComparer<TValue>.Default;
-            private IConcurrentArrayService<TKey, TValue> _arrayService = new DefaultConcurrentArrayService<TKey, TValue>();
 
             public IEqualityComparer<TKey> KeyComparer
             {

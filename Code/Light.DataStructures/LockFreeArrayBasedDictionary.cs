@@ -92,7 +92,23 @@ namespace Light.DataStructures
 
         public bool TryRemove(TKey key, out TValue value)
         {
-            throw new NotImplementedException();
+            var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
+            if (foundEntry == null)
+                goto RemoveFailed;
+
+            var readValue = foundEntry.ReadValueVolatile();
+            if (readValue == Entry.Tombstone)
+                goto RemoveFailed;
+
+            if (foundEntry.TryMarkAsRemoved().WasUpdateSuccessful == false)
+                goto RemoveFailed;
+
+            value = (TValue) readValue;
+            return true;
+
+            RemoveFailed:
+            value = default(TValue);
+            return false;
         }
 
         public bool TryGetValue(TKey key, out TValue value)

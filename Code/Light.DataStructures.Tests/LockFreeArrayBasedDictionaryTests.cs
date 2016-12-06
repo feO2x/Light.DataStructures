@@ -439,5 +439,38 @@ namespace Light.DataStructures.Tests
                     }
                 }
             };
+
+        [Theory]
+        [InlineData(42, "Foo")]
+        [InlineData("Bar", new object[] { })]
+        public void TryRemoveExisting<TKey, TValue>(TKey key, TValue value)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<TKey, TValue>();
+            dictionary.TryAdd(key, value);
+
+            TValue removedValue;
+            var wasRemoved = dictionary.TryRemove(key, out removedValue);
+
+            wasRemoved.Should().BeTrue();
+            removedValue.Should().Be(value);
+            dictionary.Should().NotContainKey(key);
+        }
+
+        [Theory]
+        [MemberData(nameof(RemoveNonExistingData))]
+        public void TryRemoveNonExisting(string key, KeyValuePair<string, object>[] existingEntries)
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<string, object>();
+            foreach (var existingEntry in existingEntries)
+            {
+                dictionary.TryAdd(existingEntry.Key, existingEntry.Value);
+            }
+
+            object removedValue;
+            var wasRemoved = dictionary.TryRemove(key, out removedValue);
+
+            wasRemoved.Should().BeFalse();
+            removedValue.Should().Be(default(object));
+        }
     }
 }

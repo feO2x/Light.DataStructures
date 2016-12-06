@@ -15,7 +15,7 @@ namespace Light.DataStructures
         private ConcurrentArray<TKey, TValue> _internalArray;
         private readonly IConcurrentArrayService<TKey, TValue> _arrayService;
         private IGrowArrayProcess<TKey, TValue> _growArrayProcess;
-        private readonly Action<ConcurrentArray<TKey, TValue>> _setNewArrayDelegate;
+        private readonly ExchangeArray<TKey, TValue> _setNewArray;
 
         public LockFreeArrayBasedDictionary() : this(Options.Default) { }
 
@@ -25,7 +25,7 @@ namespace Light.DataStructures
             _keyComparer = options.KeyComparer;
             _valueComparer = options.ValueComparer;
             _internalArray = _arrayService.CreateInitial(_keyComparer);
-            _setNewArrayDelegate = SetNewArray;
+            _setNewArray = SetNewArray;
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
@@ -190,7 +190,7 @@ namespace Light.DataStructures
             if (growArrayProcess == null)
             {
                 // If not, then check, if the internal array has to grow
-                growArrayProcess = _arrayService.CreateGrowProcessIfNecessary(array, _setNewArrayDelegate);
+                growArrayProcess = _arrayService.CreateGrowProcessIfNecessary(array, _setNewArray);
 
                 // If not, then do nothing
                 if (growArrayProcess == null)
@@ -216,7 +216,7 @@ namespace Light.DataStructures
             var growArrayProcess = Volatile.Read(ref _growArrayProcess);
             if (growArrayProcess == null)
             {
-                growArrayProcess = _arrayService.CreateGrowProcessIfNecessary(array, _setNewArrayDelegate);
+                growArrayProcess = _arrayService.CreateGrowProcessIfNecessary(array, _setNewArray);
                 growArrayProcess.MustNotBeNull();
                 growArrayProcess = Interlocked.CompareExchange(ref _growArrayProcess, growArrayProcess, null);
             }
@@ -224,10 +224,10 @@ namespace Light.DataStructures
             growArrayProcess.CopyToTheBitterEnd();
         }
 
-        private void SetNewArray(ConcurrentArray<TKey, TValue> newArray)
+        private void SetNewArray(ConcurrentArray<TKey, TValue> oldArray, ConcurrentArray<TKey, TValue> newArray)
         {
             Volatile.Write(ref _growArrayProcess, null);
-            Volatile.Write(ref _internalArray, newArray);
+            Interlocked.CompareExchange(ref _internalArray, newArray, oldArray);
         }
 
         public bool TryRemove(TKey key, out TValue value)
@@ -308,7 +308,8 @@ namespace Light.DataStructures
 
         public bool Clear()
         {
-            // TODO: in this method, we must stop the copy process if necessary
+            var growArrayProcess = Volatile.Read(ref _growArrayProcess);
+            growArrayProcess?.Abort();
             var emptyArray = _arrayService.CreateInitial(_keyComparer);
             var currentArray = Volatile.Read(ref _internalArray);
             if (Interlocked.CompareExchange(ref _internalArray, emptyArray, currentArray) != currentArray)

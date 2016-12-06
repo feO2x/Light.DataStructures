@@ -1,21 +1,20 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
 {
-    public class DefaultGrowArrayProcess<TKey, TValue> : IGrowArrayProcess<TKey, TValue>
+    public sealed class DefaultGrowArrayProcess<TKey, TValue> : IGrowArrayProcess<TKey, TValue>
     {
         private const int MaximumNumberOfItemsCopiedDuringHelp = 100;
+        private readonly ExchangeArray<TKey, TValue> _setNewArray;
         private readonly int _newArraySize;
         private readonly ConcurrentArray<TKey, TValue> _oldArray;
-        private readonly Action<ConcurrentArray<TKey, TValue>> _setNewArray;
         private int _copyingFinished;
         private int _currentIndex = -1;
         private ConcurrentArray<TKey, TValue> _newArray;
 
-        public DefaultGrowArrayProcess(ConcurrentArray<TKey, TValue> oldArray, int newArraySize, Action<ConcurrentArray<TKey, TValue>> setNewArray)
+        public DefaultGrowArrayProcess(ConcurrentArray<TKey, TValue> oldArray, int newArraySize, ExchangeArray<TKey, TValue> setNewArray)
         {
             oldArray.MustNotBeNull(nameof(oldArray));
             newArraySize.MustBeGreaterThan(oldArray.Capacity, nameof(newArraySize));
@@ -66,8 +65,16 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             newArray.TryAdd(entry);
         }
 
+        public void Abort()
+        {
+            Interlocked.Exchange(ref _copyingFinished, 1);
+        }
+
         private bool CopySingleEntry(ConcurrentArray<TKey, TValue> newArray)
         {
+            if (Volatile.Read(ref _copyingFinished) == 1)
+                return false;
+
             var currentIndex = Interlocked.Increment(ref _currentIndex);
             if (currentIndex >= _oldArray.Capacity)
             {
@@ -88,7 +95,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             if (Interlocked.CompareExchange(ref _copyingFinished, 1, 0) != 0)
                 return;
 
-            _setNewArray(newArray);
+            _setNewArray(_oldArray, newArray);
         }
 
         private ConcurrentArray<TKey, TValue> SpinGetNewArray()

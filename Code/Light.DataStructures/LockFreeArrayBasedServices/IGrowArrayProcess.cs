@@ -6,5 +6,6 @@
         void HelpCopying();
         void CopyToTheBitterEnd();
         void CopySingleEntry(Entry<TKey, TValue> entry);
+        void Abort();
     }
 }

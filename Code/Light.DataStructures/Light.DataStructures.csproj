@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="LockFreeArrayBasedServices\AddResult.cs" />
+    <Compile Include="LockFreeArrayBasedServices\ExchangeArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\ConcurrentArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\DefaultConcurrentArrayService.cs" />
     <Compile Include="LockFreeArrayBasedServices\DefaultGrowArrayProcess.cs" />

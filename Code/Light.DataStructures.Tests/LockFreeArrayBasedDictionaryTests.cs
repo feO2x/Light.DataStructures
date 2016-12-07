@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
@@ -518,6 +519,28 @@ namespace Light.DataStructures.Tests
             dictionary.Add(3, "Baz");
 
             dictionary.Values.Should().BeEquivalentTo("Foo", "Bar", "Baz");
+        }
+
+        [Fact]
+        public void ConcurrentAddTest()
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<int, object>();
+            var processorCount = Environment.ProcessorCount;
+            var entryCount = processorCount * 100000;
+            var allNumbers = Enumerable.Range(1, entryCount).ToArray();
+            var groupsPerTask = allNumbers.GroupBy(number => number % processorCount)
+                                          .ToArray();
+            Parallel.ForEach(groupsPerTask, group =>
+                                            {
+                                                foreach (var number in group)
+                                                {
+                                                    var addResult = dictionary.TryAdd(number, new object());
+                                                    addResult.Should().BeTrue();
+                                                }
+                                            });
+
+            dictionary.Count.Should().Be(allNumbers.Length);
+            dictionary.Should().ContainKeys(allNumbers);
         }
     }
 }

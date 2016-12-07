@@ -222,6 +222,8 @@ namespace Light.DataStructures.Tests
         [Theory]
         [InlineData(50)]
         [InlineData(100)]
+        [InlineData(50000)]
+        [InlineData(1500000)]
         public void IncreaseCapacity(int numberOfItems)
         {
             var keys = Enumerable.Range(1, numberOfItems).ToArray();

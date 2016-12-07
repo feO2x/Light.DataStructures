@@ -495,5 +495,27 @@ namespace Light.DataStructures.Tests
                            };
             array.Should().BeEquivalentTo(expected);
         }
+
+        [Fact]
+        public void Keys()
+        {
+            IDictionary<int, string> dictionary = new LockFreeArrayBasedDictionary<int, string>();
+            dictionary.Add(1, "Foo");
+            dictionary.Add(2, "Bar");
+            dictionary.Add(3, "Baz");
+
+            dictionary.Keys.Should().BeEquivalentTo(1, 2, 3);
+        }
+
+        [Fact]
+        public void Values()
+        {
+            IDictionary<int, string> dictionary = new LockFreeArrayBasedDictionary<int, string>();
+            dictionary.Add(1, "Foo");
+            dictionary.Add(2, "Bar");
+            dictionary.Add(3, "Baz");
+
+            dictionary.Values.Should().BeEquivalentTo("Foo", "Bar", "Baz");
+        }
     }
 }

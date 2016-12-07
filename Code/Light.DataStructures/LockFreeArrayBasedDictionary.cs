@@ -202,8 +202,31 @@ namespace Light.DataStructures
             return TryRemove(key, out value);
         }
 
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys { get; }
-        ICollection<TValue> IDictionary<TKey, TValue>.Values { get; }
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys
+        {
+            get
+            {
+                var keys = new List<TKey>();
+                foreach (var entry in this)
+                {
+                    keys.Add(entry.Key);
+                }
+                return keys;
+            }
+        }
+
+        ICollection<TValue> IDictionary<TKey, TValue>.Values
+        {
+            get
+            {
+                var values = new List<TValue>(_internalArray.Capacity);
+                foreach (var entry in this)
+                {
+                    values.Add(entry.Value);
+                }
+                return values;
+            }
+        }
 
         public TValue this[TKey key]
         {

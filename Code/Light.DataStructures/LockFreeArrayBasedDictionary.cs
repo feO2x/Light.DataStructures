@@ -14,7 +14,7 @@ namespace Light.DataStructures
         private readonly ExchangeArray<TKey, TValue> _setNewArray;
         private readonly IEqualityComparer<TValue> _valueComparer;
         private int _count;
-        private IGrowArrayProcess<TKey, TValue> _growArrayProcess;
+        private GrowArrayProcess<TKey, TValue> _growArrayProcess;
         private ConcurrentArray<TKey, TValue> _internalArray;
 
         public LockFreeArrayBasedDictionary() : this(Options.Default) { }
@@ -86,8 +86,7 @@ namespace Light.DataStructures
 
         public bool TryAdd(TKey key, TValue value)
         {
-            var hashCode = _keyComparer.GetHashCode(key);
-            return TryAddinternal(new Entry<TKey, TValue>(hashCode, key, value)).OperationResult == AddResult.AddSuccessful;
+            return TryAddinternal(new Entry<TKey, TValue>(_keyComparer.GetHashCode(key), key, value)).OperationResult == AddResult.AddSuccessful;
         }
 
         public bool TryRemove(TKey key, out TValue value)
@@ -135,6 +134,7 @@ namespace Light.DataStructures
         public bool Clear()
         {
             Volatile.Read(ref _growArrayProcess)?.Abort();
+            Volatile.Write(ref _growArrayProcess, null);
             var emptyArray = _arrayService.CreateInitial(_keyComparer);
             var currentArray = Volatile.Read(ref _internalArray);
             if (Interlocked.CompareExchange(ref _internalArray, emptyArray, currentArray) != currentArray)
@@ -356,8 +356,7 @@ namespace Light.DataStructures
                     growArrayProcess.StartCopying();
                     return;
                 }
-                previousProcess.HelpCopying();
-                return;
+                growArrayProcess = previousProcess;
             }
 
             growArrayProcess.CopySingleEntry(addedEntry);

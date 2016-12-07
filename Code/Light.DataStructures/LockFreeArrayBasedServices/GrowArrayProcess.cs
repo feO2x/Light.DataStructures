@@ -4,7 +4,7 @@ using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
 {
-    public sealed class DefaultGrowArrayProcess<TKey, TValue> : IGrowArrayProcess<TKey, TValue>
+    public sealed class GrowArrayProcess<TKey, TValue>
     {
         private const int MaximumNumberOfItemsCopiedDuringHelp = 100;
         private readonly ExchangeArray<TKey, TValue> _setNewArray;
@@ -14,7 +14,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         private int _currentIndex = -1;
         private ConcurrentArray<TKey, TValue> _newArray;
 
-        public DefaultGrowArrayProcess(ConcurrentArray<TKey, TValue> oldArray, int newArraySize, ExchangeArray<TKey, TValue> setNewArray)
+        public GrowArrayProcess(ConcurrentArray<TKey, TValue> oldArray, int newArraySize, ExchangeArray<TKey, TValue> setNewArray)
         {
             oldArray.MustNotBeNull(nameof(oldArray));
             newArraySize.MustBeGreaterThan(oldArray.Capacity, nameof(newArraySize));

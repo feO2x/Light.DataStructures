@@ -41,12 +41,11 @@
     <Compile Include="LockFreeArrayBasedServices\ExchangeArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\ConcurrentArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\DefaultConcurrentArrayService.cs" />
-    <Compile Include="LockFreeArrayBasedServices\DefaultGrowArrayProcess.cs" />
+    <Compile Include="LockFreeArrayBasedServices\GrowArrayProcess.cs" />
     <Compile Include="LockFreeArrayBasedServices\DoublingPrimeNumbersStrategy.cs" />
     <Compile Include="LockFreeArrayBasedServices\Entry.cs" />
     <Compile Include="IConcurrentDictionary.cs" />
     <Compile Include="LockFreeArrayBasedServices\IConcurrentArrayService.cs" />
-    <Compile Include="LockFreeArrayBasedServices\IGrowArrayProcess.cs" />
     <Compile Include="LockFreeArrayBasedServices\IGrowArrayStrategy.cs" />
     <Compile Include="LockFreeArrayBasedDictionary.cs" />
     <Compile Include="LockFreeArrayBasedServices\SieveOfEratosthenes.cs" />

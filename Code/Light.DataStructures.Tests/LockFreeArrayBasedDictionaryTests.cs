@@ -472,5 +472,25 @@ namespace Light.DataStructures.Tests
             wasRemoved.Should().BeFalse();
             removedValue.Should().Be(default(object));
         }
+
+        [Fact]
+        public void CopyTo()
+        {
+            IDictionary<string, string> dictionary = new LockFreeArrayBasedDictionary<string, string>();
+            dictionary.Add("Foo", "Bar");
+            dictionary.Add("Baz", "Qux");
+            dictionary.Add("Quux", "Quuz");
+            var array = new KeyValuePair<string, string>[3];
+
+            dictionary.CopyTo(array, 0);
+
+            var expected = new[]
+                           {
+                               new KeyValuePair<string, string>("Foo", "Bar"),
+                               new KeyValuePair<string, string>("Baz", "Qux"),
+                               new KeyValuePair<string, string>("Quux", "Quuz")
+                           };
+            array.Should().BeEquivalentTo(expected);
+        }
     }
 }

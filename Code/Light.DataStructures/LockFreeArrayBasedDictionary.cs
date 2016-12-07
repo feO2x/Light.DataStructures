@@ -155,9 +155,17 @@ namespace Light.DataStructures
             return targetEntry?.IsValueEqualTo(item.Value, _valueComparer) ?? false;
         }
 
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            array.MustNotBeNull(nameof(array));
+            arrayIndex.MustNotBeLessThan(0, nameof(arrayIndex));
+
+            foreach (var keyValuePair in this)
+            {
+                if (arrayIndex == array.Length)
+                    throw new ArgumentException("There is not enough space to copy all elements to the target array.");
+                array[arrayIndex++] = keyValuePair;
+            }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)

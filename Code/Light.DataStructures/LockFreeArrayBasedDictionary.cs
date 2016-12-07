@@ -103,6 +103,7 @@ namespace Light.DataStructures
             if (foundEntry.TryMarkAsRemoved().WasUpdateSuccessful == false)
                 goto RemoveFailed;
 
+            Interlocked.Decrement(ref _count);
             value = (TValue) readValue;
             return true;
 
@@ -178,10 +179,16 @@ namespace Light.DataStructures
             if (value == Entry.Tombstone || _valueComparer.Equals(item.Value, (TValue) value) == false)
                 return false;
 
-            return foundEntry.TryMarkAsRemoved().WasUpdateSuccessful;
+            var updateInfo = foundEntry.TryMarkAsRemoved();
+            if (updateInfo.WasUpdateSuccessful == false)
+                return false;
+
+            Interlocked.Decrement(ref _count);
+            return true;
         }
 
-        int ICollection<KeyValuePair<TKey, TValue>>.Count => _count;
+        public int Count => Volatile.Read(ref _count);
+
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
@@ -191,8 +198,8 @@ namespace Light.DataStructures
 
         public bool Remove(TKey key)
         {
-            var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
-            return foundEntry != null && foundEntry.TryMarkAsRemoved().WasUpdateSuccessful;
+            TValue value;
+            return TryRemove(key, out value);
         }
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys { get; }

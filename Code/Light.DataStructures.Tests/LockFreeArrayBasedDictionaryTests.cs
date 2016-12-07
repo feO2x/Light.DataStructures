@@ -365,6 +365,7 @@ namespace Light.DataStructures.Tests
 
             wasRemoved.Should().BeTrue();
             dictionary.Should().NotContainKey(key);
+            dictionary.Count.Should().Be(0);
         }
 
         [Theory]
@@ -379,6 +380,7 @@ namespace Light.DataStructures.Tests
 
             wasRemoved.Should().BeTrue();
             dictionary.Should().NotContain(new KeyValuePair<TKey, TValue>(key, value));
+            dictionary.Count.Should().Be(0);
         }
 
         [Theory]
@@ -454,6 +456,7 @@ namespace Light.DataStructures.Tests
             wasRemoved.Should().BeTrue();
             removedValue.Should().Be(value);
             dictionary.Should().NotContainKey(key);
+            dictionary.Count.Should().Be(0);
         }
 
         [Theory]

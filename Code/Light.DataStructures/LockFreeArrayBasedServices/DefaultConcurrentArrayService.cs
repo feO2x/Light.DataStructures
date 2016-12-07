@@ -5,9 +5,9 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 {
     public class DefaultConcurrentArrayService<TKey, TValue> : IConcurrentArrayService<TKey, TValue>
     {
-        public const float DefaultLoadThreshhold = 0.5f;
+        public const float DefaultLoadThreshold = 0.5f;
         public readonly IGrowArrayStrategy GrowArrayStrategy = new DoublingPrimeNumbersStrategy();
-        public readonly float LoadThreshhold = DefaultLoadThreshhold;
+        public readonly float LoadThreshold = DefaultLoadThreshold;
 
         public ConcurrentArray<TKey, TValue> CreateInitial(IEqualityComparer<TKey> keyComparer)
         {
@@ -19,7 +19,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             currentArray.MustNotBeNull(nameof(currentArray));
 
             var currentLoad = (float) currentArray.Count / currentArray.Capacity;
-            return currentLoad > LoadThreshhold ? new DefaultGrowArrayProcess<TKey, TValue>(currentArray, GrowArrayStrategy.GetNextSize(currentArray.Capacity), exchangeArray) : null;
+            return currentLoad > LoadThreshold ? new DefaultGrowArrayProcess<TKey, TValue>(currentArray, GrowArrayStrategy.GetNextSize(currentArray.Capacity), exchangeArray) : null;
         }
     }
 }

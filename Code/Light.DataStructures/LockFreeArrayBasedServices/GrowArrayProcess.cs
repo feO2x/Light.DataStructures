@@ -30,7 +30,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             Volatile.Write(ref _newArray, new ConcurrentArray<TKey, TValue>(_newArraySize, _oldArray.KeyComparer));
 
             HelpCopying();
-            if (_copyingFinished == 1)
+            if (IsCopyingFinished)
                 return;
 
             var task = new Task(CopyToTheBitterEnd);
@@ -72,7 +72,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
         private bool CopySingleEntry(ConcurrentArray<TKey, TValue> newArray)
         {
-            if (Volatile.Read(ref _copyingFinished) == 1)
+            if (IsCopyingFinished)
                 return false;
 
             var currentIndex = Interlocked.Increment(ref _currentIndex);
@@ -107,5 +107,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             } while (newArray == null);
             return newArray;
         }
+
+        public bool IsCopyingFinished => Volatile.Read(ref _copyingFinished) == 1;
     }
 }

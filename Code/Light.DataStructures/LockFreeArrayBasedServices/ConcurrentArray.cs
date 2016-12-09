@@ -12,6 +12,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         public readonly IEqualityComparer<TKey> KeyComparer;
         private int _count;
         private GrowArrayProcess<TKey, TValue> _growArrayProcess;
+        private long _version;
 
         public ConcurrentArray(int capacity) : this(capacity, EqualityComparer<TKey>.Default) { }
 
@@ -36,20 +37,27 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
             while (true)
             {
+                Interlocked.Increment(ref _version);
                 var previousEntry = Interlocked.CompareExchange(ref _internalArray[targetIndex], entry, null);
                 if (previousEntry == null)
                 {
                     Interlocked.Increment(ref _count);
-                    return new AddInfo(AddResult.AddSuccessful, entry);
+                    return CreateAddInfo(AddResult.AddSuccessful, entry, startIndex, targetIndex);
                 }
 
+                Interlocked.Decrement(ref _version);
                 if (entry.HashCode == previousEntry.HashCode && KeyComparer.Equals(entry.Key, previousEntry.Key))
-                    return new AddInfo(AddResult.ExistingEntryFound, previousEntry);
+                    return CreateAddInfo(AddResult.ExistingEntryFound, previousEntry, startIndex, targetIndex);
 
                 IncrementTargetIndex(ref targetIndex);
                 if (targetIndex == startIndex)
-                    return new AddInfo(AddResult.ArrayFull, null);
+                    return CreateAddInfo(AddResult.ArrayFull, null, startIndex, targetIndex);
             }
+        }
+
+        private AddInfo CreateAddInfo(AddResult result, Entry<TKey, TValue> targetEntry, int startIndex, int targetIndex)
+        {
+            return new AddInfo(result, targetEntry, ArrayMath.CalculateNumberOfSlotsBetween(startIndex, targetIndex, Capacity));
         }
 
         private int GetTargetBucketIndex(int hashCode)
@@ -154,11 +162,13 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         {
             public readonly AddResult OperationResult;
             public readonly Entry<TKey, TValue> TargetEntry;
+            public readonly int ReprobingCount;
 
-            public AddInfo(AddResult operationResult, Entry<TKey, TValue> targetEntry)
+            public AddInfo(AddResult operationResult, Entry<TKey, TValue> targetEntry, int reprobingCount)
             {
                 OperationResult = operationResult;
                 TargetEntry = targetEntry;
+                ReprobingCount = reprobingCount;
             }
         }
 
@@ -167,13 +177,28 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             return GetEnumerator();
         }
 
-        public GrowArrayProcess<TKey, TValue> GetOrCreateGrowArrayProcess(int newArraySize, ExchangeArray<TKey, TValue> exchangeArray)
+        public GrowArrayProcessInfo GetOrCreateGrowArrayProcess(int newArraySize, ExchangeArray<TKey, TValue> exchangeArray)
         {
             newArraySize.MustBeGreaterThan(Capacity, nameof(newArraySize));
 
-            var growArrayProcess = new GrowArrayProcess<TKey, TValue>(this, newArraySize, exchangeArray);
-            var existingProcess = Interlocked.CompareExchange(ref _growArrayProcess, growArrayProcess, null);
-            return existingProcess ?? growArrayProcess;
+            var newProcess = new GrowArrayProcess<TKey, TValue>(this, newArraySize, exchangeArray);
+            var existingProcess = Interlocked.CompareExchange(ref _growArrayProcess, newProcess, null);
+            if (existingProcess != null)
+                return new GrowArrayProcessInfo(existingProcess, false);
+
+            newProcess.StartCopying();
+            return new GrowArrayProcessInfo(newProcess, true);
+        }
+
+        public struct GrowArrayProcessInfo
+        {
+            public readonly GrowArrayProcess<TKey, TValue> TargetProcess;
+            public readonly bool IsProcessFreshlyInitialized;
+            public GrowArrayProcessInfo(GrowArrayProcess<TKey, TValue> targetProcess, bool isProcessFreshlyInitialized)
+            {
+                TargetProcess = targetProcess;
+                IsProcessFreshlyInitialized = isProcessFreshlyInitialized;
+            }
         }
 
         public Entry<TKey, TValue> this[int index] => ReadVolatileFromIndex(index);
@@ -181,6 +206,18 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         public GrowArrayProcess<TKey, TValue> ReadGrowArrayProcessVolatile()
         {
             return Volatile.Read(ref _growArrayProcess);
+        }
+
+        public long Version => Volatile.Read(ref _version);
+
+        public long IncrementVersion()
+        {
+            return Interlocked.Increment(ref _version);
+        }
+
+        public long DecrementVersion()
+        {
+            return Interlocked.Decrement(ref _version);
         }
     }
 }

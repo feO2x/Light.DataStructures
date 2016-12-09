@@ -9,22 +9,21 @@ namespace Light.DataStructures
 {
     public class LockFreeArrayBasedDictionary<TKey, TValue> : IConcurrentDictionary<TKey, TValue>, IDictionary<TKey, TValue>
     {
-        private readonly IConcurrentArrayService<TKey, TValue> _arrayService;
+        private readonly IGrowArrayStrategy _growArrayStrategy;
         private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly ExchangeArray<TKey, TValue> _setNewArray;
         private readonly IEqualityComparer<TValue> _valueComparer;
         private int _count;
-        private GrowArrayProcess<TKey, TValue> _growArrayProcess;
-        private ConcurrentArray<TKey, TValue> _internalArray;
+        private ConcurrentArray<TKey, TValue> _currentArray;
 
         public LockFreeArrayBasedDictionary() : this(Options.Default) { }
 
         public LockFreeArrayBasedDictionary(Options options)
         {
-            _arrayService = options.ArrayService;
             _keyComparer = options.KeyComparer;
             _valueComparer = options.ValueComparer;
-            _internalArray = _arrayService.CreateInitial(_keyComparer);
+            _growArrayStrategy = options.GrowArrayStrategy;
+            _currentArray = CreateInitialArray();
             _setNewArray = SetNewArray;
         }
 
@@ -133,11 +132,10 @@ namespace Light.DataStructures
 
         public bool Clear()
         {
-            Volatile.Read(ref _growArrayProcess)?.Abort();
-            Volatile.Write(ref _growArrayProcess, null);
-            var emptyArray = _arrayService.CreateInitial(_keyComparer);
-            var currentArray = Volatile.Read(ref _internalArray);
-            if (Interlocked.CompareExchange(ref _internalArray, emptyArray, currentArray) != currentArray)
+            Volatile.Read(ref _currentArray).ReadGrowArrayProcessVolatile()?.Abort();
+            var emptyArray = CreateInitialArray();
+            var currentArray = Volatile.Read(ref _currentArray);
+            if (Interlocked.CompareExchange(ref _currentArray, emptyArray, currentArray) != currentArray)
                 return false;
 
             Interlocked.Exchange(ref _count, 0);
@@ -219,7 +217,7 @@ namespace Light.DataStructures
         {
             get
             {
-                var values = new List<TValue>(_internalArray.Capacity);
+                var values = new List<TValue>(_currentArray.Capacity);
                 foreach (var entry in this)
                 {
                     values.Add(entry.Value);
@@ -263,7 +261,7 @@ namespace Light.DataStructures
 
         IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            return new Enumerator(Volatile.Read(ref _internalArray));
+            return new Enumerator(Volatile.Read(ref _currentArray));
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -276,9 +274,14 @@ namespace Light.DataStructures
             Clear();
         }
 
+        private ConcurrentArray<TKey, TValue> CreateInitialArray()
+        {
+            return new ConcurrentArray<TKey, TValue>(_growArrayStrategy.GetInitialSize(), _keyComparer);
+        }
+
         private Entry<TKey, TValue> FindEntry(int hashCode, TKey key)
         {
-            return Volatile.Read(ref _internalArray).Find(hashCode, key);
+            return Volatile.Read(ref _currentArray).Find(hashCode, key);
         }
 
         private static bool GetOrAddOnExistingEntry(Entry<TKey, TValue> targetEntry, Func<TValue> createValue, out TValue value)
@@ -311,7 +314,7 @@ namespace Light.DataStructures
         private ConcurrentArray<TKey, TValue>.AddInfo TryAddinternal(Entry<TKey, TValue> entry)
         {
             // Get the default array and try to add the entry to it
-            var array = Volatile.Read(ref _internalArray);
+            var array = Volatile.Read(ref _currentArray);
 
             TryAdd:
             var addInfo = array.TryAdd(entry);
@@ -322,64 +325,58 @@ namespace Light.DataStructures
             if (addInfo.OperationResult == AddResult.AddSuccessful)
             {
                 Interlocked.Increment(ref _count);
-                HelpCopying(array, entry);
+                HelpCopying(array, addInfo);
                 return addInfo;
             }
 
             // Else the default array is full, we must escalate copying to the new array and then retry the add
             var fullArray = array;
-            EscalateCopying(array);
+            EscalateCopying(array, addInfo);
             // Spin until the new array is available, then try to insert again
             do
             {
-                array = Volatile.Read(ref _internalArray);
+                array = Volatile.Read(ref _currentArray);
             } while (fullArray == array);
             goto TryAdd;
         }
 
-        private void HelpCopying(ConcurrentArray<TKey, TValue> array, Entry<TKey, TValue> addedEntry)
+        private void HelpCopying(ConcurrentArray<TKey, TValue> array, ConcurrentArray<TKey,TValue>.AddInfo addInfo)
         {
-            var growArrayProcess = Volatile.Read(ref _growArrayProcess);
+            var growArrayProcess = array.ReadGrowArrayProcessVolatile();
             if (growArrayProcess == null)
             {
-                // If not, then check, if the internal array has to grow
-                growArrayProcess = _arrayService.CreateGrowProcessIfNecessary(array, _setNewArray);
-
-                // If not, then do nothing
-                if (growArrayProcess == null)
+                var newSize = _growArrayStrategy.GetNextCapacity(array.Count, array.Capacity, addInfo.ReprobingCount);
+                if (newSize == null)
                     return;
 
-                // If a grow array process was created, then try to establish and start it
-                var previousProcess = Interlocked.CompareExchange(ref _growArrayProcess, growArrayProcess, null);
-                if (previousProcess == null)
-                {
-                    growArrayProcess.StartCopying();
+                var processInfo = array.GetOrCreateGrowArrayProcess(newSize.Value, _setNewArray);
+                if (processInfo.IsProcessFreshlyInitialized)
                     return;
-                }
-                growArrayProcess = previousProcess;
+
+                growArrayProcess = processInfo.TargetProcess;
             }
 
-            growArrayProcess.CopySingleEntry(addedEntry);
+            growArrayProcess.CopySingleEntry(addInfo.TargetEntry);
             growArrayProcess.HelpCopying();
         }
 
-        private void EscalateCopying(ConcurrentArray<TKey, TValue> array)
+        private void EscalateCopying(ConcurrentArray<TKey, TValue> array, ConcurrentArray<TKey, TValue>.AddInfo addInfo)
         {
-            var growArrayProcess = Volatile.Read(ref _growArrayProcess);
+            var growArrayProcess = array.ReadGrowArrayProcessVolatile();
             if (growArrayProcess == null)
             {
-                growArrayProcess = _arrayService.CreateGrowProcessIfNecessary(array, _setNewArray);
-                growArrayProcess.MustNotBeNull();
-                growArrayProcess = Interlocked.CompareExchange(ref _growArrayProcess, growArrayProcess, null);
-            }
+                var newSize = _growArrayStrategy.GetNextCapacity(array.Count, array.Capacity, addInfo.ReprobingCount);
+                if (newSize == null)
+                    return;
 
+                growArrayProcess = array.GetOrCreateGrowArrayProcess(newSize.Value, _setNewArray).TargetProcess;
+            }
             growArrayProcess.CopyToTheBitterEnd();
         }
 
         private void SetNewArray(ConcurrentArray<TKey, TValue> oldArray, ConcurrentArray<TKey, TValue> newArray)
         {
-            Volatile.Write(ref _growArrayProcess, null);
-            Interlocked.CompareExchange(ref _internalArray, newArray, oldArray);
+            Interlocked.CompareExchange(ref _currentArray, newArray, oldArray);
         }
 
         private class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
@@ -430,7 +427,7 @@ namespace Light.DataStructures
         public class Options
         {
             public static readonly Options Default = new Options();
-            private IConcurrentArrayService<TKey, TValue> _arrayService = new DefaultConcurrentArrayService<TKey, TValue>();
+            private IGrowArrayStrategy _growArrayStrategy = new LinearDoublingPrimeStrategy();
             private IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
             private IEqualityComparer<TValue> _valueComparer = EqualityComparer<TValue>.Default;
 
@@ -444,13 +441,13 @@ namespace Light.DataStructures
                 }
             }
 
-            public IConcurrentArrayService<TKey, TValue> ArrayService
+            public IGrowArrayStrategy GrowArrayStrategy
             {
-                get { return _arrayService; }
+                get { return _growArrayStrategy; }
                 set
                 {
                     value.MustNotBeNull();
-                    _arrayService = value;
+                    _growArrayStrategy = value;
                 }
             }
 

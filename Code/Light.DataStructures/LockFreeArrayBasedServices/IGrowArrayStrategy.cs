@@ -3,6 +3,6 @@
     public interface IGrowArrayStrategy
     {
         int GetInitialSize();
-        int GetNextSize(int currentSize);
+        int? GetNextCapacity(int currentCount, int currentCapacity, int reprobingCount);
     }
 }

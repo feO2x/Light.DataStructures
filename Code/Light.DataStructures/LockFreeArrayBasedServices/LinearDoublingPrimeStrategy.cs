@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
 {
-    public sealed class DoublingPrimeNumbersStrategy : IGrowArrayStrategy
+    public sealed class LinearDoublingPrimeStrategy : IGrowArrayStrategy
     {
         public static readonly IReadOnlyList<int> DoublingPrimeNumbers =
             new[]
@@ -36,12 +37,35 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
                 1175484103
             };
 
+        private readonly int _reprobingThreshold;
+        private readonly float _loadThreshold;
+
+        public LinearDoublingPrimeStrategy(int reprobingThreshold = 20, float loadThreshold = 0.5f)
+        {
+            reprobingThreshold.MustNotBeLessThan(0, nameof(reprobingThreshold));
+            loadThreshold.MustNotBeLessThan(0f, nameof(loadThreshold));
+            loadThreshold.MustNotBeGreaterThan(1f, nameof(loadThreshold));
+
+            _reprobingThreshold = reprobingThreshold;
+            _loadThreshold = loadThreshold;
+        }
+
+
         public int GetInitialSize()
         {
             return DoublingPrimeNumbers[0];
         }
 
-        public int GetNextSize(int currentSize)
+        public int? GetNextCapacity(int currentCount, int currentCapacity, int reprobingCount)
+        {
+            var currentLoad = (float) currentCount / currentCapacity;
+            if (currentLoad < _loadThreshold && reprobingCount < _reprobingThreshold)
+                return null;
+
+            return GetNextCapacity(currentCapacity);
+        }
+
+        public static int GetNextCapacity(int currentSize)
         {
             for (var i = 0; i < DoublingPrimeNumbers.Count; i++)
             {

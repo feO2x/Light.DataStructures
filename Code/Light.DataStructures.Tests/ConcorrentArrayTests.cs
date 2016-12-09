@@ -290,5 +290,70 @@ namespace Light.DataStructures.Tests
         {
             typeof(ConcurrentArray<string, string>).Should().Implement<IReadOnlyList<Entry<string, string>>>();
         }
+
+        [Fact]
+        public void CreateGrowArrayProcess()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<string, object>().Build();
+            var newArraySize = new DoublingPrimeNumbersStrategy().GetNextSize(concurrentArray.Capacity);
+            var spy = new ExchangeArraySpy<string, object>();
+            
+            var growArrayProcess = concurrentArray.GetOrCreateGrowArrayProcess(newArraySize, spy.ExchangeArray);
+
+            growArrayProcess.OldArray.Should().BeSameAs(concurrentArray);
+            growArrayProcess.NewArraySize.Should().Be(newArraySize);
+            spy.ExchangeArrayMustNotHaveBeenCalled();
+        }
+
+        [Fact]
+        public void GetExistingGrowArrayProcess()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<Type, object>().Build();
+            var newArraySize = new DoublingPrimeNumbersStrategy().GetNextSize(concurrentArray.Capacity);
+            var spy = new ExchangeArraySpy<Type, object>();
+            var existingProcess = concurrentArray.GetOrCreateGrowArrayProcess(newArraySize, spy.ExchangeArray);
+
+            var growArrayProcess = concurrentArray.GetOrCreateGrowArrayProcess(newArraySize, spy.ExchangeArray);
+
+            growArrayProcess.Should().BeSameAs(existingProcess);
+        }
+
+        public class ExchangeArraySpy<TKey, TValue>
+        {
+            private int _exchangeArrayCallCount;
+
+            public void ExchangeArray(ConcurrentArray<TKey, TValue> oldArray, ConcurrentArray<TKey, TValue> newArray)
+            {
+                ++_exchangeArrayCallCount;
+            }
+
+            public void ExchangeArrayMustNotHaveBeenCalled()
+            {
+                _exchangeArrayCallCount.Should().Be(0);
+            }
+        }
+
+        [Fact]
+        public void ReadProcessVolatile()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<int, Type>().Build();
+
+            var process = concurrentArray.ReadGrowArrayProcessVolatile();
+
+            process.Should().BeNull();
+        }
+
+        [Fact]
+        public void RetrieveExistingProcess()
+        {
+            var concurrentArray = new ConcurrentArrayBuilder<Type, object>().Build();
+            var newArraySize = new DoublingPrimeNumbersStrategy().GetNextSize(concurrentArray.Capacity);
+            var spy = new ExchangeArraySpy<Type, object>();
+            var existingProcess = concurrentArray.GetOrCreateGrowArrayProcess(newArraySize, spy.ExchangeArray);
+
+            var process = concurrentArray.ReadGrowArrayProcessVolatile();
+
+            process.Should().BeSameAs(existingProcess);
+        }
     }
 }

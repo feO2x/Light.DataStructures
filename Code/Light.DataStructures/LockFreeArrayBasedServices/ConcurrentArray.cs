@@ -11,6 +11,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         private readonly Entry<TKey, TValue>[] _internalArray;
         public readonly IEqualityComparer<TKey> KeyComparer;
         private int _count;
+        private GrowArrayProcess<TKey, TValue> _growArrayProcess;
 
         public ConcurrentArray(int capacity) : this(capacity, EqualityComparer<TKey>.Default) { }
 
@@ -166,6 +167,20 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             return GetEnumerator();
         }
 
+        public GrowArrayProcess<TKey, TValue> GetOrCreateGrowArrayProcess(int newArraySize, ExchangeArray<TKey, TValue> exchangeArray)
+        {
+            newArraySize.MustBeGreaterThan(Capacity, nameof(newArraySize));
+
+            var growArrayProcess = new GrowArrayProcess<TKey, TValue>(this, newArraySize, exchangeArray);
+            var existingProcess = Interlocked.CompareExchange(ref _growArrayProcess, growArrayProcess, null);
+            return existingProcess ?? growArrayProcess;
+        }
+
         public Entry<TKey, TValue> this[int index] => ReadVolatileFromIndex(index);
+
+        public GrowArrayProcess<TKey, TValue> ReadGrowArrayProcessVolatile()
+        {
+            return Volatile.Read(ref _growArrayProcess);
+        }
     }
 }

@@ -8,8 +8,8 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
     {
         private const int MaximumNumberOfItemsCopiedDuringHelp = 100;
         private readonly ExchangeArray<TKey, TValue> _setNewArray;
-        private readonly int _newArraySize;
-        private readonly ConcurrentArray<TKey, TValue> _oldArray;
+        public readonly int NewArraySize;
+        public readonly ConcurrentArray<TKey, TValue> OldArray;
         private int _copyingFinished;
         private int _currentIndex = -1;
         private ConcurrentArray<TKey, TValue> _newArray;
@@ -20,14 +20,14 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             newArraySize.MustBeGreaterThan(oldArray.Capacity, nameof(newArraySize));
             setNewArray.MustNotBeNull(nameof(setNewArray));
 
-            _oldArray = oldArray;
-            _newArraySize = newArraySize;
+            OldArray = oldArray;
+            NewArraySize = newArraySize;
             _setNewArray = setNewArray;
         }
 
         public void StartCopying()
         {
-            Volatile.Write(ref _newArray, new ConcurrentArray<TKey, TValue>(_newArraySize, _oldArray.KeyComparer));
+            Volatile.Write(ref _newArray, new ConcurrentArray<TKey, TValue>(NewArraySize, OldArray.KeyComparer));
 
             HelpCopying();
             if (IsCopyingFinished)
@@ -76,13 +76,13 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
                 return false;
 
             var currentIndex = Interlocked.Increment(ref _currentIndex);
-            if (currentIndex >= _oldArray.Capacity)
+            if (currentIndex >= OldArray.Capacity)
             {
                 TryFinish(newArray);
                 return false;
             }
 
-            var entry = _oldArray.ReadVolatileFromIndex(currentIndex);
+            var entry = OldArray.ReadVolatileFromIndex(currentIndex);
             if (entry == null)
                 return true;
 
@@ -95,7 +95,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             if (Interlocked.CompareExchange(ref _copyingFinished, 1, 0) != 0)
                 return;
 
-            _setNewArray(_oldArray, newArray);
+            _setNewArray(OldArray, newArray);
         }
 
         private ConcurrentArray<TKey, TValue> SpinGetNewArray()

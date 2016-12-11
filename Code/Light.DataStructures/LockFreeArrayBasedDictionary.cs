@@ -313,15 +313,17 @@ namespace Light.DataStructures
 
         private ConcurrentArray<TKey, TValue>.AddInfo TryAddinternal(Entry<TKey, TValue> entry)
         {
-            // Get the default array and try to add the entry to it
+            // Get the internal array and try to add the entry to it
             var array = Volatile.Read(ref _currentArray);
 
             TryAdd:
             var addInfo = array.TryAdd(entry);
 
+            // If the entry is already present, then do nothing
             if (addInfo.OperationResult == AddResult.ExistingEntryFound)
                 return addInfo;
 
+            // If the entry was added, then increment the count and help copying if necessary
             if (addInfo.OperationResult == AddResult.AddSuccessful)
             {
                 Interlocked.Increment(ref _count);
@@ -329,7 +331,7 @@ namespace Light.DataStructures
                 return addInfo;
             }
 
-            // Else the default array is full, we must escalate copying to the new array and then retry the add
+            // Else the internal array is full, we must escalate copying to the new array and then retry the add operation
             var fullArray = array;
             EscalateCopying(array, addInfo);
             // Spin until the new array is available, then try to insert again
@@ -342,35 +344,58 @@ namespace Light.DataStructures
 
         private void HelpCopying(ConcurrentArray<TKey, TValue> array, ConcurrentArray<TKey,TValue>.AddInfo addInfo)
         {
+            // Try to get an existing grow-array-process
             var growArrayProcess = array.ReadGrowArrayProcessVolatile();
+
+            // If there is none, then try to create it
             if (growArrayProcess == null)
             {
                 var newSize = _growArrayStrategy.GetNextCapacity(array.Count, array.Capacity, addInfo.ReprobingCount);
+                // If no new size was proposed by the grow-array-strategy, then we do not need to create a grow-array-process
                 if (newSize == null)
                     return;
 
+                // Try to establish a new grow-array-process. This is a race condition because
+                // other threads might be doing the same, thus we might get a process object
+                // that was created by another thread.
                 var processInfo = array.GetOrCreateGrowArrayProcess(newSize.Value, _setNewArray);
+
+                // If we indeed created the process object, then the initial creation of the new target array
+                // was already performed (as well as copying up to 100 items). We do not have to perform anything
+                // else here.
                 if (processInfo.IsProcessFreshlyInitialized)
                     return;
 
+                // If the process object was created on another thread, then help copying
                 growArrayProcess = processInfo.TargetProcess;
             }
 
+            // Try to copy the entry to the new array (that was previously added to the old array).
+            // This might be necessary if the concurrent copy algorithm is already past this entry.
+            // However, this add operation will not result in a AddResult.ArrayFull message because
+            // we could insert it in the old array and newArray.Capacity is always greater than oldArray.Capacity.
             growArrayProcess.CopySingleEntry(addInfo.TargetEntry);
+
+            // Try to help copying the rest of the items over to the new array
             growArrayProcess.HelpCopying();
         }
 
         private void EscalateCopying(ConcurrentArray<TKey, TValue> array, ConcurrentArray<TKey, TValue>.AddInfo addInfo)
         {
+            // This method is called when the old array is full
+            // It will help copying all remaining items from the old to the new array
             var growArrayProcess = array.ReadGrowArrayProcessVolatile();
             if (growArrayProcess == null)
             {
+                // If the grow array process is not created yet (although the old array is already full), then create it now
                 var newSize = _growArrayStrategy.GetNextCapacity(array.Count, array.Capacity, addInfo.ReprobingCount);
-                if (newSize == null)
-                    return;
+                if (newSize == null) 
+                    throw new InvalidOperationException($"The {nameof(IGrowArrayStrategy)} \"{_growArrayStrategy}\" does not provide a new size although the internal array of the dictionary is full.");
 
                 growArrayProcess = array.GetOrCreateGrowArrayProcess(newSize.Value, _setNewArray).TargetProcess;
             }
+
+            // Copy all remaining element from the old to the new array
             growArrayProcess.CopyToTheBitterEnd();
         }
 

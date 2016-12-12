@@ -327,14 +327,21 @@ namespace Light.DataStructures
             if (addInfo.OperationResult == AddResult.AddSuccessful)
             {
                 Interlocked.Increment(ref _count);
-                HelpCopying(array, addInfo);
-                return addInfo;
+                var helpInfo = HelpCopying(array, addInfo);
+                if (helpInfo.OperationResult != HelpCopyingResult.EntryCouldNotBeInsertedInNewArray)
+                    return addInfo;
+
+                Interlocked.Decrement(ref _count);
+                array = helpInfo.NewArray;
+                goto SpingGetNewArray;
             }
 
             // Else the internal array is full, we must escalate copying to the new array and then retry the add operation
-            var fullArray = array;
             EscalateCopying(array, addInfo);
+
             // Spin until the new array is available, then try to insert again
+            SpingGetNewArray:
+            var fullArray = array;
             do
             {
                 array = Volatile.Read(ref _currentArray);
@@ -342,7 +349,7 @@ namespace Light.DataStructures
             goto TryAdd;
         }
 
-        private void HelpCopying(ConcurrentArray<TKey, TValue> array, ConcurrentArray<TKey,TValue>.AddInfo addInfo)
+        private HelpCopyingInfo HelpCopying(ConcurrentArray<TKey, TValue> array, ConcurrentArray<TKey,TValue>.AddInfo addInfo)
         {
             // Try to get an existing grow-array-process
             var growArrayProcess = array.ReadGrowArrayProcessVolatile();
@@ -353,7 +360,7 @@ namespace Light.DataStructures
                 var newSize = _growArrayStrategy.GetNextCapacity(array.Count, array.Capacity, addInfo.ReprobingCount);
                 // If no new size was proposed by the grow-array-strategy, then we do not need to create a grow-array-process
                 if (newSize == null)
-                    return;
+                    return HelpCopyingInfo.CreateNoCopyingNeededInfo();
 
                 // Try to establish a new grow-array-process. This is a race condition because
                 // other threads might be doing the same, thus we might get a process object
@@ -364,7 +371,7 @@ namespace Light.DataStructures
                 // was already performed (as well as copying up to 100 items). We do not have to perform anything
                 // else here.
                 if (processInfo.IsProcessFreshlyInitialized)
-                    return;
+                    return HelpCopyingInfo.CreateGrowArrayProcessInitializedInfo();
 
                 // If the process object was created on another thread, then help copying
                 growArrayProcess = processInfo.TargetProcess;
@@ -372,12 +379,14 @@ namespace Light.DataStructures
 
             // Try to copy the entry to the new array (that was previously added to the old array).
             // This might be necessary if the concurrent copy algorithm is already past this entry.
-            // However, this add operation will not result in a AddResult.ArrayFull message because
-            // we could insert it in the old array and newArray.Capacity is always greater than oldArray.Capacity.
-            growArrayProcess.CopySingleEntry(addInfo.TargetEntry);
+            // When the target array is already full, then return the value indicating that the entry
+            // should be added to the newest array again.
+            if (growArrayProcess.CopySingleEntry(addInfo.TargetEntry).OperationResult == AddResult.ArrayFull)
+                return HelpCopyingInfo.CreateNewArrayFullInfo(growArrayProcess.NewArray);
 
             // Try to help copying the rest of the items over to the new array
             growArrayProcess.HelpCopying();
+            return HelpCopyingInfo.CreateHelpedCopyingInfo();
         }
 
         private void EscalateCopying(ConcurrentArray<TKey, TValue> array, ConcurrentArray<TKey, TValue>.AddInfo addInfo)
@@ -485,6 +494,46 @@ namespace Light.DataStructures
                     _valueComparer = value;
                 }
             }
+        }
+
+        private struct HelpCopyingInfo
+        {
+            public readonly HelpCopyingResult OperationResult;
+            public readonly ConcurrentArray<TKey, TValue> NewArray;
+
+            private HelpCopyingInfo(HelpCopyingResult operationResult, ConcurrentArray<TKey, TValue> newArray)
+            {
+                OperationResult = operationResult;
+                NewArray = newArray;
+            }
+
+            public static HelpCopyingInfo CreateGrowArrayProcessInitializedInfo()
+            {
+                return new HelpCopyingInfo(HelpCopyingResult.GrowArrayProcessInitialized, null);
+            }
+
+            public static HelpCopyingInfo CreateHelpedCopyingInfo()
+            {
+                return new HelpCopyingInfo(HelpCopyingResult.HelpedCopying, null);
+            }
+
+            public static HelpCopyingInfo CreateNewArrayFullInfo(ConcurrentArray<TKey, TValue> newArray)
+            {
+                return new HelpCopyingInfo(HelpCopyingResult.EntryCouldNotBeInsertedInNewArray, newArray);
+            }
+
+            public static HelpCopyingInfo CreateNoCopyingNeededInfo()
+            {
+                return new HelpCopyingInfo(HelpCopyingResult.NoCopyingNeeded, null);
+            }
+        }
+
+        private enum HelpCopyingResult
+        {
+            GrowArrayProcessInitialized,
+            HelpedCopying,
+            EntryCouldNotBeInsertedInNewArray,
+            NoCopyingNeeded
         }
     }
 }

@@ -59,10 +59,10 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             }
         }
 
-        public void CopySingleEntry(Entry<TKey, TValue> entry)
+        public ConcurrentArray<TKey,TValue>.AddInfo CopySingleEntry(Entry<TKey, TValue> entry)
         {
             var newArray = SpinGetNewArray();
-            newArray.TryAdd(entry);
+            return newArray.TryAdd(entry);
         }
 
         public void Abort()
@@ -109,5 +109,6 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         }
 
         public bool IsCopyingFinished => Volatile.Read(ref _copyingFinished) == 1;
+        public ConcurrentArray<TKey, TValue> NewArray => _newArray;
     }
 }

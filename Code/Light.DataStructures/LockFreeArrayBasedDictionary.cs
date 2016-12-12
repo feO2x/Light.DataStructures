@@ -333,14 +333,14 @@ namespace Light.DataStructures
 
                 Interlocked.Decrement(ref _count);
                 array = helpInfo.NewArray;
-                goto SpingGetNewArray;
+                goto SpinGetNewArray;
             }
 
             // Else the internal array is full, we must escalate copying to the new array and then retry the add operation
             EscalateCopying(array, addInfo);
 
             // Spin until the new array is available, then try to insert again
-            SpingGetNewArray:
+            SpinGetNewArray:
             var fullArray = array;
             do
             {

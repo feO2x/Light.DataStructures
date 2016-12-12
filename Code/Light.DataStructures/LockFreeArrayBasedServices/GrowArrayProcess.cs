@@ -10,8 +10,9 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         private readonly ExchangeArray<TKey, TValue> _setNewArray;
         public readonly int NewArraySize;
         public readonly ConcurrentArray<TKey, TValue> OldArray;
-        private int _copyingFinished;
+        private int _isCopyingFinished;
         private int _currentIndex = -1;
+        private int _numberOfCopiedItems;
         private ConcurrentArray<TKey, TValue> _newArray;
 
         public GrowArrayProcess(ConcurrentArray<TKey, TValue> oldArray, int newArraySize, ExchangeArray<TKey, TValue> setNewArray)
@@ -67,7 +68,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
         public void Abort()
         {
-            Interlocked.Exchange(ref _copyingFinished, 1);
+            Interlocked.Exchange(ref _isCopyingFinished, 1);
         }
 
         private bool CopySingleEntry(ConcurrentArray<TKey, TValue> newArray)
@@ -77,22 +78,23 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
             var currentIndex = Interlocked.Increment(ref _currentIndex);
             if (currentIndex >= OldArray.Capacity)
-            {
-                TryFinish(newArray);
                 return false;
-            }
 
             var entry = OldArray.ReadVolatileFromIndex(currentIndex);
-            if (entry == null)
+            if (entry != null)
+                newArray.TryAdd(entry);
+
+            var numberOfCopiedItems = Interlocked.Increment(ref _numberOfCopiedItems);
+            if (numberOfCopiedItems < OldArray.Capacity)
                 return true;
 
-            newArray.TryAdd(entry);
-            return true;
+            TryFinish(newArray);
+            return false;
         }
 
         private void TryFinish(ConcurrentArray<TKey, TValue> newArray)
         {
-            if (Interlocked.CompareExchange(ref _copyingFinished, 1, 0) != 0)
+            if (Interlocked.CompareExchange(ref _isCopyingFinished, 1, 0) != 0)
                 return;
 
             _setNewArray(OldArray, newArray);
@@ -108,7 +110,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             return newArray;
         }
 
-        public bool IsCopyingFinished => Volatile.Read(ref _copyingFinished) == 1;
+        public bool IsCopyingFinished => Volatile.Read(ref _isCopyingFinished) == 1;
         public ConcurrentArray<TKey, TValue> NewArray => _newArray;
     }
 }

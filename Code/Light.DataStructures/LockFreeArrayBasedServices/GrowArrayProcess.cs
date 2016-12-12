@@ -44,8 +44,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
             for (var i = 0; i < MaximumNumberOfItemsCopiedDuringHelp; ++i)
             {
-                var shouldContinue = CopySingleEntry(newArray);
-                if (shouldContinue == false)
+                if (CopySingleEntry(newArray) == false)
                     return;
             }
         }
@@ -62,8 +61,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
         public ConcurrentArray<TKey,TValue>.AddInfo CopySingleEntry(Entry<TKey, TValue> entry)
         {
-            var newArray = SpinGetNewArray();
-            return newArray.TryAdd(entry);
+            return SpinGetNewArray().TryAdd(entry);
         }
 
         public void Abort()
@@ -94,7 +92,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
         private void TryFinish(ConcurrentArray<TKey, TValue> newArray)
         {
-            if (Interlocked.CompareExchange(ref _isCopyingFinished, 1, 0) != 0)
+            if (Interlocked.CompareExchange(ref _isCopyingFinished, 1, 0) == 1)
                 return;
 
             _setNewArray(OldArray, newArray);

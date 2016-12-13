@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;COMPILE_ASSERTIONS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;COMPILE_ASSERTIONS CONCURRENT_LOGGING</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="LockFreeArrayBasedServices\AddResult.cs" />
     <Compile Include="LockFreeArrayBasedServices\ArrayMath.cs" />
+    <Compile Include="LockFreeArrayBasedServices\ConcurrentLogger.cs" />
     <Compile Include="LockFreeArrayBasedServices\ExchangeArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\ConcurrentArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\GrowArrayProcess.cs" />

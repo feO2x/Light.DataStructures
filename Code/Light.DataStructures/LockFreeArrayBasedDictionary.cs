@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Light.DataStructures.DataRaceLogging;
 using Light.DataStructures.LockFreeArrayBasedServices;
 using Light.GuardClauses;
@@ -334,12 +333,27 @@ namespace Light.DataStructures
                 Interlocked.Increment(ref _count);
                 LoggingHelper.Log($"Added {entry.Key} into array {array.Id}, now trying to help copying.");
                 var helpInfo = HelpCopying(array, addInfo);
-                if (helpInfo.OperationResult != HelpCopyingResult.EntryCouldNotBeInsertedInNewArray)
-                    return addInfo;
 
-                Interlocked.Decrement(ref _count);
-                array = helpInfo.NewArray;
-                goto SpinGetNewArray;
+                // Check if a grow array process is currently active and the entry could not be inserted into the new array.
+                // If this is the case then retry to add the entry to the newest array.
+                if (helpInfo.OperationResult == HelpCopyingResult.EntryCouldNotBeInsertedInNewArray)
+                {
+                    Interlocked.Decrement(ref _count);
+                    array = helpInfo.NewArray;
+                    goto SpinGetNewArray;
+                }
+
+                // Else check if a potential new array is outdated. This might happen when other threads have
+                // already created another grow array process that established an even newer array as the _currentArray.
+                if (helpInfo.OperationResult == HelpCopyingResult.NewArrayOutdated)
+                {
+                    Interlocked.Decrement(ref _count);
+                    array = helpInfo.NewArray;
+                    goto TryAdd;
+                }
+
+                // Else simply return the add info
+                return addInfo;
             }
 
             // Else the internal array is full, we must escalate copying to the new array and then retry the add operation
@@ -356,7 +370,7 @@ namespace Light.DataStructures
             goto TryAdd;
         }
 
-        private HelpCopyingInfo HelpCopying(ConcurrentArray<TKey, TValue> array, ConcurrentArray<TKey,TValue>.AddInfo addInfo)
+        private HelpCopyingInfo HelpCopying(ConcurrentArray<TKey, TValue> array, ConcurrentArray<TKey, TValue>.AddInfo addInfo)
         {
             // Try to get an existing grow-array-process
             var growArrayProcess = array.ReadGrowArrayProcessVolatile();
@@ -372,7 +386,7 @@ namespace Light.DataStructures
                 // Try to establish a new grow-array-process. This is a race condition because
                 // other threads might be doing the same, thus we might get a process object
                 // that was created by another thread.
-                var processInfo = array.GetOrCreateGrowArrayProcess(newSize.Value, _setNewArray);
+                var processInfo = array.CreateOrGetGrowArrayProcess(newSize.Value, _setNewArray);
 
                 // If we indeed created the process object, then the initial creation of the new target array
                 // was already performed (as well as copying up to 100 items). We do not have to perform anything
@@ -387,10 +401,20 @@ namespace Light.DataStructures
 
             // Try to copy the entry to the new array (that was previously added to the old array).
             // This might be necessary if the concurrent copy algorithm is already past this entry.
-            // When the target array is already full, then return the value indicating that the entry
+            addInfo = growArrayProcess.CopySingleEntry(addInfo.TargetEntry);
+            // When the new array is already full, then return the value indicating that the entry
             // should be added to the newest array again.
-            if (growArrayProcess.CopySingleEntry(addInfo.TargetEntry).OperationResult == AddResult.ArrayFull)
+            if (addInfo.OperationResult == AddResult.ArrayFull)
                 return HelpCopyingInfo.CreateNewArrayFullInfo(growArrayProcess.NewArray);
+
+            // If the copying did succeed but the grow array process already finished copying, then
+            // check if the new array is not outdated yet.
+            if (addInfo.OperationResult == AddResult.AddSuccessful && growArrayProcess.IsCopyingFinished)
+            {
+                var newestArray = Volatile.Read(ref _currentArray);
+                if (newestArray != growArrayProcess.NewArray)
+                    return HelpCopyingInfo.CreateNewArrayOutdatedInfo(newestArray);
+            }
 
             // Try to help copying the rest of the items over to the new array
             growArrayProcess.HelpCopying();
@@ -406,10 +430,10 @@ namespace Light.DataStructures
             {
                 // If the grow array process is not created yet (although the old array is already full), then create it now
                 var newSize = _growArrayStrategy.GetNextCapacity(array.Count, array.Capacity, addInfo.ReprobingCount);
-                if (newSize == null) 
+                if (newSize == null)
                     throw new InvalidOperationException($"The {nameof(IGrowArrayStrategy)} \"{_growArrayStrategy}\" does not provide a new size although the internal array of the dictionary is full.");
 
-                growArrayProcess = array.GetOrCreateGrowArrayProcess(newSize.Value, _setNewArray).TargetProcess;
+                growArrayProcess = array.CreateOrGetGrowArrayProcess(newSize.Value, _setNewArray).TargetProcess;
             }
 
             // Copy all remaining element from the old to the new array
@@ -535,6 +559,11 @@ namespace Light.DataStructures
             {
                 return new HelpCopyingInfo(HelpCopyingResult.NoCopyingNeeded, null);
             }
+
+            public static HelpCopyingInfo CreateNewArrayOutdatedInfo(ConcurrentArray<TKey, TValue> newestArray)
+            {
+                return new HelpCopyingInfo(HelpCopyingResult.NewArrayOutdated, newestArray);
+            }
         }
 
         private enum HelpCopyingResult
@@ -542,7 +571,8 @@ namespace Light.DataStructures
             GrowArrayProcessInitialized,
             HelpedCopying,
             EntryCouldNotBeInsertedInNewArray,
-            NoCopyingNeeded
+            NoCopyingNeeded,
+            NewArrayOutdated
         }
     }
 }

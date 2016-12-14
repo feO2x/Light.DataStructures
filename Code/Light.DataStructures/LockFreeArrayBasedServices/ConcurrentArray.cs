@@ -122,7 +122,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             return new Enumerator(_internalArray);
         }
 
-        public GrowArrayProcessInfo GetOrCreateGrowArrayProcess(int newArraySize, ExchangeArray<TKey, TValue> exchangeArray)
+        public GrowArrayProcessInfo CreateOrGetGrowArrayProcess(int newArraySize, ExchangeArray<TKey, TValue> exchangeArray)
         {
             newArraySize.MustBeGreaterThan(Capacity, nameof(newArraySize));
 

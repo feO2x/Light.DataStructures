@@ -297,7 +297,7 @@ namespace Light.DataStructures.Tests
             var newArraySize = LinearDoublingPrimeStrategy.GetNextCapacity(concurrentArray.Capacity);
             var spy = new ExchangeArraySpy<string, object>();
             
-            var processInfo = concurrentArray.GetOrCreateGrowArrayProcess(newArraySize, spy.ExchangeArray);
+            var processInfo = concurrentArray.CreateOrGetGrowArrayProcess(newArraySize, spy.ExchangeArray);
 
             processInfo.IsProcessFreshlyInitialized.Should().BeTrue();
             processInfo.TargetProcess.OldArray.Should().BeSameAs(concurrentArray);
@@ -311,9 +311,9 @@ namespace Light.DataStructures.Tests
             var concurrentArray = new ConcurrentArrayBuilder<Type, object>().Build();
             var newArraySize = LinearDoublingPrimeStrategy.GetNextCapacity(concurrentArray.Capacity);
             var spy = new ExchangeArraySpy<Type, object>();
-            var existingProcessInfo = concurrentArray.GetOrCreateGrowArrayProcess(newArraySize, spy.ExchangeArray);
+            var existingProcessInfo = concurrentArray.CreateOrGetGrowArrayProcess(newArraySize, spy.ExchangeArray);
 
-            var growArrayProcessInfo = concurrentArray.GetOrCreateGrowArrayProcess(newArraySize, spy.ExchangeArray);
+            var growArrayProcessInfo = concurrentArray.CreateOrGetGrowArrayProcess(newArraySize, spy.ExchangeArray);
 
             growArrayProcessInfo.IsProcessFreshlyInitialized.Should().BeFalse();
             growArrayProcessInfo.TargetProcess.Should().BeSameAs(existingProcessInfo.TargetProcess);
@@ -350,7 +350,7 @@ namespace Light.DataStructures.Tests
             var concurrentArray = new ConcurrentArrayBuilder<Type, object>().Build();
             var newArraySize = LinearDoublingPrimeStrategy.GetNextCapacity(concurrentArray.Capacity);
             var spy = new ExchangeArraySpy<Type, object>();
-            var existingProcessInfo = concurrentArray.GetOrCreateGrowArrayProcess(newArraySize, spy.ExchangeArray);
+            var existingProcessInfo = concurrentArray.CreateOrGetGrowArrayProcess(newArraySize, spy.ExchangeArray);
 
             var process = concurrentArray.ReadGrowArrayProcessVolatile();
 

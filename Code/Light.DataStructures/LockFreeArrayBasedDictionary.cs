@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using Light.DataStructures.DataRaceLogging;
 using Light.DataStructures.LockFreeArrayBasedServices;
 using Light.GuardClauses;
 
@@ -321,12 +323,16 @@ namespace Light.DataStructures
 
             // If the entry is already present, then do nothing
             if (addInfo.OperationResult == AddResult.ExistingEntryFound)
+            {
+                LoggingHelper.Log($"Tried to add {entry.Key} into array {array.Id}, but existing entry was found.");
                 return addInfo;
+            }
 
             // If the entry was added, then increment the count and help copying if necessary
             if (addInfo.OperationResult == AddResult.AddSuccessful)
             {
                 Interlocked.Increment(ref _count);
+                LoggingHelper.Log($"Added {entry.Key} into array {array.Id}, now trying to help copying.");
                 var helpInfo = HelpCopying(array, addInfo);
                 if (helpInfo.OperationResult != HelpCopyingResult.EntryCouldNotBeInsertedInNewArray)
                     return addInfo;
@@ -337,6 +343,7 @@ namespace Light.DataStructures
             }
 
             // Else the internal array is full, we must escalate copying to the new array and then retry the add operation
+            LoggingHelper.Log($"Array {array.Id} is full, copying will now escalate.");
             EscalateCopying(array, addInfo);
 
             // Spin until the new array is available, then try to insert again
@@ -374,6 +381,7 @@ namespace Light.DataStructures
                     return HelpCopyingInfo.CreateGrowArrayProcessInitializedInfo();
 
                 // If the process object was created on another thread, then help copying
+                LoggingHelper.Log("Other thread established grow array process.");
                 growArrayProcess = processInfo.TargetProcess;
             }
 
@@ -410,7 +418,8 @@ namespace Light.DataStructures
 
         private void SetNewArray(ConcurrentArray<TKey, TValue> oldArray, ConcurrentArray<TKey, TValue> newArray)
         {
-            Interlocked.CompareExchange(ref _currentArray, newArray, oldArray);
+            var previousValue = Interlocked.CompareExchange(ref _currentArray, newArray, oldArray);
+            LoggingHelper.Log(previousValue == oldArray ? $"Exchanged array {oldArray.Id} with new array {newArray.Id}" : $"Array {newArray.Id} could not be set");
         }
 
         private class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>

@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;COMPILE_ASSERTIONS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;COMPILE_ASSERTIONS CONCURRENT_LOGGING</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -74,7 +74,9 @@
     <Compile Include="ConcorrentArrayTests.cs" />
     <Compile Include="ConcurrentArrayBuilder.cs" />
     <Compile Include="ConcurrentArrayExtensions.cs" />
+    <Compile Include="ConcurrentLogger.cs" />
     <Compile Include="EntryTests.cs" />
+    <Compile Include="LockFreeArrayBasedDictionaryConcurrencyTests.cs" />
     <Compile Include="LockFreeArrayBasedDictionaryTests.cs" />
     <Compile Include="PrimeNumberGeneration.cs" />
     <Compile Include="SieveOfEratosthenesTests.cs" />

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Light.DataStructures.DataRaceLogging;
 using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
@@ -10,10 +11,10 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         private readonly ExchangeArray<TKey, TValue> _setNewArray;
         public readonly int NewArraySize;
         public readonly ConcurrentArray<TKey, TValue> OldArray;
-        private int _isCopyingFinished;
         private int _currentIndex = -1;
-        private int _numberOfCopiedItems;
+        private int _isCopyingFinished;
         private ConcurrentArray<TKey, TValue> _newArray;
+        private int _numberOfCopiedItems;
 
         public GrowArrayProcess(ConcurrentArray<TKey, TValue> oldArray, int newArraySize, ExchangeArray<TKey, TValue> setNewArray)
         {
@@ -26,9 +27,13 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             _setNewArray = setNewArray;
         }
 
+        public bool IsCopyingFinished => Volatile.Read(ref _isCopyingFinished) == 1;
+        public ConcurrentArray<TKey, TValue> NewArray => _newArray;
+
         public void StartCopying()
         {
             Volatile.Write(ref _newArray, new ConcurrentArray<TKey, TValue>(NewArraySize, OldArray.KeyComparer));
+            LoggingHelper.Log($"Created and established grow process for array {_newArray.Id}.");
 
             HelpCopying();
             if (IsCopyingFinished)
@@ -36,6 +41,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
             var task = new Task(CopyToTheBitterEnd);
             task.Start();
+            LoggingHelper.Log("Created background task for copying.");
         }
 
         public void HelpCopying()
@@ -59,9 +65,18 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             }
         }
 
-        public ConcurrentArray<TKey,TValue>.AddInfo CopySingleEntry(Entry<TKey, TValue> entry)
+        public ConcurrentArray<TKey, TValue>.AddInfo CopySingleEntry(Entry<TKey, TValue> entry)
         {
-            return SpinGetNewArray().TryAdd(entry);
+            var newArray = SpinGetNewArray();
+            var addInfo = newArray.TryAdd(entry);
+            if (addInfo.OperationResult == AddResult.AddSuccessful)
+                LoggingHelper.Log($"Copied single entry {entry.Key} to new array {newArray.Id}.");
+            else if (addInfo.OperationResult == AddResult.ExistingEntryFound)
+                LoggingHelper.Log($"Tried to copy single entry {entry.Key} to new array {newArray.Id}, but entry is already there.");
+            else
+                LoggingHelper.Log($"Tried to copy single entry {entry.Key} to new array {newArray.Id}, but the new array is full.");
+
+            return addInfo;
         }
 
         public void Abort()
@@ -80,7 +95,15 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
             var entry = OldArray.ReadVolatileFromIndex(currentIndex);
             if (entry != null)
-                newArray.TryAdd(entry);
+            {
+                var addInfo = newArray.TryAdd(entry);
+                if (addInfo.OperationResult == AddResult.AddSuccessful)
+                    LoggingHelper.Log($"Copied entry {entry.Key} to array {newArray.Id}");
+                else if (addInfo.OperationResult == AddResult.ExistingEntryFound)
+                    LoggingHelper.Log($"Tried to copy entry {entry.Key} to array {newArray.Id}, but entry was already there.");
+                else
+                    LoggingHelper.Log($"Tried to copy entry {entry.Key} to array {newArray.Id}, but the target entry is full. THIS MUST NEVER HAPPEN AND MIGHT LEAD TO LOST ENTRIES.");
+            }
 
             var numberOfCopiedItems = Interlocked.Increment(ref _numberOfCopiedItems);
             if (numberOfCopiedItems < OldArray.Capacity)
@@ -107,8 +130,5 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             } while (newArray == null);
             return newArray;
         }
-
-        public bool IsCopyingFinished => Volatile.Read(ref _isCopyingFinished) == 1;
-        public ConcurrentArray<TKey, TValue> NewArray => _newArray;
     }
 }

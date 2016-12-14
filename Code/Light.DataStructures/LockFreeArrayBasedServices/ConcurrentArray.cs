@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Light.DataStructures.DataRaceLogging;
 using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
@@ -9,6 +10,10 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
     public class ConcurrentArray<TKey, TValue> : IReadOnlyList<Entry<TKey, TValue>>
     {
         private readonly Entry<TKey, TValue>[] _internalArray;
+
+#if CONCURRENT_LOGGING
+        public readonly int Id;
+#endif
         public readonly IEqualityComparer<TKey> KeyComparer;
         private int _count;
         private GrowArrayProcess<TKey, TValue> _growArrayProcess;
@@ -23,10 +28,27 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
             _internalArray = new Entry<TKey, TValue>[capacity];
             KeyComparer = keyComparer;
+#if CONCURRENT_LOGGING
+            Id = Interlocked.Increment(ref LoggingHelper.NextId);
+#endif
         }
 
         public int Capacity => _internalArray.Length;
+
+        public long Version => Volatile.Read(ref _version);
         public int Count => Volatile.Read(ref _count);
+
+        IEnumerator<Entry<TKey, TValue>> IEnumerable<Entry<TKey, TValue>>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public Entry<TKey, TValue> this[int index] => ReadVolatileFromIndex(index);
 
         public AddInfo TryAdd(Entry<TKey, TValue> entry)
         {
@@ -95,14 +117,37 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             return Volatile.Read(ref _internalArray[index]);
         }
 
-        IEnumerator<Entry<TKey, TValue>> IEnumerable<Entry<TKey, TValue>>.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public Enumerator GetEnumerator()
         {
             return new Enumerator(_internalArray);
+        }
+
+        public GrowArrayProcessInfo GetOrCreateGrowArrayProcess(int newArraySize, ExchangeArray<TKey, TValue> exchangeArray)
+        {
+            newArraySize.MustBeGreaterThan(Capacity, nameof(newArraySize));
+
+            var newProcess = new GrowArrayProcess<TKey, TValue>(this, newArraySize, exchangeArray);
+            var existingProcess = Interlocked.CompareExchange(ref _growArrayProcess, newProcess, null);
+            if (existingProcess != null)
+                return new GrowArrayProcessInfo(existingProcess, false);
+
+            newProcess.StartCopying();
+            return new GrowArrayProcessInfo(newProcess, true);
+        }
+
+        public GrowArrayProcess<TKey, TValue> ReadGrowArrayProcessVolatile()
+        {
+            return Volatile.Read(ref _growArrayProcess);
+        }
+
+        public long IncrementVersion()
+        {
+            return Interlocked.Increment(ref _version);
+        }
+
+        public long DecrementVersion()
+        {
+            return Interlocked.Decrement(ref _version);
         }
 
         public struct Enumerator : IEnumerator<Entry<TKey, TValue>>
@@ -172,52 +217,16 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public GrowArrayProcessInfo GetOrCreateGrowArrayProcess(int newArraySize, ExchangeArray<TKey, TValue> exchangeArray)
-        {
-            newArraySize.MustBeGreaterThan(Capacity, nameof(newArraySize));
-
-            var newProcess = new GrowArrayProcess<TKey, TValue>(this, newArraySize, exchangeArray);
-            var existingProcess = Interlocked.CompareExchange(ref _growArrayProcess, newProcess, null);
-            if (existingProcess != null)
-                return new GrowArrayProcessInfo(existingProcess, false);
-
-            newProcess.StartCopying();
-            return new GrowArrayProcessInfo(newProcess, true);
-        }
-
         public struct GrowArrayProcessInfo
         {
             public readonly GrowArrayProcess<TKey, TValue> TargetProcess;
             public readonly bool IsProcessFreshlyInitialized;
+
             public GrowArrayProcessInfo(GrowArrayProcess<TKey, TValue> targetProcess, bool isProcessFreshlyInitialized)
             {
                 TargetProcess = targetProcess;
                 IsProcessFreshlyInitialized = isProcessFreshlyInitialized;
             }
-        }
-
-        public Entry<TKey, TValue> this[int index] => ReadVolatileFromIndex(index);
-
-        public GrowArrayProcess<TKey, TValue> ReadGrowArrayProcessVolatile()
-        {
-            return Volatile.Read(ref _growArrayProcess);
-        }
-
-        public long Version => Volatile.Read(ref _version);
-
-        public long IncrementVersion()
-        {
-            return Interlocked.Increment(ref _version);
-        }
-
-        public long DecrementVersion()
-        {
-            return Interlocked.Decrement(ref _version);
         }
     }
 }

@@ -220,6 +220,7 @@ namespace Light.DataStructures.Tests
         }
 
         [Fact]
+        [Trait("Category", Traits.ConcurrencyTests)]
         public void ConcurrentAddTest()
         {
             var processorCount = Environment.ProcessorCount;

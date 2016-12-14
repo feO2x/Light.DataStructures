@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Light.DataStructures.DataRaceLogging;
 using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
@@ -11,9 +10,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
     {
         private readonly Entry<TKey, TValue>[] _internalArray;
 
-#if CONCURRENT_LOGGING
         public readonly int Id;
-#endif
         public readonly IEqualityComparer<TKey> KeyComparer;
         private int _count;
         private GrowArrayProcess<TKey, TValue> _growArrayProcess;
@@ -28,9 +25,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
             _internalArray = new Entry<TKey, TValue>[capacity];
             KeyComparer = keyComparer;
-#if CONCURRENT_LOGGING
-            Id = Interlocked.Increment(ref LoggingHelper.NextId);
-#endif
+            Id = IdHelper.GetNextId();
         }
 
         public int Capacity => _internalArray.Length;

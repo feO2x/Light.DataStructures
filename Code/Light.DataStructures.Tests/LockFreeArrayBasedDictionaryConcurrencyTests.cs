@@ -15,7 +15,7 @@ namespace Light.DataStructures.Tests
         public void ConcurrentAddTest()
         {
             var logger = new ConcurrentLogger();
-            LoggingHelper.Logger = logger;
+            Logging.Logger = logger;
             var dictionary = new LockFreeArrayBasedDictionary<int, object>();
             var processorCount = Environment.ProcessorCount;
             var entryCount = processorCount * 100000;
@@ -31,7 +31,7 @@ namespace Light.DataStructures.Tests
                                                 }
                                             });
 
-            LoggingHelper.Logger = null;
+            Logging.Logger = null;
             logger.WriteLogMessages(new StreamWriter("ConcurrentAddLog.txt"));
             dictionary.Count.Should().Be(allNumbers.Length);
             dictionary.Should().ContainKeys(allNumbers);

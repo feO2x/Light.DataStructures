@@ -37,9 +37,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="LockFreeArrayBasedServices\IdHelper.cs" />
     <Compile Include="LockFreeArrayBasedServices\AddResult.cs" />
     <Compile Include="LockFreeArrayBasedServices\ArrayMath.cs" />
-    <Compile Include="DataRaceLogging\LoggingHelper.cs" />
+    <Compile Include="DataRaceLogging\Logging.cs" />
     <Compile Include="LockFreeArrayBasedServices\ExchangeArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\ConcurrentArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\GrowArrayProcess.cs" />

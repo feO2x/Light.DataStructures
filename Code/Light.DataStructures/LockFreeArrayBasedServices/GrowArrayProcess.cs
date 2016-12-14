@@ -33,7 +33,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         public void StartCopying()
         {
             Volatile.Write(ref _newArray, new ConcurrentArray<TKey, TValue>(NewArraySize, OldArray.KeyComparer));
-            LoggingHelper.Log($"Created and established grow process for array {_newArray.Id}.");
+            Logging.Log($"Created and established grow process for array {_newArray.Id}.");
 
             HelpCopying();
             if (IsCopyingFinished)
@@ -41,7 +41,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 
             var task = new Task(CopyToTheBitterEnd);
             task.Start();
-            LoggingHelper.Log("Created background task for copying.");
+            Logging.Log("Created background task for copying.");
         }
 
         public void HelpCopying()
@@ -70,11 +70,11 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             var newArray = SpinGetNewArray();
             var addInfo = newArray.TryAdd(entry);
             if (addInfo.OperationResult == AddResult.AddSuccessful)
-                LoggingHelper.Log($"Copied single entry {entry.Key} to new array {newArray.Id}.");
+                Logging.Log($"Copied single entry {entry.Key} to new array {newArray.Id}.");
             else if (addInfo.OperationResult == AddResult.ExistingEntryFound)
-                LoggingHelper.Log($"Tried to copy single entry {entry.Key} to new array {newArray.Id}, but entry is already there.");
+                Logging.Log($"Tried to copy single entry {entry.Key} to new array {newArray.Id}, but entry is already there.");
             else
-                LoggingHelper.Log($"Tried to copy single entry {entry.Key} to new array {newArray.Id}, but the new array is full.");
+                Logging.Log($"Tried to copy single entry {entry.Key} to new array {newArray.Id}, but the new array is full.");
 
             return addInfo;
         }
@@ -98,11 +98,11 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             {
                 var addInfo = newArray.TryAdd(entry);
                 if (addInfo.OperationResult == AddResult.AddSuccessful)
-                    LoggingHelper.Log($"Copied entry {entry.Key} to array {newArray.Id}");
+                    Logging.Log($"Copied entry {entry.Key} to array {newArray.Id}");
                 else if (addInfo.OperationResult == AddResult.ExistingEntryFound)
-                    LoggingHelper.Log($"Tried to copy entry {entry.Key} to array {newArray.Id}, but entry was already there.");
+                    Logging.Log($"Tried to copy entry {entry.Key} to array {newArray.Id}, but entry was already there.");
                 else
-                    LoggingHelper.Log($"Tried to copy entry {entry.Key} to array {newArray.Id}, but the target entry is full. THIS MUST NEVER HAPPEN AND MIGHT LEAD TO LOST ENTRIES.");
+                    Logging.Log($"Tried to copy entry {entry.Key} to array {newArray.Id}, but the target entry is full. THIS MUST NEVER HAPPEN AND MIGHT LEAD TO LOST ENTRIES.");
             }
 
             var numberOfCopiedItems = Interlocked.Increment(ref _numberOfCopiedItems);

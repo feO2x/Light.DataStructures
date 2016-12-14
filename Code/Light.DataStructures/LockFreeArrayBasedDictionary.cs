@@ -412,7 +412,7 @@ namespace Light.DataStructures
             if (addInfo.OperationResult == AddResult.AddSuccessful && growArrayProcess.IsCopyingFinished)
             {
                 var newestArray = Volatile.Read(ref _currentArray);
-                if (newestArray != growArrayProcess.NewArray)
+                if (newestArray != array && newestArray != growArrayProcess.NewArray)
                     return HelpCopyingInfo.CreateNewArrayOutdatedInfo(newestArray);
             }
 

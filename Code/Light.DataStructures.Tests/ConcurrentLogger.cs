@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Light.DataStructures.DataRaceLogging;
 using Light.GuardClauses;
 
@@ -13,7 +14,8 @@ namespace Light.DataStructures.Tests
 
         public void Log(string message)
         {
-            _messages[Interlocked.Increment(ref _currentIndex)] = $"Thread {Thread.CurrentThread.ManagedThreadId}:\t{message}";
+            // ReSharper disable once PossibleInvalidOperationException
+            _messages[Interlocked.Increment(ref _currentIndex)] = $"Thread {Thread.CurrentThread.ManagedThreadId:D2} Task {Task.CurrentId.Value:D2}:\t{message}";
         }
 
         public void WriteLogMessages(TextWriter writer)

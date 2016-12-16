@@ -323,7 +323,7 @@ namespace Light.DataStructures
             // If the entry is already present, then do nothing
             if (addInfo.OperationResult == AddResult.ExistingEntryFound)
             {
-                Logging.Log($"Tried to add {entry.Key} into array {array.Id}, but existing entry was found.");
+                Logging.Log($"Tried to add entry {entry.Key} into array {array.Id}, but existing entry was found.");
                 return addInfo;
             }
 
@@ -331,7 +331,7 @@ namespace Light.DataStructures
             if (addInfo.OperationResult == AddResult.AddSuccessful)
             {
                 Interlocked.Increment(ref _count);
-                Logging.Log($"Added {entry.Key} into array {array.Id}, now trying to help copying.");
+                Logging.Log($"Added entry {entry.Key} into array {array.Id}.");
                 var helpInfo = HelpCopying(array, addInfo);
 
                 // Check if a grow array process is currently active and the entry could not be inserted into the new array.
@@ -347,9 +347,10 @@ namespace Light.DataStructures
                 // already created another grow array process that established an even newer array as the _currentArray.
                 if (helpInfo.OperationResult == HelpCopyingResult.NewArrayOutdated)
                 {
-                    Interlocked.Decrement(ref _count);
-                    array = helpInfo.NewArray;
-                    goto TryAdd;
+                    var newAddInfo = TryAddinternal(entry);
+                    if (newAddInfo.OperationResult == AddResult.AddSuccessful)
+                        Interlocked.Decrement(ref _count);
+                    return addInfo;
                 }
 
                 // Else simply return the add info

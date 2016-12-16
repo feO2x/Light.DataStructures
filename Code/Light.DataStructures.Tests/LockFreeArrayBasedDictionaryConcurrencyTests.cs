@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Light.DataStructures.DataRaceLogging;
 using Xunit;
 
@@ -22,19 +23,31 @@ namespace Light.DataStructures.Tests
             var allNumbers = Enumerable.Range(1, entryCount).ToArray();
             var groupsPerTask = allNumbers.GroupBy(number => number % processorCount)
                                           .ToArray();
-            Parallel.ForEach(groupsPerTask, group =>
-                                            {
-                                                foreach (var number in group)
+            try
+            {
+                Parallel.ForEach(groupsPerTask, group =>
                                                 {
-                                                    var addResult = dictionary.TryAdd(number, new object());
-                                                    addResult.Should().BeTrue();
-                                                }
-                                            });
+                                                    foreach (var number in group)
+                                                    {
+                                                        if (dictionary.TryAdd(number, new object()))
+                                                            continue;
 
-            Logging.Logger = null;
-            logger.WriteLogMessages(new StreamWriter("ConcurrentAddLog.txt"));
-            dictionary.Count.Should().Be(allNumbers.Length);
-            dictionary.Should().ContainKeys(allNumbers);
+                                                        var errorMessage = $"Could not add entry {number}.";
+                                                        logger.Log(errorMessage);
+                                                        throw new AssertionFailedException(errorMessage);
+                                                    }
+                                                });
+
+
+                dictionary.Count.Should().Be(allNumbers.Length);
+                dictionary.Should().ContainKeys(allNumbers);
+            }
+            catch (Exception)
+            {
+                Logging.Logger = null;
+                logger.WriteLogMessages(new StreamWriter("ConcurrentAddLog.txt"));
+                throw;
+            }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
 using Light.DataStructures.DataRaceLogging;
 using Light.GuardClauses;
 
@@ -7,8 +6,9 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
 {
     public sealed class GrowArrayProcess<TKey, TValue>
     {
-        private const int MaximumNumberOfItemsCopiedDuringHelp = 100;
+        public const int DefaultMaximumNumberOfItemsCopiedDuringHelp = 100;
         private readonly ExchangeArray<TKey, TValue> _setNewArray;
+        public readonly int MaximumNumberOfItemsCopiedDuringHelp;
         public readonly int NewArraySize;
         public readonly ConcurrentArray<TKey, TValue> OldArray;
         private int _currentIndex = -1;
@@ -16,32 +16,28 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         private ConcurrentArray<TKey, TValue> _newArray;
         private int _numberOfCopiedItems;
 
-        public GrowArrayProcess(ConcurrentArray<TKey, TValue> oldArray, int newArraySize, ExchangeArray<TKey, TValue> setNewArray)
+        public GrowArrayProcess(ConcurrentArray<TKey, TValue> oldArray,
+                                int newArraySize,
+                                ExchangeArray<TKey, TValue> setNewArray,
+                                int maximumNumberOfItemsCopiedDuringHelp = DefaultMaximumNumberOfItemsCopiedDuringHelp)
         {
             oldArray.MustNotBeNull(nameof(oldArray));
             newArraySize.MustBeGreaterThan(oldArray.Capacity, nameof(newArraySize));
             setNewArray.MustNotBeNull(nameof(setNewArray));
+            maximumNumberOfItemsCopiedDuringHelp.MustNotBeLessThan(0, nameof(maximumNumberOfItemsCopiedDuringHelp));
 
             OldArray = oldArray;
             NewArraySize = newArraySize;
             _setNewArray = setNewArray;
+            MaximumNumberOfItemsCopiedDuringHelp = maximumNumberOfItemsCopiedDuringHelp;
         }
 
         public bool IsCopyingFinished => Volatile.Read(ref _isCopyingFinished) == 1;
         public ConcurrentArray<TKey, TValue> NewArray => _newArray;
 
-        public void StartCopying()
+        public void CreateNewArray()
         {
             Volatile.Write(ref _newArray, new ConcurrentArray<TKey, TValue>(NewArraySize, OldArray.KeyComparer));
-            Logging.Log($"Created and established grow process for array {_newArray.Id}.");
-
-            HelpCopying();
-            if (IsCopyingFinished)
-                return;
-
-            var task = new Task(CopyToTheBitterEnd);
-            task.Start();
-            Logging.Log("Created background task for copying.");
         }
 
         public void HelpCopying()

@@ -14,6 +14,8 @@ namespace Light.DataStructures
         private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly ExchangeArray<TKey, TValue> _setNewArray;
         private readonly IEqualityComparer<TValue> _valueComparer;
+        private readonly GrowArrayProcessFactory<TKey, TValue> _growArrayProcessFactory;
+        private readonly IBackgroundCopyTaskFactory _backgroundCopyTaskFactory;
         private int _count;
         private ConcurrentArray<TKey, TValue> _currentArray;
 
@@ -24,6 +26,8 @@ namespace Light.DataStructures
             _keyComparer = options.KeyComparer;
             _valueComparer = options.ValueComparer;
             _growArrayStrategy = options.GrowArrayStrategy;
+            _growArrayProcessFactory = options.GrowArrayProcessFactory;
+            _backgroundCopyTaskFactory = options.BackgroundCopyTaskFactory;
             _currentArray = CreateInitialArray();
             _setNewArray = SetNewArray;
         }
@@ -387,17 +391,23 @@ namespace Light.DataStructures
                 // Try to establish a new grow-array-process. This is a race condition because
                 // other threads might be doing the same, thus we might get a process object
                 // that was created by another thread.
-                var processInfo = array.CreateOrGetGrowArrayProcess(newSize.Value, _setNewArray);
+                growArrayProcess = _growArrayProcessFactory.CreateGrowArrayProcess(_currentArray, newSize.Value, _setNewArray);
+                var existingProcess = _currentArray.EstablishGrowArrayProcess(growArrayProcess);
+                
+                // If we indeed established the process object, then the initial creation of the new target array
+                // must be performed.
+                if (existingProcess == null)
+                {
+                    growArrayProcess.CreateNewArray();
+                    growArrayProcess.HelpCopying();
+                    if (growArrayProcess.IsCopyingFinished == false)
+                        _backgroundCopyTaskFactory.StartBackgroundCopyTask(growArrayProcess.CopyToTheBitterEnd);
 
-                // If we indeed created the process object, then the initial creation of the new target array
-                // was already performed (as well as copying up to 100 items). We do not have to perform anything
-                // else here.
-                if (processInfo.IsProcessFreshlyInitialized)
                     return HelpCopyingInfo.CreateGrowArrayProcessInitializedInfo();
+                }
 
-                // If the process object was created on another thread, then help copying
-                Logging.Log("Other thread established grow array process.");
-                growArrayProcess = processInfo.TargetProcess;
+                // If the process object was established on another thread, then help copying
+                growArrayProcess = existingProcess;
             }
 
             // Try to copy the entry to the new array (that was previously added to the old array).
@@ -434,7 +444,8 @@ namespace Light.DataStructures
                 if (newSize == null)
                     throw new InvalidOperationException($"The {nameof(IGrowArrayStrategy)} \"{_growArrayStrategy}\" does not provide a new size although the internal array of the dictionary is full.");
 
-                growArrayProcess = array.CreateOrGetGrowArrayProcess(newSize.Value, _setNewArray).TargetProcess;
+                growArrayProcess = _growArrayProcessFactory.CreateGrowArrayProcess(_currentArray, newSize.Value, _setNewArray);
+                growArrayProcess = _currentArray.EstablishGrowArrayProcess(growArrayProcess);
             }
 
             // Copy all remaining element from the old to the new array
@@ -498,6 +509,8 @@ namespace Light.DataStructures
             private IGrowArrayStrategy _growArrayStrategy = new LinearDoublingPrimeStrategy();
             private IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
             private IEqualityComparer<TValue> _valueComparer = EqualityComparer<TValue>.Default;
+            private GrowArrayProcessFactory<TKey, TValue> _growArrayProcessFactory = new GrowArrayProcessFactory<TKey, TValue>();
+            private IBackgroundCopyTaskFactory _backgroundCopyTaskFactory = new FactoryCreatingIndependentTasks();
 
             public IEqualityComparer<TKey> KeyComparer
             {
@@ -526,6 +539,26 @@ namespace Light.DataStructures
                 {
                     value.MustNotBeNull();
                     _valueComparer = value;
+                }
+            }
+
+            public GrowArrayProcessFactory<TKey, TValue> GrowArrayProcessFactory
+            {
+                get { return _growArrayProcessFactory; }
+                set
+                {
+                     value.MustNotBeNull();
+                    _growArrayProcessFactory = value;
+                }
+            }
+
+            public IBackgroundCopyTaskFactory BackgroundCopyTaskFactory
+            {
+                get { return _backgroundCopyTaskFactory; }
+                set
+                {
+                    value.MustNotBeNull();
+                    _backgroundCopyTaskFactory = value;
                 }
             }
         }

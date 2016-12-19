@@ -117,17 +117,9 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             return new Enumerator(_internalArray);
         }
 
-        public GrowArrayProcessInfo CreateOrGetGrowArrayProcess(int newArraySize, ExchangeArray<TKey, TValue> exchangeArray)
+        public GrowArrayProcess<TKey, TValue> EstablishGrowArrayProcess(GrowArrayProcess<TKey, TValue> process)
         {
-            newArraySize.MustBeGreaterThan(Capacity, nameof(newArraySize));
-
-            var newProcess = new GrowArrayProcess<TKey, TValue>(this, newArraySize, exchangeArray);
-            var existingProcess = Interlocked.CompareExchange(ref _growArrayProcess, newProcess, null);
-            if (existingProcess != null)
-                return new GrowArrayProcessInfo(existingProcess, false);
-
-            newProcess.StartCopying();
-            return new GrowArrayProcessInfo(newProcess, true);
+            return Interlocked.CompareExchange(ref _growArrayProcess, process, null);
         }
 
         public GrowArrayProcess<TKey, TValue> ReadGrowArrayProcessVolatile()
@@ -209,18 +201,6 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
                 OperationResult = operationResult;
                 TargetEntry = targetEntry;
                 ReprobingCount = reprobingCount;
-            }
-        }
-
-        public struct GrowArrayProcessInfo
-        {
-            public readonly GrowArrayProcess<TKey, TValue> TargetProcess;
-            public readonly bool IsProcessFreshlyInitialized;
-
-            public GrowArrayProcessInfo(GrowArrayProcess<TKey, TValue> targetProcess, bool isProcessFreshlyInitialized)
-            {
-                TargetProcess = targetProcess;
-                IsProcessFreshlyInitialized = isProcessFreshlyInitialized;
             }
         }
     }

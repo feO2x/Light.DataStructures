@@ -37,6 +37,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="LockFreeArrayBasedServices\FactoryCreatingAttachedChildTasks.cs" />
+    <Compile Include="LockFreeArrayBasedServices\BackgroundCopyTaskFactoryNullObject.cs" />
+    <Compile Include="LockFreeArrayBasedServices\IBackgroundCopyTaskFactory.cs" />
+    <Compile Include="LockFreeArrayBasedServices\FactoryCreatingIndependentTasks.cs" />
+    <Compile Include="LockFreeArrayBasedServices\GrowArrayProcessFactory.cs" />
     <Compile Include="LockFreeArrayBasedServices\IdHelper.cs" />
     <Compile Include="LockFreeArrayBasedServices\AddResult.cs" />
     <Compile Include="LockFreeArrayBasedServices\ArrayMath.cs" />

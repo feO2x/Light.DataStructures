@@ -42,12 +42,11 @@
     <Compile Include="LockFreeArrayBasedServices\IBackgroundCopyTaskFactory.cs" />
     <Compile Include="LockFreeArrayBasedServices\FactoryCreatingIndependentTasks.cs" />
     <Compile Include="LockFreeArrayBasedServices\GrowArrayProcessFactory.cs" />
-    <Compile Include="LockFreeArrayBasedServices\IdHelper.cs" />
     <Compile Include="LockFreeArrayBasedServices\AddResult.cs" />
     <Compile Include="LockFreeArrayBasedServices\ArrayMath.cs" />
     <Compile Include="DataRaceLogging\Logging.cs" />
     <Compile Include="LockFreeArrayBasedServices\ExchangeArray.cs" />
-    <Compile Include="LockFreeArrayBasedServices\ConcurrentArray.cs" />
+    <Compile Include="LockFreeArrayBasedServices\ConcurrentArrayId.cs" />
     <Compile Include="LockFreeArrayBasedServices\GrowArrayProcess.cs" />
     <Compile Include="DataRaceLogging\IConcurrentLogger.cs" />
     <Compile Include="LockFreeArrayBasedServices\LinearDoublingPrimeStrategy.cs" />

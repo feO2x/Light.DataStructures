@@ -45,7 +45,11 @@ namespace Light.DataStructures
         public bool TryUpdate(TKey key, TValue newValue)
         {
             var targetEntry = FindEntry(_keyComparer.GetHashCode(key), key);
-            return targetEntry != null && targetEntry.TryUpdateValue(newValue).WasUpdateSuccessful;
+            if (targetEntry == null)
+                return false;
+
+            var existingValue = targetEntry.ReadValueVolatile();
+            return existingValue != Entry.Tombstone && targetEntry.TryUpdateValue(newValue, existingValue).WasUpdateSuccessful;
         }
 
         public bool GetOrAdd(TKey key, Func<TValue> createValue, out TValue value)

@@ -519,5 +519,22 @@ namespace Light.DataStructures.Tests
 
             dictionary.Values.Should().BeEquivalentTo("Foo", "Bar", "Baz");
         }
+
+        [Fact]
+        public void TryAddOnPreviouslyRemovedEntry()
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<string, object>();
+            var initialValue = new object();
+            dictionary.TryAdd("Foo", initialValue);
+            dictionary.Remove("Foo");
+
+            var newValue = new object();
+            var result = dictionary.TryAdd("Foo", newValue);
+
+            result.Should().BeTrue();
+            var actualValue = dictionary["Foo"];
+            actualValue.Should().BeSameAs(newValue);
+            actualValue.Should().NotBeSameAs(initialValue);
+        }
     }
 }

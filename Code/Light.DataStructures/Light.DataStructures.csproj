@@ -37,6 +37,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="LockFreeArrayBasedServices\EntityWithSelfAssignedLockFreeId.cs" />
     <Compile Include="LockFreeArrayBasedServices\FactoryCreatingAttachedChildTasks.cs" />
     <Compile Include="LockFreeArrayBasedServices\BackgroundCopyTaskFactoryNullObject.cs" />
     <Compile Include="LockFreeArrayBasedServices\IBackgroundCopyTaskFactory.cs" />

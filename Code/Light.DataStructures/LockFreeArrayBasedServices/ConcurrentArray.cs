@@ -6,14 +6,7 @@ using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
 {
-    public abstract class ConcurrentArrayId
-    {
-        private static int _nextId;
-
-        public readonly int Id = Interlocked.Increment(ref _nextId);
-    }
-
-    public class ConcurrentArray<TKey, TValue> : ConcurrentArrayId, IReadOnlyList<Entry<TKey, TValue>>
+    public class ConcurrentArray<TKey, TValue> : EntityWithSelfAssignedLockFreeId, IReadOnlyList<Entry<TKey, TValue>>
     {
         private readonly Entry<TKey, TValue>[] _internalArray;
 

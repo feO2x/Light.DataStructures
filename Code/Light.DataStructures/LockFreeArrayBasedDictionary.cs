@@ -90,7 +90,13 @@ namespace Light.DataStructures
 
         public bool TryAdd(TKey key, TValue value)
         {
-            return TryAddinternal(new Entry<TKey, TValue>(_keyComparer.GetHashCode(key), key, value)).OperationResult == AddResult.AddSuccessful;
+            var addInfo = TryAddinternal(new Entry<TKey, TValue>(_keyComparer.GetHashCode(key), key, value));
+            if (addInfo.OperationResult == AddResult.AddSuccessful)
+                return true;
+
+            var existingEntry = addInfo.TargetEntry;
+            var existingValue = existingEntry.ReadValueVolatile();
+            return existingValue == Entry.Tombstone && existingEntry.TryUpdateValue(value).WasUpdateSuccessful;
         }
 
         public bool TryRemove(TKey key, out TValue value)

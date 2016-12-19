@@ -46,7 +46,7 @@
     <Compile Include="LockFreeArrayBasedServices\ArrayMath.cs" />
     <Compile Include="DataRaceLogging\Logging.cs" />
     <Compile Include="LockFreeArrayBasedServices\ExchangeArray.cs" />
-    <Compile Include="LockFreeArrayBasedServices\ConcurrentArrayId.cs" />
+    <Compile Include="LockFreeArrayBasedServices\ConcurrentArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\GrowArrayProcess.cs" />
     <Compile Include="DataRaceLogging\IConcurrentLogger.cs" />
     <Compile Include="LockFreeArrayBasedServices\LinearDoublingPrimeStrategy.cs" />

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Light.DataStructures.DataRaceLogging;
+using Light.DataStructures.LockFreeArrayBasedServices;
 using Xunit;
 
 namespace Light.DataStructures.Tests
@@ -17,7 +18,8 @@ namespace Light.DataStructures.Tests
         {
             var logger = new ConcurrentLogger();
             Logging.Logger = logger;
-            var dictionary = new LockFreeArrayBasedDictionary<int, object>();
+            var options = new LockFreeArrayBasedDictionary<int, object>.Options { BackgroundCopyTaskFactory = new FactoryCreatingAttachedChildTasks() };
+            var dictionary = new LockFreeArrayBasedDictionary<int, object>(options);
             var processorCount = Environment.ProcessorCount;
             var entryCount = processorCount * 100000;
             var allNumbers = Enumerable.Range(1, entryCount).ToArray();

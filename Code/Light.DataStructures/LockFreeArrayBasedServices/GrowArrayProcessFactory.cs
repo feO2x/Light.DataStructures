@@ -2,7 +2,7 @@
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
 {
-    public sealed class GrowArrayProcessFactory<TKey, TValue>
+    public sealed class GrowArrayProcessFactory<TKey, TValue> : IGrowArrayProcessFactory<TKey, TValue>
     {
         private int _maximumNumberOfItemsCopiedDuringHelp = GrowArrayProcess<TKey, TValue>.DefaultMaximumNumberOfItemsCopiedDuringHelp;
 

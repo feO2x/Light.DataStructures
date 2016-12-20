@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;COMPILE_ASSERTIONS CONCURRENT_LOGGING</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;COMPILE_ASSERTIONS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -37,7 +37,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="LockFreeArrayBasedServices\EntityWithSelfAssignedLockFreeId.cs" />
+    <Compile Include="DataRaceLogging\LoggingDecoratorFactoryForGrowArrayProcesses.cs" />
+    <Compile Include="DataRaceLogging\EntityWithSelfAssignedLockFreeId.cs" />
     <Compile Include="LockFreeArrayBasedServices\FactoryCreatingAttachedChildTasks.cs" />
     <Compile Include="LockFreeArrayBasedServices\BackgroundCopyTaskFactoryNullObject.cs" />
     <Compile Include="LockFreeArrayBasedServices\IBackgroundCopyTaskFactory.cs" />
@@ -45,11 +46,12 @@
     <Compile Include="LockFreeArrayBasedServices\GrowArrayProcessFactory.cs" />
     <Compile Include="LockFreeArrayBasedServices\AddResult.cs" />
     <Compile Include="LockFreeArrayBasedServices\ArrayMath.cs" />
-    <Compile Include="DataRaceLogging\Logging.cs" />
+    <Compile Include="DataRaceLogging\ConcurrentLogClient.cs" />
     <Compile Include="LockFreeArrayBasedServices\ExchangeArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\ConcurrentArray.cs" />
     <Compile Include="LockFreeArrayBasedServices\GrowArrayProcess.cs" />
     <Compile Include="DataRaceLogging\IConcurrentLogger.cs" />
+    <Compile Include="LockFreeArrayBasedServices\IGrowArrayProcessFactory.cs" />
     <Compile Include="LockFreeArrayBasedServices\LinearDoublingPrimeStrategy.cs" />
     <Compile Include="LockFreeArrayBasedServices\Entry.cs" />
     <Compile Include="IConcurrentDictionary.cs" />

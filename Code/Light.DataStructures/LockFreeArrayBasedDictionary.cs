@@ -2,19 +2,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+#if CONCURRENT_LOGGING
 using Light.DataStructures.DataRaceLogging;
+#endif
 using Light.DataStructures.LockFreeArrayBasedServices;
 using Light.GuardClauses;
 
 namespace Light.DataStructures
 {
-    public class LockFreeArrayBasedDictionary<TKey, TValue> : IConcurrentDictionary<TKey, TValue>, IDictionary<TKey, TValue>
+    public class LockFreeArrayBasedDictionary<TKey, TValue> :
+#if CONCURRENT_LOGGING
+        ConcurrentLogClient,
+#endif
+        IConcurrentDictionary<TKey, TValue>, IDictionary<TKey, TValue>
     {
         private readonly IGrowArrayStrategy _growArrayStrategy;
         private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly ExchangeArray<TKey, TValue> _setNewArray;
         private readonly IEqualityComparer<TValue> _valueComparer;
-        private readonly GrowArrayProcessFactory<TKey, TValue> _growArrayProcessFactory;
+        private readonly IGrowArrayProcessFactory<TKey, TValue> _growArrayProcessFactory;
         private readonly IBackgroundCopyTaskFactory _backgroundCopyTaskFactory;
         private int _count;
         private ConcurrentArray<TKey, TValue> _currentArray;
@@ -337,7 +343,9 @@ namespace Light.DataStructures
             // If the entry is already present, then do nothing
             if (addInfo.OperationResult == AddResult.ExistingEntryFound)
             {
-                Logging.Log($"Tried to add entry {entry.Key} into array {array.Id}, but existing entry was found.");
+#if CONCURRENT_LOGGING
+                Log($"Tried to add entry {entry.Key} into array {array.Id}, but existing entry was found.");
+#endif
                 return addInfo;
             }
 
@@ -345,7 +353,9 @@ namespace Light.DataStructures
             if (addInfo.OperationResult == AddResult.AddSuccessful)
             {
                 Interlocked.Increment(ref _count);
-                Logging.Log($"Added entry {entry.Key} into array {array.Id}.");
+#if CONCURRENT_LOGGING
+                Log($"Added entry {entry.Key} into array {array.Id}.");
+#endif
                 var helpInfo = HelpCopying(array, addInfo);
 
                 // Check if a grow array process is currently active and the entry could not be inserted into the new array.
@@ -372,7 +382,9 @@ namespace Light.DataStructures
             }
 
             // Else the internal array is full, we must escalate copying to the new array and then retry the add operation
-            Logging.Log($"Array {array.Id} is full, copying will now escalate.");
+#if CONCURRENT_LOGGING
+            Log($"Array {array.Id} is full, copying will now escalate.");
+#endif
             EscalateCopying(array, addInfo);
 
             // Spin until the new array is available, then try to insert again
@@ -409,14 +421,25 @@ namespace Light.DataStructures
                 if (existingProcess == null)
                 {
                     growArrayProcess.CreateNewArray();
+#if CONCURRENT_LOGGING
+                    Log($"Established grow array process for new array {growArrayProcess.NewArray.Id}");
+#endif
                     growArrayProcess.HelpCopying();
                     if (growArrayProcess.IsCopyingFinished == false)
+                    {
                         _backgroundCopyTaskFactory.StartBackgroundCopyTask(growArrayProcess.CopyToTheBitterEnd);
+#if CONCURRENT_LOGGING
+                        Log($"Created background copy task for array {growArrayProcess.NewArray}.");
+#endif
+                    }
 
                     return HelpCopyingInfo.CreateGrowArrayProcessInitializedInfo();
                 }
 
                 // If the process object was established on another thread, then help copying
+#if CONCURRENT_LOGGING
+                Log("Other thread established grow array process.");
+#endif
                 growArrayProcess = existingProcess;
             }
 
@@ -465,10 +488,12 @@ namespace Light.DataStructures
         private void SetNewArray(ConcurrentArray<TKey, TValue> oldArray, ConcurrentArray<TKey, TValue> newArray)
         {
             var previousValue = Interlocked.CompareExchange(ref _currentArray, newArray, oldArray);
-            Logging.Log(previousValue == oldArray ? $"Exchanged array {oldArray.Id} with new array {newArray.Id}" : $"Array {newArray.Id} could not be set");
+#if CONCURRENT_LOGGING
+            Log(previousValue == oldArray ? $"Exchanged array {oldArray.Id} with new array {newArray.Id}" : $"Array {newArray.Id} could not be set");
+#endif
         }
 
-        private class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
+        private sealed class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
         {
             private readonly ConcurrentArray<TKey, TValue> _array;
             private KeyValuePair<TKey, TValue> _current;
@@ -519,7 +544,7 @@ namespace Light.DataStructures
             private IGrowArrayStrategy _growArrayStrategy = new LinearDoublingPrimeStrategy();
             private IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
             private IEqualityComparer<TValue> _valueComparer = EqualityComparer<TValue>.Default;
-            private GrowArrayProcessFactory<TKey, TValue> _growArrayProcessFactory = new GrowArrayProcessFactory<TKey, TValue>();
+            private IGrowArrayProcessFactory<TKey, TValue> _growArrayProcessFactory = new GrowArrayProcessFactory<TKey, TValue>();
             private IBackgroundCopyTaskFactory _backgroundCopyTaskFactory = new FactoryCreatingIndependentTasks();
 
             public IEqualityComparer<TKey> KeyComparer
@@ -552,7 +577,7 @@ namespace Light.DataStructures
                 }
             }
 
-            public GrowArrayProcessFactory<TKey, TValue> GrowArrayProcessFactory
+            public IGrowArrayProcessFactory<TKey, TValue> GrowArrayProcessFactory
             {
                 get { return _growArrayProcessFactory; }
                 set

@@ -1,6 +1,7 @@
 using System.Threading;
 
-namespace Light.DataStructures.LockFreeArrayBasedServices
+#if CONCURRENT_LOGGING
+namespace Light.DataStructures.DataRaceLogging
 {
     public abstract class EntityWithSelfAssignedLockFreeId
     {
@@ -9,3 +10,5 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
         public readonly int Id = Interlocked.Increment(ref _nextId);
     }
 }
+
+#endif

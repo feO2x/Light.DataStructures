@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿#if CONCURRENT_LOGGING
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Light.DataStructures.DataRaceLogging;
@@ -31,3 +32,4 @@ namespace Light.DataStructures.Tests
         }
     }
 }
+#endif

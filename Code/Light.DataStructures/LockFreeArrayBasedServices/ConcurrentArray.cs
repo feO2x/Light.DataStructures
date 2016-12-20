@@ -2,11 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+#if CONCURRENT_LOGGING
+using Light.DataStructures.DataRaceLogging;
+#endif
 using Light.GuardClauses;
 
 namespace Light.DataStructures.LockFreeArrayBasedServices
 {
-    public class ConcurrentArray<TKey, TValue> : EntityWithSelfAssignedLockFreeId, IReadOnlyList<Entry<TKey, TValue>>
+    public class ConcurrentArray<TKey, TValue> :
+#if CONCURRENT_LOGGING
+        EntityWithSelfAssignedLockFreeId,
+#endif
+        IReadOnlyList<Entry<TKey, TValue>>
     {
         private readonly Entry<TKey, TValue>[] _internalArray;
 

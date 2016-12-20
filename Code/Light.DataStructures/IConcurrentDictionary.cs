@@ -119,7 +119,6 @@ namespace Light.DataStructures
         ///     Tries to remove all keys and values from the <see cref="IConcurrentDictionary{TKey,TValue}" />.
         ///     This operation will not succeed if the internal structure that holds the key-value-pairs is currently manipulated.
         /// </summary>
-        /// <returns>True if the clear operation was successful, else false.</returns>
-        bool Clear();
+        void Clear();
     }
 }

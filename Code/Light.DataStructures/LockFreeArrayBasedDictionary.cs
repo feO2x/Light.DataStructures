@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Light.DataStructures.LockFreeArrayBasedServices;
+using Light.GuardClauses;
 #if CONCURRENT_LOGGING
 using Light.DataStructures.DataRaceLogging;
 #endif
-using Light.DataStructures.LockFreeArrayBasedServices;
-using Light.GuardClauses;
 
 namespace Light.DataStructures
 {
@@ -151,16 +151,28 @@ namespace Light.DataStructures
             return true;
         }
 
-        public bool Clear()
+        public void Clear()
         {
-            Volatile.Read(ref _currentArray).ReadGrowArrayProcessVolatile()?.Abort();
             var emptyArray = CreateInitialArray();
+            TryClear:
             var currentArray = Volatile.Read(ref _currentArray);
-            if (Interlocked.CompareExchange(ref _currentArray, emptyArray, currentArray) != currentArray)
-                return false;
+            var abortResult = currentArray.ReadGrowArrayProcessVolatile()?.Abort();
+            if (abortResult == false)
+                goto SpinGetNewArray;
 
-            Interlocked.Exchange(ref _count, 0);
-            return true;
+            if (Interlocked.CompareExchange(ref _currentArray, emptyArray, currentArray) == currentArray)
+            {
+                Interlocked.Exchange(ref _count, 0);
+                return;
+            }
+
+            SpinGetNewArray:
+            var oldArray = currentArray;
+            do
+            {
+                currentArray = Volatile.Read(ref _currentArray);
+            } while (currentArray == oldArray);
+            goto TryClear;
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
@@ -290,11 +302,6 @@ namespace Light.DataStructures
             return ((IEnumerable<KeyValuePair<TKey, TValue>>) this).GetEnumerator();
         }
 
-        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
-        {
-            Clear();
-        }
-
         private ConcurrentArray<TKey, TValue> CreateInitialArray()
         {
             return new ConcurrentArray<TKey, TValue>(_growArrayStrategy.GetInitialSize(), _keyComparer);
@@ -415,7 +422,7 @@ namespace Light.DataStructures
                 // that was created by another thread.
                 growArrayProcess = _growArrayProcessFactory.CreateGrowArrayProcess(_currentArray, newSize.Value, _setNewArray);
                 var existingProcess = _currentArray.EstablishGrowArrayProcess(growArrayProcess);
-                
+
                 // If we indeed established the process object, then the initial creation of the new target array
                 // must be performed.
                 if (existingProcess == null)
@@ -487,6 +494,7 @@ namespace Light.DataStructures
 
         private void SetNewArray(ConcurrentArray<TKey, TValue> oldArray, ConcurrentArray<TKey, TValue> newArray)
         {
+            // ReSharper disable once UnusedVariable
             var previousValue = Interlocked.CompareExchange(ref _currentArray, newArray, oldArray);
 #if CONCURRENT_LOGGING
             Log(previousValue == oldArray ? $"Exchanged array {oldArray.Id} with new array {newArray.Id}" : $"Array {newArray.Id} could not be set");
@@ -541,11 +549,11 @@ namespace Light.DataStructures
         public class Options
         {
             public static readonly Options Default = new Options();
+            private IBackgroundCopyTaskFactory _backgroundCopyTaskFactory = new FactoryCreatingIndependentTasks();
+            private IGrowArrayProcessFactory<TKey, TValue> _growArrayProcessFactory = new GrowArrayProcessFactory<TKey, TValue>();
             private IGrowArrayStrategy _growArrayStrategy = new LinearDoublingPrimeStrategy();
             private IEqualityComparer<TKey> _keyComparer = EqualityComparer<TKey>.Default;
             private IEqualityComparer<TValue> _valueComparer = EqualityComparer<TValue>.Default;
-            private IGrowArrayProcessFactory<TKey, TValue> _growArrayProcessFactory = new GrowArrayProcessFactory<TKey, TValue>();
-            private IBackgroundCopyTaskFactory _backgroundCopyTaskFactory = new FactoryCreatingIndependentTasks();
 
             public IEqualityComparer<TKey> KeyComparer
             {
@@ -582,7 +590,7 @@ namespace Light.DataStructures
                 get { return _growArrayProcessFactory; }
                 set
                 {
-                     value.MustNotBeNull();
+                    value.MustNotBeNull();
                     _growArrayProcessFactory = value;
                 }
             }

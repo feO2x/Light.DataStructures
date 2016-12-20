@@ -453,15 +453,15 @@ namespace Light.DataStructures
             TryHelpExistingCopyProcess:
             // Try to copy the entry to the new array (that was previously added to the old array).
             // This might be necessary if the concurrent copy algorithm is already past this entry.
-            addInfo = growArrayProcess.CopySingleEntry(addInfo.TargetEntry);
+            var copyInfo = growArrayProcess.CopySingleEntry(addInfo.TargetEntry);
             // When the new array is already full, then return the value indicating that the entry
             // should be added to the newest array again.
-            if (addInfo.OperationResult == AddResult.ArrayFull)
+            if (copyInfo.OperationResult == AddResult.ArrayFull)
                 return HelpCopyingInfo.CreateNewArrayFullInfo(growArrayProcess.NewArray);
 
             // If the copying did succeed but the grow array process already finished copying, then
             // check if the new array is not outdated yet.
-            if (addInfo.OperationResult == AddResult.AddSuccessful && growArrayProcess.IsCopyingFinished)
+            if (copyInfo.OperationResult == AddResult.AddSuccessful && growArrayProcess.IsCopyingFinished)
             {
                 var newestArray = Volatile.Read(ref _currentArray);
                 // If the newest array  is the one that was established by the grow array process, then check
@@ -472,6 +472,9 @@ namespace Light.DataStructures
                     var newGrowArrayProcess = newestArray.ReadGrowArrayProcessVolatile();
                     if (newGrowArrayProcess != null)
                     {
+#if CONCURRENT_LOGGING
+                        Log($"New grow array process found for array {newGrowArrayProcess.SpinGetNewArray().Id}, help copying there.");
+#endif
                         growArrayProcess = newGrowArrayProcess;
                         goto TryHelpExistingCopyProcess;
                     }

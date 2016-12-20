@@ -133,7 +133,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             _setNewArray(OldArray, newArray);
         }
 
-        private ConcurrentArray<TKey, TValue> SpinGetNewArray()
+        public ConcurrentArray<TKey, TValue> SpinGetNewArray()
         {
             ConcurrentArray<TKey, TValue> newArray;
             do

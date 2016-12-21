@@ -420,17 +420,13 @@ namespace Light.DataStructures
                 // Try to establish a new grow-array-process. This is a race condition because
                 // other threads might be doing the same, thus we might get a process object
                 // that was created by another thread.
-                growArrayProcess = _growArrayProcessFactory.CreateGrowArrayProcess(_currentArray, newSize.Value, _setNewArray);
-                var existingProcess = _currentArray.EstablishGrowArrayProcess(growArrayProcess);
+                var establishResult = TryEstablishNewGrowArrayProcess(array, newSize.Value);
+                growArrayProcess = establishResult.GrowArrayProcess;
 
                 // If we indeed established the process object, then the initial creation of the new target array
                 // must be performed.
-                if (existingProcess == null)
+                if (establishResult.WasGrowArrayProcessInitializedByThisThread)
                 {
-                    growArrayProcess.CreateNewArray();
-#if CONCURRENT_LOGGING
-                    Log($"Established grow array process for new array {growArrayProcess.NewArray.Id}");
-#endif
                     growArrayProcess.HelpCopying();
                     if (growArrayProcess.IsCopyingFinished == false)
                     {
@@ -442,12 +438,6 @@ namespace Light.DataStructures
 
                     return HelpCopyingInfo.CreateGrowArrayProcessInitializedInfo();
                 }
-
-                // If the process object was established on another thread, then help copying
-#if CONCURRENT_LOGGING
-                Log("Other thread established grow array process.");
-#endif
-                growArrayProcess = existingProcess;
             }
 
             TryHelpExistingCopyProcess:
@@ -503,12 +493,30 @@ namespace Light.DataStructures
                 if (newSize == null)
                     throw new InvalidOperationException($"The {nameof(IGrowArrayStrategy)} \"{_growArrayStrategy}\" does not provide a new size although the internal array of the dictionary is full.");
 
-                growArrayProcess = _growArrayProcessFactory.CreateGrowArrayProcess(_currentArray, newSize.Value, _setNewArray);
-                growArrayProcess = _currentArray.EstablishGrowArrayProcess(growArrayProcess);
+                growArrayProcess = TryEstablishNewGrowArrayProcess(array, newSize.Value).GrowArrayProcess;
             }
 
             // Copy all remaining element from the old to the new array
             growArrayProcess.CopyToTheBitterEnd();
+        }
+
+        private EstablishGrowArrayProcessResult TryEstablishNewGrowArrayProcess(ConcurrentArray<TKey, TValue> oldArray, int newArraySize)
+        {
+            var growArrayProcess = _growArrayProcessFactory.CreateGrowArrayProcess(oldArray, newArraySize, _setNewArray);
+            var existingProcess = oldArray.EstablishGrowArrayProcess(growArrayProcess);
+            if (existingProcess == null)
+            {
+                growArrayProcess.CreateNewArray();
+#if CONCURRENT_LOGGING
+                    Log($"Established grow array process for new array {growArrayProcess.NewArray.Id}");
+#endif
+                return new EstablishGrowArrayProcessResult(true, growArrayProcess);
+            }
+
+#if CONCURRENT_LOGGING
+                Log("Other thread established grow array process.");
+#endif
+            return new EstablishGrowArrayProcessResult(false, existingProcess);
         }
 
         private void SetNewArray(ConcurrentArray<TKey, TValue> oldArray, ConcurrentArray<TKey, TValue> newArray)
@@ -669,6 +677,17 @@ namespace Light.DataStructures
             EntryCouldNotBeInsertedInNewArray,
             NoCopyingNeeded,
             NewArrayOutdated
+        }
+
+        private struct EstablishGrowArrayProcessResult
+        {
+            public readonly bool WasGrowArrayProcessInitializedByThisThread;
+            public readonly GrowArrayProcess<TKey, TValue> GrowArrayProcess;
+            public EstablishGrowArrayProcessResult(bool wasGrowArrayProcessInitializedByThisThread, GrowArrayProcess<TKey, TValue> growArrayProcess)
+            {
+                WasGrowArrayProcessInitializedByThisThread = wasGrowArrayProcessInitializedByThisThread;
+                GrowArrayProcess = growArrayProcess;
+            }
         }
     }
 }

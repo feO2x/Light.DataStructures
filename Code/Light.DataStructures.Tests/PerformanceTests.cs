@@ -49,9 +49,9 @@ namespace Light.DataStructures.Tests
         public static readonly TestData SingleThreadedDictionaryInstances =
             new[]
             {
+                new object[] { new LockFreeArrayBasedDictionary<int, object>() },
                 new object[] { new Dictionary<int, object>() },
-                new object[] { new ConcurrentDictionary<int, object>() },
-                new object[] { new LockFreeArrayBasedDictionary<int, object>() }
+                new object[] { new ConcurrentDictionary<int, object>() }
             };
 
         [Theory]
@@ -70,8 +70,8 @@ namespace Light.DataStructures.Tests
         public static readonly TestData MultiThreadedDictionaryInstances =
             new[]
             {
-                new object[] { new ConcurrentDictionary<int, object>() },
-                new object[] { new LockFreeArrayBasedDictionary<int, object>(new LockFreeArrayBasedDictionary<int, object>.Options { BackgroundCopyTaskFactory = new FactoryCreatingAttachedChildTasks() }) }
+                new object[] { new LockFreeArrayBasedDictionary<int, object>(new LockFreeArrayBasedDictionary<int, object>.Options { BackgroundCopyTaskFactory = new FactoryCreatingAttachedChildTasks() }) },
+                new object[] { new ConcurrentDictionary<int, object>() }
             };
     }
 }

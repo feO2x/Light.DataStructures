@@ -14,7 +14,7 @@ namespace Light.DataStructures
 #if CONCURRENT_LOGGING
         ConcurrentLogClient,
 #endif
-        IConcurrentDictionary<TKey, TValue>, IDictionary<TKey, TValue>
+        IConcurrentDictionary<TKey, TValue>, IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
         private readonly IGrowArrayStrategy _growArrayStrategy;
         private readonly IEqualityComparer<TKey> _keyComparer;
@@ -678,6 +678,10 @@ namespace Light.DataStructures
             NoCopyingNeeded,
             NewArrayOutdated
         }
+
+        public IEnumerable<TKey> Keys => ((IDictionary<TKey, TValue>) this).Keys;
+
+        public IEnumerable<TValue> Values => ((IDictionary<TKey, TValue>) this).Values;
 
         private struct EstablishGrowArrayProcessResult
         {

@@ -4,12 +4,22 @@ using System.Collections.Generic;
 using System.Threading;
 using Light.DataStructures.LockFreeArrayBasedServices;
 using Light.GuardClauses;
+
 #if CONCURRENT_LOGGING
 using Light.DataStructures.DataRaceLogging;
 #endif
 
 namespace Light.DataStructures
 {
+    /// <summary>
+    ///     Represents an <see cref="IDictionary{TKey,TValue}" /> that can be
+    ///     accessed by multiple threads concurrently. It uses lock-free synchronization
+    ///     primitives like the members of <see cref="Interlocked" /> and <see cref="Volatile" />
+    ///     to synchronize access to shared data. Key-Value-Pairs will not be returned in the same
+    ///     order as they were added when iterating over the dictionary.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the keys.</typeparam>
+    /// <typeparam name="TValue">The type of the values.</typeparam>
     public class LockFreeArrayBasedDictionary<TKey, TValue> :
 #if CONCURRENT_LOGGING
         ConcurrentLogClient,
@@ -25,10 +35,21 @@ namespace Light.DataStructures
         private int _count;
         private ConcurrentArray<TKey, TValue> _currentArray;
 
+        /// <summary>
+        ///     Initializes a new instance of <see cref="LockFreeArrayBasedDictionary{TKey,TValue}" />
+        ///     with the default options.
+        /// </summary>
         public LockFreeArrayBasedDictionary() : this(Options.Default) { }
 
+        /// <summary>
+        ///     Initializes a new instance of <see cref="LockFreeArrayBasedDictionary{TKey,TValue}" />.
+        /// </summary>
+        /// <param name="options">The options that specify the service objects used by this dictionary.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="options" /> is null.</exception>
         public LockFreeArrayBasedDictionary(Options options)
         {
+            options.MustNotBeNull(nameof(options));
+
             _keyComparer = options.KeyComparer;
             _valueComparer = options.ValueComparer;
             _growArrayStrategy = options.GrowArrayStrategy;
@@ -38,6 +59,7 @@ namespace Light.DataStructures
             _setNewArray = SetNewArray;
         }
 
+        /// <inheritdoc />
         public bool ContainsKey(TKey key)
         {
             var targetEntry = FindEntry(_keyComparer.GetHashCode(key), key);
@@ -48,6 +70,7 @@ namespace Light.DataStructures
             return value != Entry.Tombstone;
         }
 
+        /// <inheritdoc />
         public bool TryUpdate(TKey key, TValue newValue)
         {
             var targetEntry = FindEntry(_keyComparer.GetHashCode(key), key);
@@ -58,6 +81,7 @@ namespace Light.DataStructures
             return existingValue != Entry.Tombstone && targetEntry.TryUpdateValue(newValue, existingValue).WasUpdateSuccessful;
         }
 
+        /// <inheritdoc />
         public bool GetOrAdd(TKey key, Func<TValue> createValue, out TValue value)
         {
             var hashCode = _keyComparer.GetHashCode(key);
@@ -81,6 +105,7 @@ namespace Light.DataStructures
             return true;
         }
 
+        /// <inheritdoc />
         public TValue GetOrAdd(TKey key, Func<TValue> createValue)
         {
             TValue returnValue;
@@ -88,6 +113,7 @@ namespace Light.DataStructures
             return returnValue;
         }
 
+        /// <inheritdoc />
         public bool AddOrUpdate(TKey key, TValue value)
         {
             var addResult = TryAddinternal(new Entry<TKey, TValue>(_keyComparer.GetHashCode(key), key, value));
@@ -98,6 +124,7 @@ namespace Light.DataStructures
             return false;
         }
 
+        /// <inheritdoc />
         public bool TryAdd(TKey key, TValue value)
         {
             var addInfo = TryAddinternal(new Entry<TKey, TValue>(_keyComparer.GetHashCode(key), key, value));
@@ -109,6 +136,7 @@ namespace Light.DataStructures
             return existingValue == Entry.Tombstone && existingEntry.TryUpdateValue(value).WasUpdateSuccessful;
         }
 
+        /// <inheritdoc />
         public bool TryRemove(TKey key, out TValue value)
         {
             var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
@@ -131,6 +159,7 @@ namespace Light.DataStructures
             return false;
         }
 
+        /// <inheritdoc />
         public bool TryGetValue(TKey key, out TValue value)
         {
             var foundEntry = FindEntry(_keyComparer.GetHashCode(key), key);
@@ -151,6 +180,14 @@ namespace Light.DataStructures
             return true;
         }
 
+        /// <summary>
+        ///     Removes all items from the <see cref="LockFreeArrayBasedDictionary{TKey,TValue}" />
+        ///     by replacing the internal <see cref="ConcurrentArray{TKey,TValue}" /> with an empty one.
+        ///     IMPORTANT: You must only call this method if you can ensure that no other threads are currently
+        ///     accessing the dictionary - otherwise this method might result in an invalid state. If you cannot
+        ///     ensure this condition, then replace an existing <see cref="LockFreeArrayBasedDictionary{TKey,TValue}" />
+        ///     object with a new instance.
+        /// </summary>
         public void Clear()
         {
             var emptyArray = CreateInitialArray();
@@ -218,6 +255,12 @@ namespace Light.DataStructures
             return true;
         }
 
+        /// <summary>
+        ///     Gets the number of items currently in the dictionary.
+        ///     IMPORTANT: this property might return an outdated value if
+        ///     it is concurrently accessed by other threads. Only use this
+        ///     property when accessing the dictionary in single-threaded mode.
+        /// </summary>
         public int Count => Volatile.Read(ref _count);
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
@@ -227,6 +270,12 @@ namespace Light.DataStructures
             TryAdd(key, value);
         }
 
+        /// <summary>
+        ///     Tries to remove the key-value-pair with the given key.
+        /// </summary>
+        /// <param name="key">The key identifying the target key-value-pair.</param>
+        /// <returns>True if the key-value-pair was successfully removed, else false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="key" /> is null.</exception>
         public bool Remove(TKey key)
         {
             TValue value;
@@ -259,6 +308,13 @@ namespace Light.DataStructures
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the value with the given key.
+        /// </summary>
+        /// <param name="key">The key identifying the target key-value-pair.</param>
+        /// <returns>The value of the target key-value-pair.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="key" /> is null.</exception>
+        /// <exception cref="KeyNotFoundException">Thrown when <paramref name="key" /> does not identify an existing key-value-pair.</exception>
         public TValue this[TKey key]
         {
             get
@@ -679,14 +735,15 @@ namespace Light.DataStructures
             NewArrayOutdated
         }
 
-        public IEnumerable<TKey> Keys => ((IDictionary<TKey, TValue>) this).Keys;
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => ((IDictionary<TKey, TValue>) this).Keys;
 
-        public IEnumerable<TValue> Values => ((IDictionary<TKey, TValue>) this).Values;
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => ((IDictionary<TKey, TValue>) this).Values;
 
         private struct EstablishGrowArrayProcessResult
         {
             public readonly bool WasGrowArrayProcessInitializedByThisThread;
             public readonly GrowArrayProcess<TKey, TValue> GrowArrayProcess;
+
             public EstablishGrowArrayProcessResult(bool wasGrowArrayProcessInitializedByThisThread, GrowArrayProcess<TKey, TValue> growArrayProcess)
             {
                 WasGrowArrayProcessInitializedByThisThread = wasGrowArrayProcessInitializedByThisThread;

@@ -1,6 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Light.DataStructures.LockFreeArrayBasedServices;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
 
@@ -15,6 +18,23 @@ namespace Light.DataStructures.Tests
                                                        .GroupBy(number => number % 27)
                                                        .SelectMany(group => group)
                                                        .ToArray();
+
+        private static readonly Dictionary<int, List<int>> PerThreadKeyGroups = new Dictionary<int, List<int>>();
+
+        static PerformanceTests()
+        {
+            var numberOfProcessors = Environment.ProcessorCount;
+            for (var i = 0; i < numberOfProcessors; i++)
+            {
+                PerThreadKeyGroups.Add(i, new List<int>());
+            }
+
+            for (var i = 0; i < NumberOfKeys; i++)
+            {
+                var targetKey = i % numberOfProcessors;
+                PerThreadKeyGroups[targetKey].Add(Keys[i]);
+            }
+        }
 
         [Theory]
         [MemberData(nameof(SingleThreadedDictionaryInstances))]
@@ -32,6 +52,26 @@ namespace Light.DataStructures.Tests
                 new object[] { new Dictionary<int, object>() },
                 new object[] { new ConcurrentDictionary<int, object>() },
                 new object[] { new LockFreeArrayBasedDictionary<int, object>() }
+            };
+
+        [Theory]
+        [MemberData(nameof(MultiThreadedDictionaryInstances))]
+        public void MultiThreadedAdd(IDictionary<int, object> dictionary)
+        {
+            Parallel.ForEach(PerThreadKeyGroups, kvp =>
+                                                 {
+                                                     foreach (var number in kvp.Value)
+                                                     {
+                                                         dictionary.Add(number, new object());
+                                                     }
+                                                 });
+        }
+
+        public static readonly TestData MultiThreadedDictionaryInstances =
+            new[]
+            {
+                new object[] { new ConcurrentDictionary<int, object>() },
+                new object[] { new LockFreeArrayBasedDictionary<int, object>(new LockFreeArrayBasedDictionary<int, object>.Options { BackgroundCopyTaskFactory = new FactoryCreatingAttachedChildTasks() }) }
             };
     }
 }

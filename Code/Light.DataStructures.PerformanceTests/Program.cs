@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Light.DataStructures.PerformanceTests
 {
@@ -8,18 +9,14 @@ namespace Light.DataStructures.PerformanceTests
     {
         public static void Main(string[] args)
         {
-            var targetDictionary = args[0].InstantiateTarget();
+            var test = args[0].InstantiateTest();
 
-            var test = new SingleThreadedAddTest();
-            var results = test.Run(targetDictionary);
+            var results = test.Run(args[1].InstantiateDictionary());
 
             results.Print();
         }
-    }
 
-    public static class StringExtensions
-    {
-        public static IDictionary<int, object> InstantiateTarget(this string dictionaryName)
+        public static IDictionary<int, object> InstantiateDictionary(this string dictionaryName)
         {
             if (dictionaryName == "Dictionary")
                 return new Dictionary<int, object>();
@@ -29,6 +26,15 @@ namespace Light.DataStructures.PerformanceTests
                 return new LockFreeArrayBasedDictionary<int, object>();
 
             throw new ArgumentException($"Invalid dictionary name: {dictionaryName}", nameof(dictionaryName));
+        }
+
+        public static IPerformanceTest InstantiateTest(this string testName)
+        {
+            var targetType = typeof(Program).Assembly
+                                            .ExportedTypes
+                                            .First(t => t.Name == testName);
+
+            return (IPerformanceTest) Activator.CreateInstance(targetType);
         }
     }
 }

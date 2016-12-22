@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Light.DataStructures.PerformanceTests
 {
-    public sealed class SingleThreadedAddTest
+    public sealed class SingleThreadedAddTest : IPerformanceTest
     {
         private const int NumberOfKeys = 10000000;
 

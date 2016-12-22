@@ -78,6 +78,7 @@
     <Compile Include="EntryTests.cs" />
     <Compile Include="LockFreeArrayBasedDictionaryConcurrencyTests.cs" />
     <Compile Include="LockFreeArrayBasedDictionaryTests.cs" />
+    <Compile Include="PerformanceTests.cs" />
     <Compile Include="PrimeNumberGeneration.cs" />
     <Compile Include="SieveOfEratosthenesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

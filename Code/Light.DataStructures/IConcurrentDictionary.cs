@@ -60,15 +60,15 @@ namespace Light.DataStructures
         ///     updates the key with a third value.
         /// </summary>
         /// <param name="key">
-        ///     The key whose value is compared with <paramref name="comparisonValue" /> and possibly replaced.
+        ///     The key whose value is compared and possibly replaced.
         /// </param>
         /// <param name="newValue">
         ///     The value that replaces the value of the element with <paramref name="key" />
         ///     if the comparison results in equality.
         /// </param>
         /// <returns>
-        ///     true if the value with <paramref name="key" /> was equal to <paramref name="comparisonValue" />
-        ///     and replaced with <paramref name="newValue" />; otherwise, false.
+        ///     true if the value of <paramref name="key" /> is different than <paramref name="newValue" />
+        ///     and therefore replaced; otherwise, false.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="key" /> is a null reference.</exception>
         bool TryUpdate(TKey key, TValue newValue);
@@ -114,11 +114,5 @@ namespace Light.DataStructures
         /// <returns>True if <paramref name="value" /> is added to the dictionary, else false.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key" /> is a null reference (Nothing in Visual Basic).</exception>
         bool AddOrUpdate(TKey key, TValue value);
-
-        /// <summary>
-        ///     Tries to remove all keys and values from the <see cref="IConcurrentDictionary{TKey,TValue}" />.
-        ///     This operation will not succeed if the internal structure that holds the key-value-pairs is currently manipulated.
-        /// </summary>
-        void Clear();
     }
 }

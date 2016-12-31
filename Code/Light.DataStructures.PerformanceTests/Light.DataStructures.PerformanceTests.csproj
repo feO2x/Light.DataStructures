@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IPerformanceTest.cs" />
-    <Compile Include="MultithreadedAddTest.cs" />
+    <Compile Include="MultiThreadedAddTest.cs" />
     <Compile Include="PerformanceTestResults.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

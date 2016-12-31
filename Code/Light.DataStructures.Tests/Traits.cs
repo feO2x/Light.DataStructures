@@ -2,6 +2,7 @@
 {
     public static class Traits
     {
+        public const string PerformanceTests = "Performance Tests";
         public const string ConcurrencyTests = "Concurrency Tests";
         public const string FunctionalTests = "Functional Tests";
         public const string CreationScripts = "Creation Scripts";

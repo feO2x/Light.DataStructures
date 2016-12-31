@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Light.DataStructures", "Lig
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Light.DataStructures.Tests", "Light.DataStructures.Tests\Light.DataStructures.Tests.csproj", "{1E3A2A0A-F518-4B25-9A02-25A1AFCD55E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Light.DataStructures.PerformanceTests", "Light.DataStructures.PerformanceTests\Light.DataStructures.PerformanceTests.csproj", "{50AE7C5F-808C-4AA8-A8DC-616684C4C6D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1E3A2A0A-F518-4B25-9A02-25A1AFCD55E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E3A2A0A-F518-4B25-9A02-25A1AFCD55E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E3A2A0A-F518-4B25-9A02-25A1AFCD55E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50AE7C5F-808C-4AA8-A8DC-616684C4C6D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50AE7C5F-808C-4AA8-A8DC-616684C4C6D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50AE7C5F-808C-4AA8-A8DC-616684C4C6D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50AE7C5F-808C-4AA8-A8DC-616684C4C6D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

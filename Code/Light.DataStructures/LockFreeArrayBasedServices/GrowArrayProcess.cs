@@ -71,7 +71,7 @@ namespace Light.DataStructures.LockFreeArrayBasedServices
             }
         }
 
-        public ConcurrentArray<TKey, TValue>.AddInfo CopySingleEntry(Entry<TKey, TValue> entry)
+        public ConcurrentArray<TKey, TValue>.AddInfo CopyEntryThatWasJustAdded(Entry<TKey, TValue> entry)
         {
             var newArray = SpinGetNewArray();
             var addInfo = newArray.TryAdd(entry);

@@ -367,7 +367,7 @@ namespace Light.DataStructures
 
                 // Check if a grow array process is currently active and the entry could not be inserted into the new array.
                 // If this is the case then retry to add the entry to the newest array.
-                if (helpInfo.OperationResult == HelpCopyingResult.EntryCouldNotBeInsertedInNewArray)
+                if (helpInfo.OperationResult == HelpCopyingResult.NewArrayFull)
                 {
                     Interlocked.Decrement(ref _count);
                     array = helpInfo.NewArray;
@@ -443,7 +443,7 @@ namespace Light.DataStructures
             TryHelpExistingCopyProcess:
             // Try to copy the entry to the new array (that was previously added to the old array).
             // This might be necessary if the concurrent copy algorithm is already past this entry.
-            var copyInfo = growArrayProcess.CopySingleEntry(addInfo.TargetEntry);
+            var copyInfo = growArrayProcess.CopyEntryThatWasJustAdded(addInfo.TargetEntry);
             // When the new array is already full, then return the value indicating that the entry
             // should be added to the newest array again.
             if (copyInfo.OperationResult == AddResult.ArrayFull)
@@ -656,7 +656,7 @@ namespace Light.DataStructures
 
             public static HelpCopyingInfo CreateNewArrayFullInfo(ConcurrentArray<TKey, TValue> newArray)
             {
-                return new HelpCopyingInfo(HelpCopyingResult.EntryCouldNotBeInsertedInNewArray, newArray);
+                return new HelpCopyingInfo(HelpCopyingResult.NewArrayFull, newArray);
             }
 
             public static HelpCopyingInfo CreateNoCopyingNeededInfo()
@@ -674,7 +674,7 @@ namespace Light.DataStructures
         {
             GrowArrayProcessInitialized,
             HelpedCopying,
-            EntryCouldNotBeInsertedInNewArray,
+            NewArrayFull,
             NoCopyingNeeded,
             NewArrayOutdated
         }

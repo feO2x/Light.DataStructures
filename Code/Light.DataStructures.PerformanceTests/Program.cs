@@ -5,32 +5,68 @@ using System.Linq;
 
 namespace Light.DataStructures.PerformanceTests
 {
-    internal static class Program
+    public static class Program
     {
         public static void Main(string[] arguments)
         {
-            var commandArgumentsMapping = new CommandLineArgumentsParser().ParseArguments(arguments);
+            try
+            {
+                var commandArgumentsMapping = new CommandLineArgumentsParser().ParseArguments(arguments);
+
+                var dictionary = InstantiateDictionary(commandArgumentsMapping);
+                var test = InstantiateTest(commandArgumentsMapping);
+
+                var testResults = test.Run(dictionary);
+
+                testResults.Print();
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
-        public static IDictionary<int, object> InstantiateDictionary(this string dictionaryName)
+        private static IDictionary<int, object> InstantiateDictionary(Dictionary<string, string> commandArgumentsMapping)
         {
-            if (dictionaryName == "Dictionary")
-                return new Dictionary<int, object>();
-            if (dictionaryName == "ConcurrentDictionary")
-                return new ConcurrentDictionary<int, object>();
-            if (dictionaryName == "LockFreeDictionary")
-                return new LockFreeArrayBasedDictionary<int, object>();
+            string dictionaryTypeName;
+            if (commandArgumentsMapping.TryGetValue("testTarget", out dictionaryTypeName) == false)
+                throw new ArgumentException("\"testTarget\" is not specified in command line arguments.");
 
-            throw new ArgumentException($"Invalid dictionary name: {dictionaryName}", nameof(dictionaryName));
+            switch (dictionaryTypeName)
+            {
+                case "Dictionary":
+                    return new Dictionary<int, object>();
+                case "ConcurrentDictionary":
+                    return new ConcurrentDictionary<int, object>();
+                case "LockFreeDictionary":
+                    return new LockFreeArrayBasedDictionary<int, object>();
+            }
+
+            throw new ArgumentException($"Invalid testTarget name: {dictionaryTypeName}");
         }
 
-        public static IPerformanceTest InstantiateTest(this string testName)
+        public static IPerformanceTest InstantiateTest(Dictionary<string, string> commandArgumentsMapping)
         {
+            string testName;
+            if (commandArgumentsMapping.TryGetValue("test", out testName) == false)
+                throw new ArgumentException("\"test\" is not specified in command line arguments");
+
             var targetType = typeof(Program).Assembly
                                             .ExportedTypes
-                                            .First(t => t.Name == testName);
+                                            .FirstOrDefault(t => t.Name == testName);
 
-            return (IPerformanceTest) Activator.CreateInstance(targetType);
+            if (targetType == null)
+                throw new ArgumentException($"Test \"{testName}\" does not exist.");
+
+            var createMethod = targetType.GetMethods()
+                                         .FirstOrDefault(m => m.IsStatic &&
+                                                              m.ReturnType == typeof(IPerformanceTest) &&
+                                                              m.GetParameters().Single(p => p.ParameterType == typeof(IDictionary<string, string>)) != null);
+
+            if (createMethod == null)
+                return (IPerformanceTest) Activator.CreateInstance(targetType);
+
+            return (IPerformanceTest) createMethod.Invoke(null, new object[] { commandArgumentsMapping });
         }
     }
 }

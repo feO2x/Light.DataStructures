@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineArgumentsParser.cs" />
-    <Compile Include="IntKeyCreator.cs" />
+    <Compile Include="IntKeyTestInfo.cs" />
     <Compile Include="IPerformanceTest.cs" />
     <Compile Include="MultiThreadedAddTest.cs" />
     <Compile Include="PerformanceTestResults.cs" />

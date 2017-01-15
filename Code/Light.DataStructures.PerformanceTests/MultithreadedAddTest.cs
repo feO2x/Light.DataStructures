@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Light.DataStructures.PerformanceTests
@@ -10,32 +9,25 @@ namespace Light.DataStructures.PerformanceTests
     {
         private const int NumberOfKeys = 10000000;
 
-        private static readonly int[] Keys = Enumerable.Range(1, NumberOfKeys)
-                                                       .GroupBy(number => number % 27)
-                                                       .SelectMany(group => group)
-                                                       .ToArray();
-
-        private static readonly Dictionary<int, List<int>> PerThreadKeyGroups = new Dictionary<int, List<int>>();
-
-        static MultiThreadedAddTest()
+        public PerformanceTestResults Run(IDictionary<int, object> dictionary)
         {
+            var keys = IntKeyCreator.CreateKeys(NumberOfKeys);
+
             var numberOfProcessors = Environment.ProcessorCount;
+            var perThreadKeyGroups = new Dictionary<int, List<int>>();
             for (var i = 0; i < numberOfProcessors; i++)
             {
-                PerThreadKeyGroups.Add(i, new List<int>());
+                perThreadKeyGroups.Add(i, new List<int>());
             }
 
             for (var i = 0; i < NumberOfKeys; i++)
             {
                 var targetKey = i % numberOfProcessors;
-                PerThreadKeyGroups[targetKey].Add(Keys[i]);
+                perThreadKeyGroups[targetKey].Add(keys[i]);
             }
-        }
 
-        public PerformanceTestResults Run(IDictionary<int, object> dictionary)
-        {
             var stopwatch = Stopwatch.StartNew();
-            Parallel.ForEach(PerThreadKeyGroups, kvp =>
+            Parallel.ForEach(perThreadKeyGroups, kvp =>
                                                  {
                                                      foreach (var number in kvp.Value)
                                                      {

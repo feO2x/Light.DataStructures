@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Light.DataStructures.PerformanceTests
 {
@@ -8,15 +7,11 @@ namespace Light.DataStructures.PerformanceTests
     {
         private const int NumberOfKeys = 10000000;
 
-        private static readonly int[] Keys = Enumerable.Range(1, NumberOfKeys)
-                                                       .GroupBy(number => number % 27)
-                                                       .SelectMany(group => group)
-                                                       .ToArray();
-
         public PerformanceTestResults Run(IDictionary<int, object> dictionary)
         {
+            var keys = IntKeyCreator.CreateKeys(NumberOfKeys);
             var stopwatch = Stopwatch.StartNew();
-            foreach (var key in Keys)
+            foreach (var key in keys)
             {
                 dictionary.Add(key, new object());
             }

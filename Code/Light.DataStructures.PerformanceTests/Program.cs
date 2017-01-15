@@ -7,13 +7,9 @@ namespace Light.DataStructures.PerformanceTests
 {
     internal static class Program
     {
-        public static void Main(string[] args)
+        public static void Main(string[] arguments)
         {
-            var test = args[0].InstantiateTest();
-
-            var results = test.Run(args[1].InstantiateDictionary());
-
-            results.Print();
+            var commandArgumentsMapping = new CommandLineArgumentsParser().ParseArguments(arguments);
         }
 
         public static IDictionary<int, object> InstantiateDictionary(this string dictionaryName)

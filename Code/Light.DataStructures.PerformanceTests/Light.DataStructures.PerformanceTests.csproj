@@ -146,12 +146,18 @@
     <Compile Include="SingleThreadedAddTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="10000 items seed 9673754.json" />
+    <None Include="10000 items seed 9673754.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="100000 items seed 42.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="1000000 items seed 339826.json" />
-    <None Include="500000 items seed 1925388.json" />
+    <None Include="1000000 items seed 339826.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="500000 items seed 1925388.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Results\2017-03-14T07-50 SingleThreadedAddTest.csv" />

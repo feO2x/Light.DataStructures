@@ -134,13 +134,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandLineArgumentsParser.cs" />
     <Compile Include="FileNames.cs" />
     <Compile Include="IntegerSequence.cs" />
-    <Compile Include="IntKeyTestInfo.cs" />
-    <Compile Include="IPerformanceTest.cs" />
     <Compile Include="MultiThreadedAddTest.cs" />
-    <Compile Include="PerformanceTestResults.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingleThreadedAddTest.cs" />

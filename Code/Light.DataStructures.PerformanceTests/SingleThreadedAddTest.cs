@@ -1,57 +1,23 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using BenchmarkDotNet.Attributes;
-using Light.GuardClauses;
+using Newtonsoft.Json;
 
 namespace Light.DataStructures.PerformanceTests
 {
     public class SingleThreadedAddTest
     {
-        private static readonly List<int> Keys10000;
-        private static readonly List<int> Keys100000;
-        private static readonly List<int> Keys1000000;
         private List<int> _keys;
 
-        static SingleThreadedAddTest()
-        {
-            Keys10000 = InitializeList(10_000, 42);
-            Keys100000 = InitializeList(100_000, 50400302);
-            Keys1000000 = InitializeList(1_000_000, 9812903);
-        }
-
-        [Params(10_000, 100_000, 1_000_000)]
-        public int NumberOfItems { get; set; }
-
-
-        private static List<int> InitializeList(int numberOfItems, int seed)
-        {
-            var random = new Random(seed);
-            var list = new List<int>(numberOfItems);
-
-            while (list.Count < numberOfItems)
-            {
-                var number = random.Next();
-                if (list.Contains(number))
-                    continue;
-
-                list.Add(number);
-            }
-
-            return list;
-        }
+        [Params(FileNames.Items10000, FileNames.Items100000, FileNames.Items500000, FileNames.Items1000000)]
+        public string TestFile { get; set; }
 
         [Setup]
         public void Setup()
         {
-            NumberOfItems.MustNotBe(0);
-
-            if (NumberOfItems == 10_000)
-                _keys = Keys10000;
-            else if (NumberOfItems == 100_000)
-                _keys = Keys100000;
-            else
-                _keys = Keys1000000;
+            var json = File.ReadAllText(TestFile);
+            _keys = JsonConvert.DeserializeObject<List<int>>(json);
         }
 
         [Benchmark]

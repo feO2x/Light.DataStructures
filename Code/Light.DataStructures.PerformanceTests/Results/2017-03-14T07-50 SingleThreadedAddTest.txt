@@ -1,0 +1,1491 @@
+// ***** BenchmarkRunner: Start   *****
+// Found benchmarks:
+//   SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=10000 items seed 9673754.json]
+//   SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=10000 items seed 9673754.json]
+//   SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=10000 items seed 9673754.json]
+//   SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=100000 items seed 42.json]
+//   SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=100000 items seed 42.json]
+//   SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=100000 items seed 42.json]
+//   SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=1000000 items seed 339826.json]
+//   SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=1000000 items seed 339826.json]
+//   SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=1000000 items seed 339826.json]
+//   SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=500000 items seed 1925388.json]
+//   SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=500000 items seed 1925388.json]
+//   SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=500000 items seed 1925388.json]
+
+// Validating benchmarks:
+// **************************
+// Benchmark: SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=10000 items seed 9673754.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 9500848.56 ns, 593.8030 us/op
+Pilot 2: 32 op, 19887149.94 ns, 621.4734 us/op
+Pilot 3: 64 op, 40196847.61 ns, 628.0757 us/op
+Pilot 4: 128 op, 80405139.84 ns, 628.1652 us/op
+Pilot 5: 256 op, 189369144.98 ns, 739.7232 us/op
+Pilot 6: 512 op, 333742830.17 ns, 651.8415 us/op
+
+IdleWarmup 1: 512 op, 5722.31 ns, 11.1764 ns/op
+IdleWarmup 2: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleWarmup 3: 512 op, 2710.57 ns, 5.2941 ns/op
+IdleWarmup 4: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleWarmup 5: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleWarmup 6: 512 op, 4216.44 ns, 8.2352 ns/op
+
+IdleTarget 1: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 2: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 3: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 4: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 5: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 6: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 7: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 8: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 9: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 10: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 11: 512 op, 2710.57 ns, 5.2941 ns/op
+IdleTarget 12: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 13: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 14: 512 op, 2409.4 ns, 4.7059 ns/op
+IdleTarget 15: 512 op, 2409.4 ns, 4.7059 ns/op
+
+MainWarmup 1: 512 op, 328750261.65 ns, 642.0904 us/op
+MainWarmup 2: 512 op, 326925445.78 ns, 638.5263 us/op
+MainWarmup 3: 512 op, 330464245.32 ns, 645.4380 us/op
+MainWarmup 4: 512 op, 322178635.59 ns, 629.2551 us/op
+MainWarmup 5: 512 op, 321824755.63 ns, 628.5640 us/op
+MainWarmup 6: 512 op, 328167790.3 ns, 640.9527 us/op
+MainWarmup 7: 512 op, 325511130.65 ns, 635.7639 us/op
+
+MainTarget 1: 512 op, 326500488.66 ns, 637.6963 us/op
+MainTarget 2: 512 op, 329130042.6 ns, 642.8321 us/op
+MainTarget 3: 512 op, 324639833.03 ns, 634.0622 us/op
+MainTarget 4: 512 op, 325761707.78 ns, 636.2533 us/op
+MainTarget 5: 512 op, 324425095.66 ns, 633.6428 us/op
+MainTarget 6: 512 op, 328242180.38 ns, 641.0980 us/op
+MainTarget 7: 512 op, 327775962.37 ns, 640.1874 us/op
+MainTarget 8: 512 op, 330391963.46 ns, 645.2968 us/op
+MainTarget 9: 512 op, 326344179.13 ns, 637.3910 us/op
+MainTarget 10: 512 op, 325440957.01 ns, 635.6269 us/op
+MainTarget 11: 512 op, 329085769.96 ns, 642.7456 us/op
+MainTarget 12: 512 op, 326616741.99 ns, 637.9233 us/op
+MainTarget 13: 512 op, 323263164.71 ns, 631.3734 us/op
+MainTarget 14: 512 op, 328780981.44 ns, 642.1504 us/op
+MainTarget 15: 512 op, 330821438.2 ns, 646.1356 us/op
+
+Result 1: 512 op, 326498059.18 ns, 637.6915 us/op
+Result 2: 512 op, 329127613.13 ns, 642.8274 us/op
+Result 3: 512 op, 324637403.56 ns, 634.0574 us/op
+Result 4: 512 op, 325759278.31 ns, 636.2486 us/op
+Result 5: 512 op, 324422666.19 ns, 633.6380 us/op
+Result 6: 512 op, 328239750.91 ns, 641.0933 us/op
+Result 7: 512 op, 327773532.89 ns, 640.1827 us/op
+Result 8: 512 op, 330389533.99 ns, 645.2921 us/op
+Result 9: 512 op, 326341749.65 ns, 637.3862 us/op
+Result 10: 512 op, 325438527.54 ns, 635.6221 us/op
+Result 11: 512 op, 329083340.49 ns, 642.7409 us/op
+Result 12: 512 op, 326614312.51 ns, 637.9186 us/op
+Result 13: 512 op, 323260735.24 ns, 631.3686 us/op
+Result 14: 512 op, 328778551.96 ns, 642.1456 us/op
+Result 15: 512 op, 330819008.72 ns, 646.1309 us/op
+GC:  809 809 809 0 7680
+
+
+Mean = 638.9563 us, StdErr = 1.1352 us (0.18%); N = 15, StdDev = 4.3965 us
+Min = 631.3686 us, Q1 = 635.6221 us, Median = 637.9186 us, Q3 = 642.7409 us, Max = 646.1309 us
+IQR = 7.1188 us, LowerFence = 624.9440 us, UpperFence = 653.4191 us
+ConfidenceInterval = [636.7313 us; 641.1812 us] (CI 95%)
+Skewness = 0.01, Kurtosis = 1.73
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=10000 items seed 9673754.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 45024673.72 ns, 2.8140 ms/op
+Pilot 2: 32 op, 95765035.76 ns, 2.9927 ms/op
+Pilot 3: 64 op, 224988743.61 ns, 3.5154 ms/op
+
+IdleWarmup 1: 64 op, 3614.09 ns, 56.4702 ns/op
+IdleWarmup 2: 64 op, 602.35 ns, 9.4117 ns/op
+IdleWarmup 3: 64 op, 602.35 ns, 9.4117 ns/op
+IdleWarmup 4: 64 op, 602.35 ns, 9.4117 ns/op
+IdleWarmup 5: 64 op, 602.35 ns, 9.4117 ns/op
+IdleWarmup 6: 64 op, 903.52 ns, 14.1176 ns/op
+
+IdleTarget 1: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 2: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 3: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 4: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 5: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 6: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 7: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 8: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 9: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 10: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 11: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 12: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 13: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 14: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 15: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 16: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 17: 64 op, 602.35 ns, 9.4117 ns/op
+
+MainWarmup 1: 64 op, 223420829.52 ns, 3.4910 ms/op
+MainWarmup 2: 64 op, 223781636.49 ns, 3.4966 ms/op
+MainWarmup 3: 64 op, 231293830.29 ns, 3.6140 ms/op
+MainWarmup 4: 64 op, 235954504.59 ns, 3.6868 ms/op
+MainWarmup 5: 64 op, 225125777.97 ns, 3.5176 ms/op
+MainWarmup 6: 64 op, 224471024.76 ns, 3.5074 ms/op
+MainWarmup 7: 64 op, 222155294.57 ns, 3.4712 ms/op
+MainWarmup 8: 64 op, 223950294.17 ns, 3.4992 ms/op
+MainWarmup 9: 64 op, 223054601.42 ns, 3.4852 ms/op
+
+MainTarget 1: 64 op, 222984427.78 ns, 3.4841 ms/op
+MainTarget 2: 64 op, 224343025.63 ns, 3.5054 ms/op
+MainTarget 3: 64 op, 224182800.83 ns, 3.5029 ms/op
+MainTarget 4: 64 op, 230078892.64 ns, 3.5950 ms/op
+MainTarget 5: 64 op, 227782136.44 ns, 3.5591 ms/op
+MainTarget 6: 64 op, 224696002.06 ns, 3.5109 ms/op
+MainTarget 7: 64 op, 224746900.54 ns, 3.5117 ms/op
+MainTarget 8: 64 op, 226990047.69 ns, 3.5467 ms/op
+MainTarget 9: 64 op, 227021972.18 ns, 3.5472 ms/op
+MainTarget 10: 64 op, 225978101.61 ns, 3.5309 ms/op
+MainTarget 11: 64 op, 224517405.62 ns, 3.5081 ms/op
+MainTarget 12: 64 op, 227810446.84 ns, 3.5595 ms/op
+MainTarget 13: 64 op, 226179888.48 ns, 3.5341 ms/op
+MainTarget 14: 64 op, 224654138.81 ns, 3.5102 ms/op
+MainTarget 15: 64 op, 224104796.65 ns, 3.5016 ms/op
+
+Result 1: 64 op, 222983736.85 ns, 3.4841 ms/op
+Result 2: 64 op, 224342334.7 ns, 3.5053 ms/op
+Result 3: 64 op, 224182109.9 ns, 3.5028 ms/op
+Result 4: 64 op, 230078201.71 ns, 3.5950 ms/op
+Result 5: 64 op, 227781445.51 ns, 3.5591 ms/op
+Result 6: 64 op, 224695311.13 ns, 3.5109 ms/op
+Result 7: 64 op, 224746209.61 ns, 3.5117 ms/op
+Result 8: 64 op, 226989356.76 ns, 3.5467 ms/op
+Result 9: 64 op, 227021281.25 ns, 3.5472 ms/op
+Result 10: 64 op, 225977410.68 ns, 3.5309 ms/op
+Result 11: 64 op, 224516714.69 ns, 3.5081 ms/op
+Result 12: 64 op, 227809755.91 ns, 3.5595 ms/op
+Result 13: 64 op, 226179197.55 ns, 3.5340 ms/op
+Result 14: 64 op, 224653447.88 ns, 3.5102 ms/op
+Result 15: 64 op, 224104105.72 ns, 3.5016 ms/op
+GC:  0 0 0 0 960
+
+
+Mean = 3.5271 ms, StdErr = 0.0076 ms (0.22%); N = 15, StdDev = 0.0296 ms
+Min = 3.4841 ms, Q1 = 3.5053 ms, Median = 3.5117 ms, Q3 = 3.5472 ms, Max = 3.5950 ms
+IQR = 0.0419 ms, LowerFence = 3.4426 ms, UpperFence = 3.6100 ms
+ConfidenceInterval = [3.5122 ms; 3.5421 ms] (CI 95%)
+Skewness = 0.65, Kurtosis = 2.48
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=10000 items seed 9673754.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 105006874.31 ns, 6.5629 ms/op
+Pilot 2: 32 op, 180562804.66 ns, 5.6426 ms/op
+Pilot 3: 64 op, 520840517.6 ns, 8.1381 ms/op
+
+IdleWarmup 1: 64 op, 5722.31 ns, 89.4112 ns/op
+IdleWarmup 2: 64 op, 1204.7 ns, 18.8234 ns/op
+IdleWarmup 3: 64 op, 903.52 ns, 14.1176 ns/op
+IdleWarmup 4: 64 op, 602.35 ns, 9.4117 ns/op
+IdleWarmup 5: 64 op, 903.52 ns, 14.1176 ns/op
+IdleWarmup 6: 64 op, 602.35 ns, 9.4117 ns/op
+IdleWarmup 7: 64 op, 903.52 ns, 14.1176 ns/op
+IdleWarmup 8: 64 op, 602.35 ns, 9.4117 ns/op
+
+IdleTarget 1: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 2: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 3: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 4: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 5: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 6: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 7: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 8: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 9: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 10: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 11: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 12: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 13: 64 op, 903.52 ns, 14.1176 ns/op
+IdleTarget 14: 64 op, 602.35 ns, 9.4117 ns/op
+IdleTarget 15: 64 op, 903.52 ns, 14.1176 ns/op
+
+MainWarmup 1: 64 op, 606570120.18 ns, 9.4777 ms/op
+MainWarmup 2: 64 op, 743503893.43 ns, 11.6172 ms/op
+MainWarmup 3: 64 op, 745547361.94 ns, 11.6492 ms/op
+MainWarmup 4: 64 op, 747648655.93 ns, 11.6820 ms/op
+MainWarmup 5: 64 op, 748825645.61 ns, 11.7004 ms/op
+MainWarmup 6: 64 op, 748162760.69 ns, 11.6900 ms/op
+MainWarmup 7: 64 op, 745162762.19 ns, 11.6432 ms/op
+MainWarmup 8: 64 op, 744258034.2 ns, 11.6290 ms/op
+MainWarmup 9: 64 op, 748104031.67 ns, 11.6891 ms/op
+MainWarmup 10: 64 op, 747620345.54 ns, 11.6816 ms/op
+
+MainTarget 1: 64 op, 516128944.82 ns, 8.0645 ms/op
+MainTarget 2: 64 op, 359536311.85 ns, 5.6178 ms/op
+MainTarget 3: 64 op, 359857966.14 ns, 5.6228 ms/op
+MainTarget 4: 64 op, 361830658.65 ns, 5.6536 ms/op
+MainTarget 5: 64 op, 361235236.81 ns, 5.6443 ms/op
+MainTarget 6: 64 op, 357705773.66 ns, 5.5892 ms/op
+MainTarget 7: 64 op, 362152312.94 ns, 5.6586 ms/op
+MainTarget 8: 64 op, 358103323.91 ns, 5.5954 ms/op
+MainTarget 9: 64 op, 358715310.35 ns, 5.6049 ms/op
+MainTarget 10: 64 op, 362863988.12 ns, 5.6697 ms/op
+MainTarget 11: 64 op, 360867201.65 ns, 5.6386 ms/op
+MainTarget 12: 64 op, 362622747.4 ns, 5.6660 ms/op
+MainTarget 13: 64 op, 359733581.1 ns, 5.6208 ms/op
+MainTarget 14: 64 op, 357307018.72 ns, 5.5829 ms/op
+MainTarget 15: 64 op, 364175602.76 ns, 5.6902 ms/op
+
+Result 1: 64 op, 359535488.64 ns, 5.6177 ms/op
+Result 2: 64 op, 359857142.93 ns, 5.6228 ms/op
+Result 3: 64 op, 361829835.44 ns, 5.6536 ms/op
+Result 4: 64 op, 361234413.6 ns, 5.6443 ms/op
+Result 5: 64 op, 357704950.45 ns, 5.5891 ms/op
+Result 6: 64 op, 362151489.73 ns, 5.6586 ms/op
+Result 7: 64 op, 358102500.7 ns, 5.5954 ms/op
+Result 8: 64 op, 358714487.14 ns, 5.6049 ms/op
+Result 9: 64 op, 362863164.91 ns, 5.6697 ms/op
+Result 10: 64 op, 360866378.44 ns, 5.6385 ms/op
+Result 11: 64 op, 362621924.19 ns, 5.6660 ms/op
+Result 12: 64 op, 359732757.89 ns, 5.6208 ms/op
+Result 13: 64 op, 357306195.51 ns, 5.5829 ms/op
+Result 14: 64 op, 364174779.55 ns, 5.6902 ms/op
+GC:  0 0 0 0 960
+
+
+Mean = 5.6325 ms, StdErr = 0.0088 ms (0.16%); N = 14, StdDev = 0.0329 ms
+Min = 5.5829 ms, Q1 = 5.6049 ms, Median = 5.6307 ms, Q3 = 5.6586 ms, Max = 5.6902 ms
+IQR = 0.0537 ms, LowerFence = 5.5244 ms, UpperFence = 5.7392 ms
+ConfidenceInterval = [5.6152 ms; 5.6497 ms] (CI 95%)
+Skewness = 0.06, Kurtosis = 1.65
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=100000 items seed 42.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 183398361.91 ns, 11.4624 ms/op
+Pilot 2: 32 op, 377713694.55 ns, 11.8036 ms/op
+
+IdleWarmup 1: 32 op, 8131.71 ns, 254.1159 ns/op
+IdleWarmup 2: 32 op, 903.52 ns, 28.2351 ns/op
+IdleWarmup 3: 32 op, 602.35 ns, 18.8234 ns/op
+IdleWarmup 4: 32 op, 301.17 ns, 9.4117 ns/op
+IdleWarmup 5: 32 op, 602.35 ns, 18.8234 ns/op
+IdleWarmup 6: 32 op, 602.35 ns, 18.8234 ns/op
+IdleWarmup 7: 32 op, 602.35 ns, 18.8234 ns/op
+IdleWarmup 8: 32 op, 602.35 ns, 18.8234 ns/op
+
+IdleTarget 1: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 2: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 3: 32 op, 903.52 ns, 28.2351 ns/op
+IdleTarget 4: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 5: 32 op, 301.17 ns, 9.4117 ns/op
+IdleTarget 6: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 7: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 8: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 9: 32 op, 301.17 ns, 9.4117 ns/op
+IdleTarget 10: 32 op, 301.17 ns, 9.4117 ns/op
+IdleTarget 11: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 12: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 13: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 14: 32 op, 602.35 ns, 18.8234 ns/op
+IdleTarget 15: 32 op, 602.35 ns, 18.8234 ns/op
+
+MainWarmup 1: 32 op, 427458675.1 ns, 13.3581 ms/op
+MainWarmup 2: 32 op, 383759168.88 ns, 11.9925 ms/op
+MainWarmup 3: 32 op, 375877735.23 ns, 11.7462 ms/op
+MainWarmup 4: 32 op, 374071893.35 ns, 11.6897 ms/op
+MainWarmup 5: 32 op, 373776140.06 ns, 11.6805 ms/op
+MainWarmup 6: 32 op, 372867797.98 ns, 11.6521 ms/op
+MainWarmup 7: 32 op, 379899016.21 ns, 11.8718 ms/op
+MainWarmup 8: 32 op, 376661089.92 ns, 11.7707 ms/op
+MainWarmup 9: 32 op, 377899218 ns, 11.8094 ms/op
+MainWarmup 10: 32 op, 379150898.93 ns, 11.8485 ms/op
+MainWarmup 11: 32 op, 376055126.97 ns, 11.7517 ms/op
+
+MainTarget 1: 32 op, 375839787.25 ns, 11.7450 ms/op
+MainTarget 2: 32 op, 379996295.55 ns, 11.8749 ms/op
+MainTarget 3: 32 op, 378792501.36 ns, 11.8373 ms/op
+MainTarget 4: 32 op, 379638801.51 ns, 11.8637 ms/op
+MainTarget 5: 32 op, 377000513.5 ns, 11.7813 ms/op
+MainTarget 6: 32 op, 374087855.59 ns, 11.6902 ms/op
+MainTarget 7: 32 op, 382277691.86 ns, 11.9462 ms/op
+MainTarget 8: 32 op, 375737387.94 ns, 11.7418 ms/op
+MainTarget 9: 32 op, 376997501.76 ns, 11.7812 ms/op
+MainTarget 10: 32 op, 375539516.34 ns, 11.7356 ms/op
+MainTarget 11: 32 op, 378049202.87 ns, 11.8140 ms/op
+MainTarget 12: 32 op, 390794302.38 ns, 12.2123 ms/op
+MainTarget 13: 32 op, 378284420.1 ns, 11.8214 ms/op
+MainTarget 14: 32 op, 376734275.31 ns, 11.7729 ms/op
+MainTarget 15: 32 op, 376083437.36 ns, 11.7526 ms/op
+
+Result 1: 32 op, 375839225.06 ns, 11.7450 ms/op
+Result 2: 32 op, 379995733.36 ns, 11.8749 ms/op
+Result 3: 32 op, 378791939.17 ns, 11.8372 ms/op
+Result 4: 32 op, 379638239.31 ns, 11.8637 ms/op
+Result 5: 32 op, 376999951.31 ns, 11.7812 ms/op
+Result 6: 32 op, 374087293.4 ns, 11.6902 ms/op
+Result 7: 32 op, 382277129.67 ns, 11.9462 ms/op
+Result 8: 32 op, 375736825.75 ns, 11.7418 ms/op
+Result 9: 32 op, 376996939.57 ns, 11.7812 ms/op
+Result 10: 32 op, 375538954.15 ns, 11.7356 ms/op
+Result 11: 32 op, 378048640.67 ns, 11.8140 ms/op
+Result 12: 32 op, 378283857.9 ns, 11.8214 ms/op
+Result 13: 32 op, 376733713.11 ns, 11.7729 ms/op
+Result 14: 32 op, 376082875.17 ns, 11.7526 ms/op
+GC:  344 286 239 0 480
+
+
+Mean = 11.7970 ms, StdErr = 0.0180 ms (0.15%); N = 14, StdDev = 0.0675 ms
+Min = 11.6902 ms, Q1 = 11.7450 ms, Median = 11.7812 ms, Q3 = 11.8372 ms, Max = 11.9462 ms
+IQR = 0.0923 ms, LowerFence = 11.6066 ms, UpperFence = 11.9757 ms
+ConfidenceInterval = [11.7616 ms; 11.8324 ms] (CI 95%)
+Skewness = 0.54, Kurtosis = 2.48
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=100000 items seed 42.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 748414241.33 ns, 46.7759 ms/op
+
+IdleWarmup 1: 16 op, 5421.14 ns, 338.8212 ns/op
+IdleWarmup 2: 16 op, 1204.7 ns, 75.2936 ns/op
+IdleWarmup 3: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 4: 16 op, 301.17 ns, 18.8234 ns/op
+IdleWarmup 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 6: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 7: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 8: 16 op, 301.17 ns, 18.8234 ns/op
+
+IdleTarget 1: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 2: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 3: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 4: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 6: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 7: 16 op, 1204.7 ns, 75.2936 ns/op
+IdleTarget 8: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 9: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 10: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 11: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 12: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 13: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 14: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 15: 16 op, 602.35 ns, 37.6468 ns/op
+
+MainWarmup 1: 16 op, 729910987.9 ns, 45.6194 ms/op
+MainWarmup 2: 16 op, 785494837.12 ns, 49.0934 ms/op
+MainWarmup 3: 16 op, 795605865.07 ns, 49.7254 ms/op
+MainWarmup 4: 16 op, 784268454.84 ns, 49.0168 ms/op
+MainWarmup 5: 16 op, 797148179.33 ns, 49.8218 ms/op
+MainWarmup 6: 16 op, 798191447.55 ns, 49.8870 ms/op
+MainWarmup 7: 16 op, 801680854.49 ns, 50.1051 ms/op
+MainWarmup 8: 16 op, 781366639.21 ns, 48.8354 ms/op
+
+MainTarget 1: 16 op, 790967176.5 ns, 49.4354 ms/op
+MainTarget 2: 16 op, 791198478.47 ns, 49.4499 ms/op
+MainTarget 3: 16 op, 787013358.59 ns, 49.1883 ms/op
+MainTarget 4: 16 op, 806233708.35 ns, 50.3896 ms/op
+MainTarget 5: 16 op, 780911564.65 ns, 48.8070 ms/op
+MainTarget 6: 16 op, 790709371.19 ns, 49.4193 ms/op
+MainTarget 7: 16 op, 785268052.77 ns, 49.0793 ms/op
+MainTarget 8: 16 op, 785315337.16 ns, 49.0822 ms/op
+MainTarget 9: 16 op, 789639599.62 ns, 49.3525 ms/op
+MainTarget 10: 16 op, 795627549.63 ns, 49.7267 ms/op
+MainTarget 11: 16 op, 781815389.11 ns, 48.8635 ms/op
+MainTarget 12: 16 op, 780866689.66 ns, 48.8042 ms/op
+MainTarget 13: 16 op, 795201086.64 ns, 49.7001 ms/op
+MainTarget 14: 16 op, 799395542.92 ns, 49.9622 ms/op
+MainTarget 15: 16 op, 763925025.64 ns, 47.7453 ms/op
+
+Result 1: 16 op, 790966574.16 ns, 49.4354 ms/op
+Result 2: 16 op, 791197876.12 ns, 49.4499 ms/op
+Result 3: 16 op, 787012756.24 ns, 49.1883 ms/op
+Result 4: 16 op, 806233106 ns, 50.3896 ms/op
+Result 5: 16 op, 780910962.3 ns, 48.8069 ms/op
+Result 6: 16 op, 790708768.84 ns, 49.4193 ms/op
+Result 7: 16 op, 785267450.42 ns, 49.0792 ms/op
+Result 8: 16 op, 785314734.81 ns, 49.0822 ms/op
+Result 9: 16 op, 789638997.27 ns, 49.3524 ms/op
+Result 10: 16 op, 795626947.28 ns, 49.7267 ms/op
+Result 11: 16 op, 781814786.76 ns, 48.8634 ms/op
+Result 12: 16 op, 780866087.31 ns, 48.8041 ms/op
+Result 13: 16 op, 795200484.29 ns, 49.7000 ms/op
+Result 14: 16 op, 799394940.57 ns, 49.9622 ms/op
+Result 15: 16 op, 763924423.29 ns, 47.7453 ms/op
+GC:  167 83 0 0 240
+
+
+Mean = 49.2670 ms, StdErr = 0.1576 ms (0.32%); N = 15, StdDev = 0.6103 ms
+Min = 47.7453 ms, Q1 = 48.8634 ms, Median = 49.3524 ms, Q3 = 49.7000 ms, Max = 50.3896 ms
+IQR = 0.8366 ms, LowerFence = 47.6085 ms, UpperFence = 50.9549 ms
+ConfidenceInterval = [48.9581 ms; 49.5759 ms] (CI 95%)
+Skewness = -0.54, Kurtosis = 3.55
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=100000 items seed 42.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 1976313835.8 ns, 123.5196 ms/op
+
+IdleWarmup 1: 16 op, 4818.79 ns, 301.1744 ns/op
+IdleWarmup 2: 16 op, 1505.87 ns, 94.1170 ns/op
+IdleWarmup 3: 16 op, 301.17 ns, 18.8234 ns/op
+IdleWarmup 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 6: 16 op, 903.52 ns, 56.4702 ns/op
+IdleWarmup 7: 16 op, 301.17 ns, 18.8234 ns/op
+
+IdleTarget 1: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 2: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 3: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 6: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 7: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 8: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 9: 16 op, 903.52 ns, 56.4702 ns/op
+IdleTarget 10: 16 op, 903.52 ns, 56.4702 ns/op
+IdleTarget 11: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 12: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 13: 16 op, 903.52 ns, 56.4702 ns/op
+IdleTarget 14: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 15: 16 op, 602.35 ns, 37.6468 ns/op
+
+MainWarmup 1: 16 op, 1609061736.24 ns, 100.5664 ms/op
+MainWarmup 2: 16 op, 1422597418.63 ns, 88.9123 ms/op
+MainWarmup 3: 16 op, 1202379277.99 ns, 75.1487 ms/op
+MainWarmup 4: 16 op, 1437606145.16 ns, 89.8504 ms/op
+MainWarmup 5: 16 op, 1221316523.78 ns, 76.3323 ms/op
+MainWarmup 6: 16 op, 1527030856.83 ns, 95.4394 ms/op
+MainWarmup 7: 16 op, 1169999412.71 ns, 73.1250 ms/op
+
+MainTarget 1: 16 op, 1218310501.8 ns, 76.1444 ms/op
+MainTarget 2: 16 op, 1135333934.68 ns, 70.9584 ms/op
+MainTarget 3: 16 op, 1305867932 ns, 81.6167 ms/op
+MainTarget 4: 16 op, 1206655352.55 ns, 75.4160 ms/op
+MainTarget 5: 16 op, 1291748573.56 ns, 80.7343 ms/op
+MainTarget 6: 16 op, 1203282801.28 ns, 75.2052 ms/op
+MainTarget 7: 16 op, 1162895912.61 ns, 72.6810 ms/op
+MainTarget 8: 16 op, 1604270954.59 ns, 100.2669 ms/op
+MainTarget 9: 16 op, 1517720049.33 ns, 94.8575 ms/op
+MainTarget 10: 16 op, 1339798544.42 ns, 83.7374 ms/op
+MainTarget 11: 16 op, 1254579733.67 ns, 78.4112 ms/op
+MainTarget 12: 16 op, 1473337479.5 ns, 92.0836 ms/op
+MainTarget 13: 16 op, 1257414387.4 ns, 78.5884 ms/op
+MainTarget 14: 16 op, 1361643026.98 ns, 85.1027 ms/op
+MainTarget 15: 16 op, 1556934465.95 ns, 97.3084 ms/op
+MainTarget 16: 16 op, 1301839422.83 ns, 81.3650 ms/op
+MainTarget 17: 16 op, 1246630234.6 ns, 77.9144 ms/op
+MainTarget 18: 16 op, 1471549105.74 ns, 91.9718 ms/op
+MainTarget 19: 16 op, 1302350515.84 ns, 81.3969 ms/op
+MainTarget 20: 16 op, 1472913727.08 ns, 92.0571 ms/op
+MainTarget 21: 16 op, 1299045728.82 ns, 81.1904 ms/op
+MainTarget 22: 16 op, 1443417606.96 ns, 90.2136 ms/op
+MainTarget 23: 16 op, 1470538063.18 ns, 91.9086 ms/op
+MainTarget 24: 16 op, 1594416828.42 ns, 99.6511 ms/op
+MainTarget 25: 16 op, 1457542687.71 ns, 91.0964 ms/op
+MainTarget 26: 16 op, 1118398294.15 ns, 69.8999 ms/op
+MainTarget 27: 16 op, 1476239596.31 ns, 92.2650 ms/op
+MainTarget 28: 16 op, 1233775808.77 ns, 77.1110 ms/op
+MainTarget 29: 16 op, 1211330784.39 ns, 75.7082 ms/op
+MainTarget 30: 16 op, 1425970572.25 ns, 89.1232 ms/op
+MainTarget 31: 16 op, 1697139897.03 ns, 106.0712 ms/op
+MainTarget 32: 16 op, 1528792727.24 ns, 95.5495 ms/op
+MainTarget 33: 16 op, 1276774482.09 ns, 79.7984 ms/op
+MainTarget 34: 16 op, 1315896136.99 ns, 82.2435 ms/op
+MainTarget 35: 16 op, 1441803914.36 ns, 90.1127 ms/op
+MainTarget 36: 16 op, 1171173089.46 ns, 73.1983 ms/op
+MainTarget 37: 16 op, 1385804745.61 ns, 86.6128 ms/op
+MainTarget 38: 16 op, 1212192745.61 ns, 75.7620 ms/op
+MainTarget 39: 16 op, 1957216666.39 ns, 122.3260 ms/op
+MainTarget 40: 16 op, 1137501487.05 ns, 71.0938 ms/op
+MainTarget 41: 16 op, 1421602639.49 ns, 88.8502 ms/op
+MainTarget 42: 16 op, 1385639099.67 ns, 86.6024 ms/op
+MainTarget 43: 16 op, 1316931273.5 ns, 82.3082 ms/op
+MainTarget 44: 16 op, 1414590094.07 ns, 88.4119 ms/op
+MainTarget 45: 16 op, 1237991046.08 ns, 77.3744 ms/op
+MainTarget 46: 16 op, 1418787863.27 ns, 88.6742 ms/op
+MainTarget 47: 16 op, 1199508784.51 ns, 74.9693 ms/op
+MainTarget 48: 16 op, 1434228775.11 ns, 89.6393 ms/op
+MainTarget 49: 16 op, 1190431989.54 ns, 74.4020 ms/op
+MainTarget 50: 16 op, 1501406936.35 ns, 93.8379 ms/op
+MainTarget 51: 16 op, 1258822377.86 ns, 78.6764 ms/op
+MainTarget 52: 16 op, 1525190681.06 ns, 95.3244 ms/op
+MainTarget 53: 16 op, 1319474089.21 ns, 82.4671 ms/op
+MainTarget 54: 16 op, 1493867335.68 ns, 93.3667 ms/op
+MainTarget 55: 16 op, 1508024642.09 ns, 94.2515 ms/op
+MainTarget 56: 16 op, 1617985835.77 ns, 101.1241 ms/op
+MainTarget 57: 16 op, 1362766407.61 ns, 85.1729 ms/op
+MainTarget 58: 16 op, 1467755813.8 ns, 91.7347 ms/op
+MainTarget 59: 16 op, 1098621675.22 ns, 68.6639 ms/op
+MainTarget 60: 16 op, 1514655298.34 ns, 94.6660 ms/op
+MainTarget 61: 16 op, 1372643121.85 ns, 85.7902 ms/op
+MainTarget 62: 16 op, 1490856193.73 ns, 93.1785 ms/op
+MainTarget 63: 16 op, 1199548238.36 ns, 74.9718 ms/op
+MainTarget 64: 16 op, 1271064214.91 ns, 79.4415 ms/op
+MainTarget 65: 16 op, 1221334594.25 ns, 76.3334 ms/op
+MainTarget 66: 16 op, 1463433358.38 ns, 91.4646 ms/op
+MainTarget 67: 16 op, 1266966134.44 ns, 79.1854 ms/op
+MainTarget 68: 16 op, 1412686972.85 ns, 88.2929 ms/op
+MainTarget 69: 16 op, 1147129732.39 ns, 71.6956 ms/op
+MainTarget 70: 16 op, 1563173896.61 ns, 97.6984 ms/op
+MainTarget 71: 16 op, 1425154088.37 ns, 89.0721 ms/op
+MainTarget 72: 16 op, 1592816086.33 ns, 99.5510 ms/op
+MainTarget 73: 16 op, 1159317659.21 ns, 72.4574 ms/op
+MainTarget 74: 16 op, 1215896588.75 ns, 75.9935 ms/op
+MainTarget 75: 16 op, 1710412051.8 ns, 106.9008 ms/op
+MainTarget 76: 16 op, 1132452900.08 ns, 70.7783 ms/op
+MainTarget 77: 16 op, 1482705811.31 ns, 92.6691 ms/op
+MainTarget 78: 16 op, 1215461692.87 ns, 75.9664 ms/op
+MainTarget 79: 16 op, 1746591533.69 ns, 109.1620 ms/op
+MainTarget 80: 16 op, 1194756553.18 ns, 74.6723 ms/op
+MainTarget 81: 16 op, 1448789655.26 ns, 90.5494 ms/op
+MainTarget 82: 16 op, 1675672786.03 ns, 104.7295 ms/op
+MainTarget 83: 16 op, 1675476721.48 ns, 104.7173 ms/op
+MainTarget 84: 16 op, 1176932448.08 ns, 73.5583 ms/op
+MainTarget 85: 16 op, 1184616612.48 ns, 74.0385 ms/op
+MainTarget 86: 16 op, 1382443940.14 ns, 86.4027 ms/op
+MainTarget 87: 16 op, 1250754517.24 ns, 78.1722 ms/op
+MainTarget 88: 16 op, 1348004945.28 ns, 84.2503 ms/op
+MainTarget 89: 16 op, 1527640735.05 ns, 95.4775 ms/op
+MainTarget 90: 16 op, 1254664664.86 ns, 78.4165 ms/op
+MainTarget 91: 16 op, 1279199538.6 ns, 79.9500 ms/op
+MainTarget 92: 16 op, 1359864591.98 ns, 84.9915 ms/op
+MainTarget 93: 16 op, 1157430199.06 ns, 72.3394 ms/op
+MainTarget 94: 16 op, 1380733269.38 ns, 86.2958 ms/op
+MainTarget 95: 16 op, 1586740795.73 ns, 99.1713 ms/op
+MainTarget 96: 16 op, 1220514797.45 ns, 76.2822 ms/op
+MainTarget 97: 16 op, 1616648018.95 ns, 101.0405 ms/op
+MainTarget 98: 16 op, 1773618927.01 ns, 110.8512 ms/op
+MainTarget 99: 16 op, 1432095556.62 ns, 89.5060 ms/op
+MainTarget 100: 16 op, 1267457048.76 ns, 79.2161 ms/op
+
+Result 1: 16 op, 1218309899.45 ns, 76.1444 ms/op
+Result 2: 16 op, 1135333332.33 ns, 70.9583 ms/op
+Result 3: 16 op, 1305867329.65 ns, 81.6167 ms/op
+Result 4: 16 op, 1206654750.2 ns, 75.4159 ms/op
+Result 5: 16 op, 1291747971.21 ns, 80.7342 ms/op
+Result 6: 16 op, 1203282198.93 ns, 75.2051 ms/op
+Result 7: 16 op, 1162895310.26 ns, 72.6810 ms/op
+Result 8: 16 op, 1604270352.24 ns, 100.2669 ms/op
+Result 9: 16 op, 1517719446.98 ns, 94.8575 ms/op
+Result 10: 16 op, 1339797942.08 ns, 83.7374 ms/op
+Result 11: 16 op, 1254579131.32 ns, 78.4112 ms/op
+Result 12: 16 op, 1473336877.15 ns, 92.0836 ms/op
+Result 13: 16 op, 1257413785.05 ns, 78.5884 ms/op
+Result 14: 16 op, 1361642424.63 ns, 85.1027 ms/op
+Result 15: 16 op, 1556933863.6 ns, 97.3084 ms/op
+Result 16: 16 op, 1301838820.48 ns, 81.3649 ms/op
+Result 17: 16 op, 1246629632.25 ns, 77.9144 ms/op
+Result 18: 16 op, 1471548503.39 ns, 91.9718 ms/op
+Result 19: 16 op, 1302349913.49 ns, 81.3969 ms/op
+Result 20: 16 op, 1472913124.73 ns, 92.0571 ms/op
+Result 21: 16 op, 1299045126.47 ns, 81.1903 ms/op
+Result 22: 16 op, 1443417004.61 ns, 90.2136 ms/op
+Result 23: 16 op, 1470537460.83 ns, 91.9086 ms/op
+Result 24: 16 op, 1594416226.07 ns, 99.6510 ms/op
+Result 25: 16 op, 1457542085.36 ns, 91.0964 ms/op
+Result 26: 16 op, 1118397691.8 ns, 69.8999 ms/op
+Result 27: 16 op, 1476238993.96 ns, 92.2649 ms/op
+Result 28: 16 op, 1233775206.42 ns, 77.1110 ms/op
+Result 29: 16 op, 1211330182.04 ns, 75.7081 ms/op
+Result 30: 16 op, 1425969969.9 ns, 89.1231 ms/op
+Result 31: 16 op, 1697139294.68 ns, 106.0712 ms/op
+Result 32: 16 op, 1528792124.89 ns, 95.5495 ms/op
+Result 33: 16 op, 1276773879.74 ns, 79.7984 ms/op
+Result 34: 16 op, 1315895534.64 ns, 82.2435 ms/op
+Result 35: 16 op, 1441803312.02 ns, 90.1127 ms/op
+Result 36: 16 op, 1171172487.11 ns, 73.1983 ms/op
+Result 37: 16 op, 1385804143.26 ns, 86.6128 ms/op
+Result 38: 16 op, 1212192143.26 ns, 75.7620 ms/op
+Result 39: 16 op, 1137500884.7 ns, 71.0938 ms/op
+Result 40: 16 op, 1421602037.14 ns, 88.8501 ms/op
+Result 41: 16 op, 1385638497.32 ns, 86.6024 ms/op
+Result 42: 16 op, 1316930671.15 ns, 82.3082 ms/op
+Result 43: 16 op, 1414589491.72 ns, 88.4118 ms/op
+Result 44: 16 op, 1237990443.74 ns, 77.3744 ms/op
+Result 45: 16 op, 1418787260.92 ns, 88.6742 ms/op
+Result 46: 16 op, 1199508182.16 ns, 74.9693 ms/op
+Result 47: 16 op, 1434228172.76 ns, 89.6393 ms/op
+Result 48: 16 op, 1190431387.19 ns, 74.4020 ms/op
+Result 49: 16 op, 1501406334 ns, 93.8379 ms/op
+Result 50: 16 op, 1258821775.51 ns, 78.6764 ms/op
+Result 51: 16 op, 1525190078.71 ns, 95.3244 ms/op
+Result 52: 16 op, 1319473486.86 ns, 82.4671 ms/op
+Result 53: 16 op, 1493866733.33 ns, 93.3667 ms/op
+Result 54: 16 op, 1508024039.74 ns, 94.2515 ms/op
+Result 55: 16 op, 1617985233.42 ns, 101.1241 ms/op
+Result 56: 16 op, 1362765805.26 ns, 85.1729 ms/op
+Result 57: 16 op, 1467755211.45 ns, 91.7347 ms/op
+Result 58: 16 op, 1098621072.87 ns, 68.6638 ms/op
+Result 59: 16 op, 1514654695.99 ns, 94.6659 ms/op
+Result 60: 16 op, 1372642519.5 ns, 85.7902 ms/op
+Result 61: 16 op, 1490855591.38 ns, 93.1785 ms/op
+Result 62: 16 op, 1199547636.01 ns, 74.9717 ms/op
+Result 63: 16 op, 1271063612.56 ns, 79.4415 ms/op
+Result 64: 16 op, 1221333991.9 ns, 76.3334 ms/op
+Result 65: 16 op, 1463432756.03 ns, 91.4645 ms/op
+Result 66: 16 op, 1266965532.09 ns, 79.1853 ms/op
+Result 67: 16 op, 1412686370.5 ns, 88.2929 ms/op
+Result 68: 16 op, 1147129130.04 ns, 71.6956 ms/op
+Result 69: 16 op, 1563173294.26 ns, 97.6983 ms/op
+Result 70: 16 op, 1425153486.02 ns, 89.0721 ms/op
+Result 71: 16 op, 1592815483.98 ns, 99.5510 ms/op
+Result 72: 16 op, 1159317056.86 ns, 72.4573 ms/op
+Result 73: 16 op, 1215895986.4 ns, 75.9935 ms/op
+Result 74: 16 op, 1710411449.45 ns, 106.9007 ms/op
+Result 75: 16 op, 1132452297.74 ns, 70.7783 ms/op
+Result 76: 16 op, 1482705208.96 ns, 92.6691 ms/op
+Result 77: 16 op, 1215461090.52 ns, 75.9663 ms/op
+Result 78: 16 op, 1746590931.34 ns, 109.1619 ms/op
+Result 79: 16 op, 1194755950.83 ns, 74.6722 ms/op
+Result 80: 16 op, 1448789052.91 ns, 90.5493 ms/op
+Result 81: 16 op, 1675672183.68 ns, 104.7295 ms/op
+Result 82: 16 op, 1675476119.13 ns, 104.7173 ms/op
+Result 83: 16 op, 1176931845.73 ns, 73.5582 ms/op
+Result 84: 16 op, 1184616010.13 ns, 74.0385 ms/op
+Result 85: 16 op, 1382443337.8 ns, 86.4027 ms/op
+Result 86: 16 op, 1250753914.89 ns, 78.1721 ms/op
+Result 87: 16 op, 1348004342.94 ns, 84.2503 ms/op
+Result 88: 16 op, 1527640132.7 ns, 95.4775 ms/op
+Result 89: 16 op, 1254664062.51 ns, 78.4165 ms/op
+Result 90: 16 op, 1279198936.25 ns, 79.9499 ms/op
+Result 91: 16 op, 1359863989.63 ns, 84.9915 ms/op
+Result 92: 16 op, 1157429596.71 ns, 72.3393 ms/op
+Result 93: 16 op, 1380732667.04 ns, 86.2958 ms/op
+Result 94: 16 op, 1586740193.38 ns, 99.1713 ms/op
+Result 95: 16 op, 1220514195.1 ns, 76.2821 ms/op
+Result 96: 16 op, 1616647416.6 ns, 101.0405 ms/op
+Result 97: 16 op, 1773618324.66 ns, 110.8511 ms/op
+Result 98: 16 op, 1432094954.27 ns, 89.5059 ms/op
+Result 99: 16 op, 1267456446.41 ns, 79.2160 ms/op
+GC:  1378 1089 580 0 1600
+
+
+Mean = 85.5775 ms, StdErr = 1.0156 ms (1.19%); N = 99, StdDev = 10.1055 ms
+Min = 68.6638 ms, Q1 = 76.3334 ms, Median = 85.1027 ms, Q3 = 92.2649 ms, Max = 110.8511 ms
+IQR = 15.9316 ms, LowerFence = 52.4360 ms, UpperFence = 116.1623 ms
+ConfidenceInterval = [83.5868 ms; 87.5681 ms] (CI 95%)
+Skewness = 0.41, Kurtosis = 2.32
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=1000000 items seed 339826.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 4415112029.36 ns, 275.9445 ms/op
+
+IdleWarmup 1: 16 op, 7228.19 ns, 451.7616 ns/op
+IdleWarmup 2: 16 op, 2108.22 ns, 131.7638 ns/op
+IdleWarmup 3: 16 op, 903.52 ns, 56.4702 ns/op
+IdleWarmup 4: 16 op, 301.17 ns, 18.8234 ns/op
+IdleWarmup 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 6: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 7: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 8: 16 op, 602.35 ns, 37.6468 ns/op
+
+IdleTarget 1: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 2: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 3: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 6: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 7: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 8: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 9: 16 op, 903.52 ns, 56.4702 ns/op
+IdleTarget 10: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 11: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 12: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 13: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 14: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 15: 16 op, 602.35 ns, 37.6468 ns/op
+
+MainWarmup 1: 16 op, 4576395454.07 ns, 286.0247 ms/op
+MainWarmup 2: 16 op, 4692092514.76 ns, 293.2558 ms/op
+MainWarmup 3: 16 op, 4469976372.87 ns, 279.3735 ms/op
+MainWarmup 4: 16 op, 4440652825.69 ns, 277.5408 ms/op
+MainWarmup 5: 16 op, 4485841037.12 ns, 280.3651 ms/op
+MainWarmup 6: 16 op, 4456251854.11 ns, 278.5157 ms/op
+
+MainTarget 1: 16 op, 4505545976.54 ns, 281.5966 ms/op
+MainTarget 2: 16 op, 4678885112.5 ns, 292.4303 ms/op
+MainTarget 3: 16 op, 4460990231.41 ns, 278.8119 ms/op
+MainTarget 4: 16 op, 4444400037.95 ns, 277.7750 ms/op
+MainTarget 5: 16 op, 4522010881.43 ns, 282.6257 ms/op
+MainTarget 6: 16 op, 4439109306.74 ns, 277.4443 ms/op
+MainTarget 7: 16 op, 4395220662.98 ns, 274.7013 ms/op
+MainTarget 8: 16 op, 4460167422.87 ns, 278.7605 ms/op
+MainTarget 9: 16 op, 4434678729.71 ns, 277.1674 ms/op
+MainTarget 10: 16 op, 4510337661.71 ns, 281.8961 ms/op
+MainTarget 11: 16 op, 4522815017.16 ns, 282.6759 ms/op
+MainTarget 12: 16 op, 4466324030.56 ns, 279.1453 ms/op
+MainTarget 13: 16 op, 4448724300.41 ns, 278.0453 ms/op
+MainTarget 14: 16 op, 4480097640.75 ns, 280.0061 ms/op
+MainTarget 15: 16 op, 4469268914.13 ns, 279.3293 ms/op
+
+Result 1: 16 op, 4505545374.19 ns, 281.5966 ms/op
+Result 2: 16 op, 4460989629.06 ns, 278.8119 ms/op
+Result 3: 16 op, 4444399435.6 ns, 277.7750 ms/op
+Result 4: 16 op, 4522010279.08 ns, 282.6256 ms/op
+Result 5: 16 op, 4439108704.39 ns, 277.4443 ms/op
+Result 6: 16 op, 4395220060.63 ns, 274.7013 ms/op
+Result 7: 16 op, 4460166820.52 ns, 278.7604 ms/op
+Result 8: 16 op, 4434678127.36 ns, 277.1674 ms/op
+Result 9: 16 op, 4510337059.36 ns, 281.8961 ms/op
+Result 10: 16 op, 4522814414.81 ns, 282.6759 ms/op
+Result 11: 16 op, 4466323428.21 ns, 279.1452 ms/op
+Result 12: 16 op, 4448723698.06 ns, 278.0452 ms/op
+Result 13: 16 op, 4480097038.4 ns, 280.0061 ms/op
+Result 14: 16 op, 4469268311.78 ns, 279.3293 ms/op
+GC:  589 422 118 0 240
+
+
+Mean = 279.2843 ms, StdErr = 0.6138 ms (0.22%); N = 14, StdDev = 2.2965 ms
+Min = 274.7013 ms, Q1 = 277.7750 ms, Median = 278.9785 ms, Q3 = 281.5966 ms, Max = 282.6759 ms
+IQR = 3.8216 ms, LowerFence = 272.0425 ms, UpperFence = 287.3290 ms
+ConfidenceInterval = [278.0813 ms; 280.4873 ms] (CI 95%)
+Skewness = -0.06, Kurtosis = 2.09
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=1000000 items seed 339826.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 14557831965.75 ns, 909.8645 ms/op
+
+IdleWarmup 1: 16 op, 6625.84 ns, 414.1148 ns/op
+IdleWarmup 2: 16 op, 903.52 ns, 56.4702 ns/op
+IdleWarmup 3: 16 op, 903.52 ns, 56.4702 ns/op
+IdleWarmup 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 6: 16 op, 602.35 ns, 37.6468 ns/op
+
+IdleTarget 1: 16 op, 903.52 ns, 56.4702 ns/op
+IdleTarget 2: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 3: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 6: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 7: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 8: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 9: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 10: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 11: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 12: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 13: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 14: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 15: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 16: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 17: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 18: 16 op, 602.35 ns, 37.6468 ns/op
+
+MainWarmup 1: 16 op, 14372856955.7 ns, 898.3036 ms/op
+MainWarmup 2: 16 op, 14575503074.24 ns, 910.9689 ms/op
+MainWarmup 3: 16 op, 14484144822.74 ns, 905.2591 ms/op
+MainWarmup 4: 16 op, 14771554677.46 ns, 923.2222 ms/op
+MainWarmup 5: 16 op, 14688984695.82 ns, 918.0615 ms/op
+MainWarmup 6: 16 op, 14521030859.84 ns, 907.5644 ms/op
+
+MainTarget 1: 16 op, 14801496234.57 ns, 925.0935 ms/op
+MainTarget 2: 16 op, 14569286231.66 ns, 910.5804 ms/op
+MainTarget 3: 16 op, 14615884240.6 ns, 913.4928 ms/op
+MainTarget 4: 16 op, 14828819381.18 ns, 926.8012 ms/op
+MainTarget 5: 16 op, 14775649445.01 ns, 923.4781 ms/op
+MainTarget 6: 16 op, 14882152252.71 ns, 930.1345 ms/op
+MainTarget 7: 16 op, 14463145736.8 ns, 903.9466 ms/op
+MainTarget 8: 16 op, 14685169418.15 ns, 917.8231 ms/op
+MainTarget 9: 16 op, 14507896944.13 ns, 906.7436 ms/op
+MainTarget 10: 16 op, 14517645358.07 ns, 907.3528 ms/op
+MainTarget 11: 16 op, 14730131146.41 ns, 920.6332 ms/op
+MainTarget 12: 16 op, 14689031980.21 ns, 918.0645 ms/op
+MainTarget 13: 16 op, 14708947440.54 ns, 919.3092 ms/op
+MainTarget 14: 16 op, 14596066360.77 ns, 912.2541 ms/op
+MainTarget 15: 16 op, 14738411937.35 ns, 921.1507 ms/op
+
+Result 1: 16 op, 14801495682.41 ns, 925.0935 ms/op
+Result 2: 16 op, 14569285679.51 ns, 910.5804 ms/op
+Result 3: 16 op, 14615883688.44 ns, 913.4927 ms/op
+Result 4: 16 op, 14828818829.02 ns, 926.8012 ms/op
+Result 5: 16 op, 14775648892.86 ns, 923.4781 ms/op
+Result 6: 16 op, 14882151700.56 ns, 930.1345 ms/op
+Result 7: 16 op, 14463145184.65 ns, 903.9466 ms/op
+Result 8: 16 op, 14685168865.99 ns, 917.8231 ms/op
+Result 9: 16 op, 14507896391.98 ns, 906.7435 ms/op
+Result 10: 16 op, 14517644805.92 ns, 907.3528 ms/op
+Result 11: 16 op, 14730130594.25 ns, 920.6332 ms/op
+Result 12: 16 op, 14689031428.05 ns, 918.0645 ms/op
+Result 13: 16 op, 14708946888.39 ns, 919.3092 ms/op
+Result 14: 16 op, 14596065808.62 ns, 912.2541 ms/op
+Result 15: 16 op, 14738411385.2 ns, 921.1507 ms/op
+GC:  2285 2134 22 0 240
+
+
+Mean = 917.1239 ms, StdErr = 2.0214 ms (0.22%); N = 15, StdDev = 7.8289 ms
+Min = 903.9466 ms, Q1 = 910.5804 ms, Median = 918.0645 ms, Q3 = 923.4781 ms, Max = 930.1345 ms
+IQR = 12.8977 ms, LowerFence = 891.2338 ms, UpperFence = 942.8246 ms
+ConfidenceInterval = [913.1619 ms; 921.0858 ms] (CI 95%)
+Skewness = -0.11, Kurtosis = 1.72
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=1000000 items seed 339826.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 22167889685.83 ns, 1.3855 s/op
+
+IdleWarmup 1: 16 op, 6324.66 ns, 395.2914 ns/op
+IdleWarmup 2: 16 op, 1204.7 ns, 75.2936 ns/op
+IdleWarmup 3: 16 op, 903.52 ns, 56.4702 ns/op
+IdleWarmup 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 6: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 7: 16 op, 301.17 ns, 18.8234 ns/op
+IdleWarmup 8: 16 op, 301.17 ns, 18.8234 ns/op
+
+IdleTarget 1: 16 op, 903.52 ns, 56.4702 ns/op
+IdleTarget 2: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 3: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 6: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 7: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 8: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 9: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 10: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 11: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 12: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 13: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 14: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 15: 16 op, 602.35 ns, 37.6468 ns/op
+
+MainWarmup 1: 16 op, 23686804795.3 ns, 1.4804 s/op
+MainWarmup 2: 16 op, 21489364175.6 ns, 1.3431 s/op
+MainWarmup 3: 16 op, 25395431485.08 ns, 1.5872 s/op
+MainWarmup 4: 16 op, 22161870413.68 ns, 1.3851 s/op
+MainWarmup 5: 16 op, 29640103483.53 ns, 1.8525 s/op
+MainWarmup 6: 16 op, 22772486209.98 ns, 1.4233 s/op
+
+MainTarget 1: 16 op, 23142020910.54 ns, 1.4464 s/op
+MainTarget 2: 16 op, 23633446625.11 ns, 1.4771 s/op
+MainTarget 3: 16 op, 22733942207.64 ns, 1.4209 s/op
+MainTarget 4: 16 op, 24758752053.63 ns, 1.5474 s/op
+MainTarget 5: 16 op, 22998412208.41 ns, 1.4374 s/op
+MainTarget 6: 16 op, 25054529738.72 ns, 1.5659 s/op
+MainTarget 7: 16 op, 28426559669.43 ns, 1.7767 s/op
+MainTarget 8: 16 op, 23519725569.86 ns, 1.4700 s/op
+MainTarget 9: 16 op, 22943432515.09 ns, 1.4340 s/op
+MainTarget 10: 16 op, 24142095300.62 ns, 1.5089 s/op
+MainTarget 11: 16 op, 22350995607.37 ns, 1.3969 s/op
+MainTarget 12: 16 op, 23037707038.6 ns, 1.4399 s/op
+MainTarget 13: 16 op, 24569674144.33 ns, 1.5356 s/op
+MainTarget 14: 16 op, 23049870570.29 ns, 1.4406 s/op
+MainTarget 15: 16 op, 23684769759.68 ns, 1.4803 s/op
+
+Result 1: 16 op, 23142020308.19 ns, 1.4464 s/op
+Result 2: 16 op, 23633446022.77 ns, 1.4771 s/op
+Result 3: 16 op, 22733941605.29 ns, 1.4209 s/op
+Result 4: 16 op, 24758751451.28 ns, 1.5474 s/op
+Result 5: 16 op, 22998411606.06 ns, 1.4374 s/op
+Result 6: 16 op, 25054529136.37 ns, 1.5659 s/op
+Result 7: 16 op, 23519724967.51 ns, 1.4700 s/op
+Result 8: 16 op, 22943431912.74 ns, 1.4340 s/op
+Result 9: 16 op, 24142094698.28 ns, 1.5089 s/op
+Result 10: 16 op, 22350995005.02 ns, 1.3969 s/op
+Result 11: 16 op, 23037706436.25 ns, 1.4399 s/op
+Result 12: 16 op, 24569673541.98 ns, 1.5356 s/op
+Result 13: 16 op, 23049869967.94 ns, 1.4406 s/op
+Result 14: 16 op, 23684769157.33 ns, 1.4803 s/op
+GC:  1383 1163 99 0 240
+
+
+Mean = 1.4715 s, StdErr = 0.0136 s (0.92%); N = 14, StdDev = 0.0508 s
+Min = 1.3969 s, Q1 = 1.4374 s, Median = 1.4582 s, Q3 = 1.5089 s, Max = 1.5659 s
+IQR = 0.0715 s, LowerFence = 1.3302 s, UpperFence = 1.6161 s
+ConfidenceInterval = [1.4449 s; 1.4981 s] (CI 95%)
+Skewness = 0.48, Kurtosis = 1.87
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=500000 items seed 1925388.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 1602107618.66 ns, 100.1317 ms/op
+
+IdleWarmup 1: 16 op, 6324.66 ns, 395.2914 ns/op
+IdleWarmup 2: 16 op, 903.52 ns, 56.4702 ns/op
+IdleWarmup 3: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 6: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 7: 16 op, 602.35 ns, 37.6468 ns/op
+
+IdleTarget 1: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 2: 16 op, 1204.7 ns, 75.2936 ns/op
+IdleTarget 3: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 5: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 6: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 7: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 8: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 9: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 10: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 11: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 12: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 13: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 14: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 15: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 16: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 17: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 18: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 19: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 20: 16 op, 301.17 ns, 18.8234 ns/op
+
+MainWarmup 1: 16 op, 1610349558.1 ns, 100.6468 ms/op
+MainWarmup 2: 16 op, 1805162732.07 ns, 112.8227 ms/op
+MainWarmup 3: 16 op, 1829106701.58 ns, 114.3192 ms/op
+MainWarmup 4: 16 op, 1825681745.97 ns, 114.1051 ms/op
+MainWarmup 5: 16 op, 1838759944.4 ns, 114.9225 ms/op
+MainWarmup 6: 16 op, 1821583665.5 ns, 113.8490 ms/op
+
+MainTarget 1: 16 op, 1829234399.54 ns, 114.3271 ms/op
+MainTarget 2: 16 op, 1841433770.99 ns, 115.0896 ms/op
+MainTarget 3: 16 op, 1827312906.68 ns, 114.2071 ms/op
+MainTarget 4: 16 op, 1819226072.07 ns, 113.7016 ms/op
+MainTarget 5: 16 op, 1827417715.38 ns, 114.2136 ms/op
+MainTarget 6: 16 op, 1831329670.05 ns, 114.4581 ms/op
+MainTarget 7: 16 op, 1826443717.28 ns, 114.1527 ms/op
+MainTarget 8: 16 op, 1820703031.47 ns, 113.7939 ms/op
+MainTarget 9: 16 op, 1826529551.99 ns, 114.1581 ms/op
+MainTarget 10: 16 op, 1832026888.85 ns, 114.5017 ms/op
+MainTarget 11: 16 op, 1927249810.64 ns, 120.4531 ms/op
+MainTarget 12: 16 op, 1844086816.54 ns, 115.2554 ms/op
+MainTarget 13: 16 op, 1831760650.66 ns, 114.4850 ms/op
+MainTarget 14: 16 op, 1829410887.76 ns, 114.3382 ms/op
+MainTarget 15: 16 op, 1836695694.86 ns, 114.7935 ms/op
+
+Result 1: 16 op, 1829233902.6 ns, 114.3271 ms/op
+Result 2: 16 op, 1841433274.05 ns, 115.0896 ms/op
+Result 3: 16 op, 1827312409.74 ns, 114.2070 ms/op
+Result 4: 16 op, 1819225575.13 ns, 113.7016 ms/op
+Result 5: 16 op, 1827417218.44 ns, 114.2136 ms/op
+Result 6: 16 op, 1831329173.11 ns, 114.4581 ms/op
+Result 7: 16 op, 1826443220.34 ns, 114.1527 ms/op
+Result 8: 16 op, 1820702534.53 ns, 113.7939 ms/op
+Result 9: 16 op, 1826529055.05 ns, 114.1581 ms/op
+Result 10: 16 op, 1832026391.92 ns, 114.5016 ms/op
+Result 11: 16 op, 1844086319.6 ns, 115.2554 ms/op
+Result 12: 16 op, 1831760153.72 ns, 114.4850 ms/op
+Result 13: 16 op, 1829410390.82 ns, 114.3381 ms/op
+Result 14: 16 op, 1836695197.92 ns, 114.7934 ms/op
+GC:  254 179 14 0 240
+
+
+Mean = 114.3911 ms, StdErr = 0.1157 ms (0.1%); N = 14, StdDev = 0.4330 ms
+Min = 113.7016 ms, Q1 = 114.1581 ms, Median = 114.3326 ms, Q3 = 114.5016 ms, Max = 115.2554 ms
+IQR = 0.3436 ms, LowerFence = 113.6427 ms, UpperFence = 115.0170 ms
+ConfidenceInterval = [114.1643 ms; 114.6179 ms] (CI 95%)
+Skewness = 0.42, Kurtosis = 2.41
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=500000 items seed 1925388.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 6599451561.36 ns, 412.4657 ms/op
+
+IdleWarmup 1: 16 op, 5722.31 ns, 357.6446 ns/op
+IdleWarmup 2: 16 op, 1204.7 ns, 75.2936 ns/op
+IdleWarmup 3: 16 op, 903.52 ns, 56.4702 ns/op
+IdleWarmup 4: 16 op, 903.52 ns, 56.4702 ns/op
+IdleWarmup 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 6: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 7: 16 op, 602.35 ns, 37.6468 ns/op
+
+IdleTarget 1: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 2: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 3: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 6: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 7: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 8: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 9: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 10: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 11: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 12: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 13: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 14: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 15: 16 op, 602.35 ns, 37.6468 ns/op
+
+MainWarmup 1: 16 op, 6768019190.83 ns, 423.0012 ms/op
+MainWarmup 2: 16 op, 6755319568.66 ns, 422.2075 ms/op
+MainWarmup 3: 16 op, 6814187725.03 ns, 425.8867 ms/op
+MainWarmup 4: 16 op, 6800578556.08 ns, 425.0362 ms/op
+MainWarmup 5: 16 op, 6855135099.32 ns, 428.4459 ms/op
+MainWarmup 6: 16 op, 6768817001.9 ns, 423.0511 ms/op
+
+MainTarget 1: 16 op, 6810933836.5 ns, 425.6834 ms/op
+MainTarget 2: 16 op, 6647849689.87 ns, 415.4906 ms/op
+MainTarget 3: 16 op, 6726532413.15 ns, 420.4083 ms/op
+MainTarget 4: 16 op, 6686933697.96 ns, 417.9334 ms/op
+MainTarget 5: 16 op, 6669394805.04 ns, 416.8372 ms/op
+MainTarget 6: 16 op, 6715844937.33 ns, 419.7403 ms/op
+MainTarget 7: 16 op, 6798993475.06 ns, 424.9371 ms/op
+MainTarget 8: 16 op, 6889104262.07 ns, 430.5690 ms/op
+MainTarget 9: 16 op, 6747378201.3 ns, 421.7111 ms/op
+MainTarget 10: 16 op, 6877083185.88 ns, 429.8177 ms/op
+MainTarget 11: 16 op, 6936353108.95 ns, 433.5221 ms/op
+MainTarget 12: 16 op, 6774549555.99 ns, 423.4093 ms/op
+MainTarget 13: 16 op, 6784866286.08 ns, 424.0541 ms/op
+MainTarget 14: 16 op, 6804436299.35 ns, 425.2773 ms/op
+MainTarget 15: 16 op, 6792766994.9 ns, 424.5479 ms/op
+
+Result 1: 16 op, 6810933234.15 ns, 425.6833 ms/op
+Result 2: 16 op, 6647849087.52 ns, 415.4906 ms/op
+Result 3: 16 op, 6726531810.8 ns, 420.4082 ms/op
+Result 4: 16 op, 6686933095.61 ns, 417.9333 ms/op
+Result 5: 16 op, 6669394202.69 ns, 416.8371 ms/op
+Result 6: 16 op, 6715844334.98 ns, 419.7403 ms/op
+Result 7: 16 op, 6798992872.71 ns, 424.9371 ms/op
+Result 8: 16 op, 6889103659.72 ns, 430.5690 ms/op
+Result 9: 16 op, 6747377598.95 ns, 421.7111 ms/op
+Result 10: 16 op, 6877082583.53 ns, 429.8177 ms/op
+Result 11: 16 op, 6936352506.6 ns, 433.5220 ms/op
+Result 12: 16 op, 6774548953.64 ns, 423.4093 ms/op
+Result 13: 16 op, 6784865683.73 ns, 424.0541 ms/op
+Result 14: 16 op, 6804435697 ns, 425.2772 ms/op
+Result 15: 16 op, 6792766392.55 ns, 424.5479 ms/op
+GC:  1185 1010 54 0 240
+
+
+Mean = 423.5959 ms, StdErr = 1.3238 ms (0.31%); N = 15, StdDev = 5.1271 ms
+Min = 415.4906 ms, Q1 = 419.7403 ms, Median = 424.0541 ms, Q3 = 425.6833 ms, Max = 433.5220 ms
+IQR = 5.9431 ms, LowerFence = 410.8257 ms, UpperFence = 434.5979 ms
+ConfidenceInterval = [421.0012 ms; 426.1905 ms] (CI 95%)
+Skewness = 0.23, Kurtosis = 2.06
+
+
+// **************************
+// Benchmark: SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=500000 items seed 1925388.json]
+// *** Generate *** 
+// Result = Success
+// BinariesDirectoryPath = D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release
+
+// *** Build ***
+BuildScript: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.bat
+// Result = Success
+
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: D:\Programming\Light.DataStructures\Code\Light.DataStructures.PerformanceTests\bin\Release\BDN.Generated.exe 
+
+// Benchmark Process Environment Information:
+// Runtime=Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+// GC=Concurrent Workstation
+// Job: DefaultJob
+
+Pilot 1: 16 op, 9740975232.92 ns, 608.8110 ms/op
+
+IdleWarmup 1: 16 op, 5722.31 ns, 357.6446 ns/op
+IdleWarmup 2: 16 op, 1505.87 ns, 94.1170 ns/op
+IdleWarmup 3: 16 op, 1204.7 ns, 75.2936 ns/op
+IdleWarmup 4: 16 op, 903.52 ns, 56.4702 ns/op
+IdleWarmup 5: 16 op, 301.17 ns, 18.8234 ns/op
+IdleWarmup 6: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 7: 16 op, 602.35 ns, 37.6468 ns/op
+IdleWarmup 8: 16 op, 301.17 ns, 18.8234 ns/op
+IdleWarmup 9: 16 op, 602.35 ns, 37.6468 ns/op
+
+IdleTarget 1: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 2: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 3: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 4: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 5: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 6: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 7: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 8: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 9: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 10: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 11: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 12: 16 op, 301.17 ns, 18.8234 ns/op
+IdleTarget 13: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 14: 16 op, 602.35 ns, 37.6468 ns/op
+IdleTarget 15: 16 op, 602.35 ns, 37.6468 ns/op
+
+MainWarmup 1: 16 op, 11489913216.59 ns, 718.1196 ms/op
+MainWarmup 2: 16 op, 11686973452.98 ns, 730.4358 ms/op
+MainWarmup 3: 16 op, 11301210570.62 ns, 706.3257 ms/op
+MainWarmup 4: 16 op, 12590837370.33 ns, 786.9273 ms/op
+MainWarmup 5: 16 op, 11043543497.87 ns, 690.2215 ms/op
+MainWarmup 6: 16 op, 11915999138.64 ns, 744.7499 ms/op
+
+MainTarget 1: 16 op, 10184728950.54 ns, 636.5456 ms/op
+MainTarget 2: 16 op, 12082461257.67 ns, 755.1538 ms/op
+MainTarget 3: 16 op, 11352662005.49 ns, 709.5414 ms/op
+MainTarget 4: 16 op, 10875222229.08 ns, 679.7014 ms/op
+MainTarget 5: 16 op, 13159966690.11 ns, 822.4979 ms/op
+MainTarget 6: 16 op, 11332099020.13 ns, 708.2562 ms/op
+MainTarget 7: 16 op, 11099767041.58 ns, 693.7354 ms/op
+MainTarget 8: 16 op, 11267888631.72 ns, 704.2430 ms/op
+MainTarget 9: 16 op, 9607956124.91 ns, 600.4973 ms/op
+MainTarget 10: 16 op, 10955024116.54 ns, 684.6890 ms/op
+MainTarget 11: 16 op, 11723164379.5 ns, 732.6978 ms/op
+MainTarget 12: 16 op, 10980689900.27 ns, 686.2931 ms/op
+MainTarget 13: 16 op, 10930745843.42 ns, 683.1716 ms/op
+MainTarget 14: 16 op, 11791601148.68 ns, 736.9751 ms/op
+MainTarget 15: 16 op, 11423517205.34 ns, 713.9698 ms/op
+MainTarget 16: 16 op, 11123906774.47 ns, 695.2442 ms/op
+MainTarget 17: 16 op, 10965207125.18 ns, 685.3254 ms/op
+
+Result 1: 16 op, 10184728408.43 ns, 636.5455 ms/op
+Result 2: 16 op, 12082460715.56 ns, 755.1538 ms/op
+Result 3: 16 op, 11352661463.38 ns, 709.5413 ms/op
+Result 4: 16 op, 10875221686.97 ns, 679.7014 ms/op
+Result 5: 16 op, 11332098478.02 ns, 708.2562 ms/op
+Result 6: 16 op, 11099766499.46 ns, 693.7354 ms/op
+Result 7: 16 op, 11267888089.61 ns, 704.2430 ms/op
+Result 8: 16 op, 10955023574.43 ns, 684.6890 ms/op
+Result 9: 16 op, 11723163837.38 ns, 732.6977 ms/op
+Result 10: 16 op, 10980689358.15 ns, 686.2931 ms/op
+Result 11: 16 op, 10930745301.3 ns, 683.1716 ms/op
+Result 12: 16 op, 11791600606.57 ns, 736.9750 ms/op
+Result 13: 16 op, 11423516663.23 ns, 713.9698 ms/op
+Result 14: 16 op, 11123906232.35 ns, 695.2441 ms/op
+Result 15: 16 op, 10965206583.07 ns, 685.3254 ms/op
+GC:  853 619 118 0 272
+
+
+Mean = 700.3695 ms, StdErr = 7.3257 ms (1.05%); N = 15, StdDev = 28.3722 ms
+Min = 636.5455 ms, Q1 = 684.6890 ms, Median = 695.2441 ms, Q3 = 713.9698 ms, Max = 755.1538 ms
+IQR = 29.2808 ms, LowerFence = 640.7677 ms, UpperFence = 757.8910 ms
+ConfidenceInterval = [686.0112 ms; 714.7278 ms] (CI 95%)
+Skewness = -0.1, Kurtosis = 2.98
+
+
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  BenchmarkDotNet.Artifacts\results\SingleThreadedAddTest-report.csv
+  BenchmarkDotNet.Artifacts\results\SingleThreadedAddTest-report-github.md
+  BenchmarkDotNet.Artifacts\results\SingleThreadedAddTest-report.html
+
+// * Detailed results *
+SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=10000 items seed 9673754.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 638.9563 us, StdErr = 1.1352 us (0.18%); N = 15, StdDev = 4.3965 us
+Min = 631.3686 us, Q1 = 635.6221 us, Median = 637.9186 us, Q3 = 642.7409 us, Max = 646.1309 us
+IQR = 7.1188 us, LowerFence = 624.9440 us, UpperFence = 653.4191 us
+ConfidenceInterval = [636.7313 us; 641.1812 us] (CI 95%)
+Skewness = 0.01, Kurtosis = 1.73
+
+
+SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=10000 items seed 9673754.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 3.5271 ms, StdErr = 0.0076 ms (0.22%); N = 15, StdDev = 0.0296 ms
+Min = 3.4841 ms, Q1 = 3.5053 ms, Median = 3.5117 ms, Q3 = 3.5472 ms, Max = 3.5950 ms
+IQR = 0.0419 ms, LowerFence = 3.4426 ms, UpperFence = 3.6100 ms
+ConfidenceInterval = [3.5122 ms; 3.5421 ms] (CI 95%)
+Skewness = 0.65, Kurtosis = 2.48
+
+
+SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=10000 items seed 9673754.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 5.6325 ms, StdErr = 0.0088 ms (0.16%); N = 14, StdDev = 0.0329 ms
+Min = 5.5829 ms, Q1 = 5.6049 ms, Median = 5.6307 ms, Q3 = 5.6586 ms, Max = 5.6902 ms
+IQR = 0.0537 ms, LowerFence = 5.5244 ms, UpperFence = 5.7392 ms
+ConfidenceInterval = [5.6152 ms; 5.6497 ms] (CI 95%)
+Skewness = 0.06, Kurtosis = 1.65
+
+
+SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=100000 items seed 42.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 11.7970 ms, StdErr = 0.0180 ms (0.15%); N = 14, StdDev = 0.0675 ms
+Min = 11.6902 ms, Q1 = 11.7450 ms, Median = 11.7812 ms, Q3 = 11.8372 ms, Max = 11.9462 ms
+IQR = 0.0923 ms, LowerFence = 11.6066 ms, UpperFence = 11.9757 ms
+ConfidenceInterval = [11.7616 ms; 11.8324 ms] (CI 95%)
+Skewness = 0.54, Kurtosis = 2.48
+
+
+SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=100000 items seed 42.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 49.2670 ms, StdErr = 0.1576 ms (0.32%); N = 15, StdDev = 0.6103 ms
+Min = 47.7453 ms, Q1 = 48.8634 ms, Median = 49.3524 ms, Q3 = 49.7000 ms, Max = 50.3896 ms
+IQR = 0.8366 ms, LowerFence = 47.6085 ms, UpperFence = 50.9549 ms
+ConfidenceInterval = [48.9581 ms; 49.5759 ms] (CI 95%)
+Skewness = -0.54, Kurtosis = 3.55
+
+
+SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=100000 items seed 42.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 85.5775 ms, StdErr = 1.0156 ms (1.19%); N = 99, StdDev = 10.1055 ms
+Min = 68.6638 ms, Q1 = 76.3334 ms, Median = 85.1027 ms, Q3 = 92.2649 ms, Max = 110.8511 ms
+IQR = 15.9316 ms, LowerFence = 52.4360 ms, UpperFence = 116.1623 ms
+ConfidenceInterval = [83.5868 ms; 87.5681 ms] (CI 95%)
+Skewness = 0.41, Kurtosis = 2.32
+
+
+SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=1000000 items seed 339826.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 279.2843 ms, StdErr = 0.6138 ms (0.22%); N = 14, StdDev = 2.2965 ms
+Min = 274.7013 ms, Q1 = 277.7750 ms, Median = 278.9785 ms, Q3 = 281.5966 ms, Max = 282.6759 ms
+IQR = 3.8216 ms, LowerFence = 272.0425 ms, UpperFence = 287.3290 ms
+ConfidenceInterval = [278.0813 ms; 280.4873 ms] (CI 95%)
+Skewness = -0.06, Kurtosis = 2.09
+
+
+SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=1000000 items seed 339826.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 917.1239 ms, StdErr = 2.0214 ms (0.22%); N = 15, StdDev = 7.8289 ms
+Min = 903.9466 ms, Q1 = 910.5804 ms, Median = 918.0645 ms, Q3 = 923.4781 ms, Max = 930.1345 ms
+IQR = 12.8977 ms, LowerFence = 891.2338 ms, UpperFence = 942.8246 ms
+ConfidenceInterval = [913.1619 ms; 921.0858 ms] (CI 95%)
+Skewness = -0.11, Kurtosis = 1.72
+
+
+SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=1000000 items seed 339826.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 1.4715 s, StdErr = 0.0136 s (0.92%); N = 14, StdDev = 0.0508 s
+Min = 1.3969 s, Q1 = 1.4374 s, Median = 1.4582 s, Q3 = 1.5089 s, Max = 1.5659 s
+IQR = 0.0715 s, LowerFence = 1.3302 s, UpperFence = 1.6161 s
+ConfidenceInterval = [1.4449 s; 1.4981 s] (CI 95%)
+Skewness = 0.48, Kurtosis = 1.87
+
+
+SingleThreadedAddTest.Dictionary: DefaultJob [TestFile=500000 items seed 1925388.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 114.3911 ms, StdErr = 0.1157 ms (0.1%); N = 14, StdDev = 0.4330 ms
+Min = 113.7016 ms, Q1 = 114.1581 ms, Median = 114.3326 ms, Q3 = 114.5016 ms, Max = 115.2554 ms
+IQR = 0.3436 ms, LowerFence = 113.6427 ms, UpperFence = 115.0170 ms
+ConfidenceInterval = [114.1643 ms; 114.6179 ms] (CI 95%)
+Skewness = 0.42, Kurtosis = 2.41
+
+
+SingleThreadedAddTest.ConcurrentDictionary: DefaultJob [TestFile=500000 items seed 1925388.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 423.5959 ms, StdErr = 1.3238 ms (0.31%); N = 15, StdDev = 5.1271 ms
+Min = 415.4906 ms, Q1 = 419.7403 ms, Median = 424.0541 ms, Q3 = 425.6833 ms, Max = 433.5220 ms
+IQR = 5.9431 ms, LowerFence = 410.8257 ms, UpperFence = 434.5979 ms
+ConfidenceInterval = [421.0012 ms; 426.1905 ms] (CI 95%)
+Skewness = 0.23, Kurtosis = 2.06
+
+
+SingleThreadedAddTest.LockFreeArrayBasedDictionary: DefaultJob [TestFile=500000 items seed 1925388.json]
+Runtime = Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0; GC = Concurrent Workstation
+Mean = 700.3695 ms, StdErr = 7.3257 ms (1.05%); N = 15, StdDev = 28.3722 ms
+Min = 636.5455 ms, Q1 = 684.6890 ms, Median = 695.2441 ms, Q3 = 713.9698 ms, Max = 755.1538 ms
+IQR = 29.2808 ms, LowerFence = 640.7677 ms, UpperFence = 757.8910 ms
+ConfidenceInterval = [686.0112 ms; 714.7278 ms] (CI 95%)
+Skewness = -0.1, Kurtosis = 2.98
+
+
+Total time: 00:28:49 (1729.15 sec)
+
+// * Summary *
+
+BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
+Processor=Intel(R) Core(TM) i7-2600K CPU 3.40GHz, ProcessorCount=8
+Frequency=3320335 Hz, Resolution=301.1744 ns, Timer=TSC
+  [Host]     : Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+  DefaultJob : Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+
+
+                       Method |                       TestFile |              Mean |         StdErr |         StdDev |
+----------------------------- |------------------------------- |------------------ |--------------- |--------------- |
+                   Dictionary |  10000 items seed 9673754.json |       638.9563 us |      1.1352 us |      4.3965 us |
+         ConcurrentDictionary |  10000 items seed 9673754.json |     3,527.1465 us |      7.6343 us |     29.5676 us |
+ LockFreeArrayBasedDictionary |  10000 items seed 9673754.json |     5,632.4727 us |      8.7928 us |     32.8996 us |
+                   Dictionary |      100000 items seed 42.json |    11,796.9895 us |     18.0418 us |     67.5062 us |
+         ConcurrentDictionary |      100000 items seed 42.json |    49,266.9954 us |    157.5800 us |    610.3047 us |
+ LockFreeArrayBasedDictionary |      100000 items seed 42.json |    85,577.4975 us |  1,015.6368 us | 10,105.4587 us |
+                   Dictionary | 1000000 items seed 339826.json |   279,284.2963 us |    613.7622 us |  2,296.4879 us |
+         ConcurrentDictionary | 1000000 items seed 339826.json |   917,123.8576 us |  2,021.4094 us |  7,828.8851 us |
+ LockFreeArrayBasedDictionary | 1000000 items seed 339826.json | 1,471,515.0260 us | 13,582.3772 us | 50,820.6022 us |
+                   Dictionary | 500000 items seed 1925388.json |   114,391.0929 us |    115.7340 us |    433.0371 us |
+         ConcurrentDictionary | 500000 items seed 1925388.json |   423,595.8821 us |  1,323.8074 us |  5,127.0840 us |
+ LockFreeArrayBasedDictionary | 500000 items seed 1925388.json |   700,369.4896 us |  7,325.6767 us | 28,372.2239 us |
+
+*** Hints ***
+Outliers
+  SingleThreadedAddTest.LockFreeArrayBasedDictionary: Default -> 1 outlier  was  removed
+  SingleThreadedAddTest.Dictionary: Default                   -> 1 outlier  was  removed
+  SingleThreadedAddTest.LockFreeArrayBasedDictionary: Default -> 1 outlier  was  removed
+  SingleThreadedAddTest.Dictionary: Default                   -> 1 outlier  was  removed
+  SingleThreadedAddTest.LockFreeArrayBasedDictionary: Default -> 1 outlier  was  removed
+  SingleThreadedAddTest.Dictionary: Default                   -> 1 outlier  was  removed
+  SingleThreadedAddTest.LockFreeArrayBasedDictionary: Default -> 2 outliers were removed
+
+// ***** BenchmarkRunner: End *****

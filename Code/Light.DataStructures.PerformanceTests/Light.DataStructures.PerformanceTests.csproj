@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineArgumentsParser.cs" />
+    <Compile Include="FileNames.cs" />
     <Compile Include="IntegerSequence.cs" />
     <Compile Include="IntKeyTestInfo.cs" />
     <Compile Include="IPerformanceTest.cs" />
@@ -153,6 +154,8 @@
     <None Include="500000 items seed 1925388.json" />
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Results\2017-03-14T07-50 SingleThreadedAddTest.csv" />
+    <Content Include="Results\2017-03-14T07-50 SingleThreadedAddTest.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Light.DataStructures\Light.DataStructures.csproj">
@@ -163,6 +166,9 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Results\2017-03-14T07-50 SingleThreadedAddTest.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

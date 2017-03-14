@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>SingleThreadedAddTest</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
+Processor=Intel(R) Core(TM) i7-2600K CPU 3.40GHz, ProcessorCount=8
+Frequency=3320335 Hz, Resolution=301.1744 ns, Timer=TSC
+  [Host]     : Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+  DefaultJob : Clr 4.0.30319.42000, 32bit LegacyJIT-v4.6.1586.0
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>                Method</th><th>                TestFile</th><th>       Mean</th><th>  StdErr</th><th>  StdDev</th>
+</tr>
+</thead><tbody><tr><td>            Dictionary</td><td>10000 items seed 9673754.json</td><td>638.9563 us</td><td>1.1352 us</td><td>4.3965 us</td>
+</tr><tr><td>  ConcurrentDictionary</td><td>10000 items seed 9673754.json</td><td>3,527.1465 us</td><td>7.6343 us</td><td>29.5676 us</td>
+</tr><tr><td>LockFreeArrayBasedDictionary</td><td>10000 items seed 9673754.json</td><td>5,632.4727 us</td><td>8.7928 us</td><td>32.8996 us</td>
+</tr><tr><td>            Dictionary</td><td>100000 items seed 42.json</td><td>11,796.9895 us</td><td>18.0418 us</td><td>67.5062 us</td>
+</tr><tr><td>  ConcurrentDictionary</td><td>100000 items seed 42.json</td><td>49,266.9954 us</td><td>157.5800 us</td><td>610.3047 us</td>
+</tr><tr><td>LockFreeArrayBasedDictionary</td><td>100000 items seed 42.json</td><td>85,577.4975 us</td><td>1,015.6368 us</td><td>10,105.4587 us</td>
+</tr><tr><td>            Dictionary</td><td>1000000 items seed 339826.json</td><td>279,284.2963 us</td><td>613.7622 us</td><td>2,296.4879 us</td>
+</tr><tr><td>  ConcurrentDictionary</td><td>1000000 items seed 339826.json</td><td>917,123.8576 us</td><td>2,021.4094 us</td><td>7,828.8851 us</td>
+</tr><tr><td>LockFreeArrayBasedDictionary</td><td>1000000 items seed 339826.json</td><td>1,471,515.0260 us</td><td>13,582.3772 us</td><td>50,820.6022 us</td>
+</tr><tr><td>            Dictionary</td><td>500000 items seed 1925388.json</td><td>114,391.0929 us</td><td>115.7340 us</td><td>433.0371 us</td>
+</tr><tr><td>  ConcurrentDictionary</td><td>500000 items seed 1925388.json</td><td>423,595.8821 us</td><td>1,323.8074 us</td><td>5,127.0840 us</td>
+</tr><tr><td>LockFreeArrayBasedDictionary</td><td>500000 items seed 1925388.json</td><td>700,369.4896 us</td><td>7,325.6767 us</td><td>28,372.2239 us</td>
+</tr></tbody></table>
+</body>
+</html>

@@ -15,10 +15,10 @@ namespace Light.DataStructures.PerformanceTests
         private readonly LockFreeArrayBasedDictionary<int, object> _lockFreeDictionary = new LockFreeArrayBasedDictionary<int, object>();
         private Dictionary<int, List<int>> _perThreadKeys;
 
-        [Params(95)]
+        [Params(95, 75)]
         public int PercentageOfElementsPresent { get; set; }
 
-        [Params(FileNames.Items10000)]
+        [Params(FileNames.Items10000, FileNames.Items100000)]
         public string TestFile { get; set; }
 
         [Setup]

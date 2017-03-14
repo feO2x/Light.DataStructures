@@ -135,8 +135,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileNames.cs" />
-    <Compile Include="IntegerSequence.cs" />
+    <Compile Include="IntegerSequences.cs" />
     <Compile Include="MultiThreadedAddTest.cs" />
+    <Compile Include="MultiThreadedReadTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingleThreadedAddTest.cs" />

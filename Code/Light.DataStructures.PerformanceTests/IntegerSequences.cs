@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Light.DataStructures.PerformanceTests
 {
-    public static class IntegerSequence
+    public static class IntegerSequences
     {
         public static List<int> CreateIntegerSequence(int count, int seed)
         {
@@ -32,6 +32,26 @@ namespace Light.DataStructures.PerformanceTests
             var integerSequence = CreateIntegerSequence(count, seed);
             var json = JsonConvert.SerializeObject(integerSequence, Formatting.Indented);
             File.WriteAllText($"{count} items seed {seed}.json", json, Encoding.UTF8);
+        }
+
+        public static Dictionary<int, List<int>> DistributeSequencePerCpuCore(List<int> sequence)
+        {
+            sequence.MustNotBeNullOrEmpty();
+
+            var numberOfProcessors = Environment.ProcessorCount;
+            var perThreadSequences = new Dictionary<int, List<int>>();
+            for (var i = 0; i < numberOfProcessors; i++)
+            {
+                perThreadSequences.Add(i, new List<int>());
+            }
+
+            for (var i = 0; i < sequence.Count; i++)
+            {
+                var targetGroup = i % numberOfProcessors;
+                perThreadSequences[targetGroup].Add(sequence[i]);
+            }
+
+            return perThreadSequences;
         }
     }
 }

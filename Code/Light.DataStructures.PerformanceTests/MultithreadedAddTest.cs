@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -20,20 +19,7 @@ namespace Light.DataStructures.PerformanceTests
         {
             var json = File.ReadAllText(TestFile);
             var keys = JsonConvert.DeserializeObject<List<int>>(json);
-            var numberOfProcessors = Environment.ProcessorCount;
-            var perThreadKeyGroups = new Dictionary<int, List<int>>();
-            for (var i = 0; i < numberOfProcessors; i++)
-            {
-                perThreadKeyGroups.Add(i, new List<int>());
-            }
-
-            for (var i = 0; i < keys.Count; i++)
-            {
-                var targetKey = i % numberOfProcessors;
-                perThreadKeyGroups[targetKey].Add(keys[i]);
-            }
-
-            _perThreadKeyGroups = perThreadKeyGroups;
+            _perThreadKeyGroups = IntegerSequences.DistributeSequencePerCpuCore(keys);
         }
 
         [Benchmark]

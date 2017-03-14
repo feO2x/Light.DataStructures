@@ -6,7 +6,7 @@ namespace Light.DataStructures.PerformanceTests
     {
         public static void Main()
         {
-            BenchmarkRunner.Run<SingleThreadedAddTest>();
+            BenchmarkRunner.Run<MultiThreadedAddTest>();
         }
     }
 }

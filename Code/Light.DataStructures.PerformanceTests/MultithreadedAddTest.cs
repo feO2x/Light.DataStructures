@@ -1,24 +1,25 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
+using BenchmarkDotNet.Attributes;
+using Newtonsoft.Json;
 
 namespace Light.DataStructures.PerformanceTests
 {
-    public sealed class MultiThreadedAddTest : IPerformanceTest
+    public class MultiThreadedAddTest
     {
-        private readonly int _numberOfKeys;
+        private Dictionary<int, List<int>> _perThreadKeyGroups;
 
-        public MultiThreadedAddTest(int numberOfKeys)
+        [Params(FileNames.Items10000, FileNames.Items100000, FileNames.Items500000, FileNames.Items1000000)]
+        public string TestFile { get; set; }
+
+        [Setup]
+        public void Setup()
         {
-            _numberOfKeys = numberOfKeys;
-        }
-
-        public PerformanceTestResults Run(IDictionary<int, object> dictionary)
-        {
-            // Set up data for threads
-            var keys = IntKeyTestInfo.CreateKeys(_numberOfKeys);
-
+            var json = File.ReadAllText(TestFile);
+            var keys = JsonConvert.DeserializeObject<List<int>>(json);
             var numberOfProcessors = Environment.ProcessorCount;
             var perThreadKeyGroups = new Dictionary<int, List<int>>();
             for (var i = 0; i < numberOfProcessors; i++)
@@ -26,30 +27,81 @@ namespace Light.DataStructures.PerformanceTests
                 perThreadKeyGroups.Add(i, new List<int>());
             }
 
-            for (var i = 0; i < _numberOfKeys; i++)
+            for (var i = 0; i < keys.Count; i++)
             {
                 var targetKey = i % numberOfProcessors;
                 perThreadKeyGroups[targetKey].Add(keys[i]);
             }
 
-            // Run the actual test
-            var stopwatch = Stopwatch.StartNew();
-            Parallel.ForEach(perThreadKeyGroups, kvp =>
-                                                 {
-                                                     foreach (var number in kvp.Value)
-                                                     {
-                                                         dictionary.Add(number, new object());
-                                                     }
-                                                 });
-            stopwatch.Stop();
-
-            return new PerformanceTestResults(nameof(MultiThreadedAddTest), dictionary.GetType().Name, stopwatch.Elapsed);
+            _perThreadKeyGroups = perThreadKeyGroups;
         }
 
-        public static IPerformanceTest Create(IDictionary<string, string> parsedCommandArguments)
+        [Benchmark]
+        public Dictionary<int, object> DictionaryInnerLock()
         {
-            var numberOfKeys = IntKeyTestInfo.GetNumberOfKeysFromArguments(parsedCommandArguments);
-            return new MultiThreadedAddTest(numberOfKeys);
+            var dictionary = new Dictionary<int, object>();
+
+            Parallel.ForEach(_perThreadKeyGroups, kvp =>
+                                                  {
+                                                      foreach (var number in kvp.Value)
+                                                      {
+                                                          lock (dictionary)
+                                                          {
+                                                              dictionary.Add(number, new object());
+                                                          }
+                                                      }
+                                                  });
+            return dictionary;
+        }
+
+        [Benchmark]
+        public Dictionary<int, object> DictionaryOuterLock()
+        {
+            var dictionary = new Dictionary<int, object>();
+
+            Parallel.ForEach(_perThreadKeyGroups, kvp =>
+                                                  {
+                                                      lock (dictionary)
+                                                      {
+                                                          foreach (var number in kvp.Value)
+                                                          {
+                                                              dictionary.Add(number, new object());
+                                                          }
+                                                      }
+                                                  });
+            return dictionary;
+        }
+
+        [Benchmark]
+        public ConcurrentDictionary<int, object> ConcurrentDictionary()
+        {
+            var dictionary = new ConcurrentDictionary<int, object>();
+
+            Parallel.ForEach(_perThreadKeyGroups, kvp =>
+                                                  {
+                                                      foreach (var number in kvp.Value)
+                                                      {
+                                                          dictionary.TryAdd(number, new object());
+                                                      }
+                                                  });
+
+            return dictionary;
+        }
+
+        [Benchmark]
+        public LockFreeArrayBasedDictionary<int, object> LockFreeDictionaryArrayBasedDictionary()
+        {
+            var dictionary = new LockFreeArrayBasedDictionary<int, object>();
+
+            Parallel.ForEach(_perThreadKeyGroups, kvp =>
+                                                  {
+                                                      foreach (var number in kvp.Value)
+                                                      {
+                                                          dictionary.TryAdd(number, new object());
+                                                      }
+                                                  });
+
+            return dictionary;
         }
     }
 }

@@ -53,6 +53,9 @@
     <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.1.3.2\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.AppContext.4.1.0\lib\net46\System.AppContext.dll</HintPath>
@@ -132,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineArgumentsParser.cs" />
+    <Compile Include="IntegerSequence.cs" />
     <Compile Include="IntKeyTestInfo.cs" />
     <Compile Include="IPerformanceTest.cs" />
     <Compile Include="MultiThreadedAddTest.cs" />
@@ -141,6 +145,12 @@
     <Compile Include="SingleThreadedAddTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="10000 items seed 9673754.json" />
+    <None Include="100000 items seed 42.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="1000000 items seed 339826.json" />
+    <None Include="500000 items seed 1925388.json" />
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>

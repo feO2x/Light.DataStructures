@@ -59,6 +59,10 @@
     <Compile Include="LockFreeArrayBasedDictionary.cs" />
     <Compile Include="LockFreeArrayBasedServices\SieveOfEratosthenes.cs" />
     <Compile Include="PrecompiledDictionary.cs" />
+    <Compile Include="PrecompiledDictionaryServices\DefaultLookupFunctionCompiler.cs" />
+    <Compile Include="PrecompiledDictionaryServices\ILookupFunctionCompiler.cs" />
+    <Compile Include="PrecompiledDictionaryServices\LookupDelegate.cs" />
+    <Compile Include="PrecompiledDictionaryServices\PrecompiledDictionaryFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

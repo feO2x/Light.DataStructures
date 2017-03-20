@@ -11,12 +11,17 @@ namespace Light.DataStructures
     public sealed class PrecompiledDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     {
         private readonly Func<TKey, TValue> _lookupKey;
+        public readonly int Count;
 
-        public PrecompiledDictionary(Func<TKey, TValue> lookupKey)
+        public PrecompiledDictionary(Func<TKey, TValue> lookupKey, IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
         {
             lookupKey.MustNotBeNull(nameof(lookupKey));
+            // ReSharper disable PossibleMultipleEnumeration
+            keyValuePairs.MustNotBeNull();
 
             _lookupKey = lookupKey;
+            Count = keyValuePairs.Count();
+            // ReSharper restore PossibleMultipleEnumeration
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -29,7 +34,7 @@ namespace Light.DataStructures
             throw new NotImplementedException();
         }
 
-        public int Count { get; }
+        int IReadOnlyCollection<KeyValuePair<TKey, TValue>>.Count => Count;
 
         public bool ContainsKey(TKey key)
         {
@@ -53,7 +58,7 @@ namespace Light.DataStructures
         {
             keyValuePairs.MustNotBeNull(nameof(keyValuePairs));
 
-            return new PrecompiledDictionary<TKey, TValue>(CreateLookupDelegate(keyValuePairs, EqualityComparer<TKey>.Default));
+            return new PrecompiledDictionary<TKey, TValue>(CreateLookupDelegate(keyValuePairs, EqualityComparer<TKey>.Default), keyValuePairs);
         }
 
         public static Func<TKey, TValue> CreateLookupDelegate<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs, IEqualityComparer<TKey> keyComparer)

@@ -58,6 +58,7 @@
     <Compile Include="LockFreeArrayBasedServices\IGrowArrayStrategy.cs" />
     <Compile Include="LockFreeArrayBasedDictionary.cs" />
     <Compile Include="LockFreeArrayBasedServices\SieveOfEratosthenes.cs" />
+    <Compile Include="PrecompiledDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
@@ -33,6 +34,15 @@ namespace Light.DataStructures.Tests
             var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
 
             dictionary.Count.Should().Be(keyValuePairs.Length);
+        }
+
+        [Theory]
+        [MemberData(nameof(DifferentHashCodesData))]
+        public void KeysMustBeAccessible(KeyValuePair<int, object>[] keyValuePairs)
+        {
+            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+
+            dictionary.Keys.ShouldAllBeEquivalentTo(keyValuePairs.Select(kvp => kvp.Key));
         }
 
         public static readonly TestData DifferentHashCodesData =

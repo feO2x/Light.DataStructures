@@ -11,7 +11,7 @@ namespace Light.DataStructures
     public sealed class PrecompiledDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     {
         private readonly Func<TKey, TValue> _lookupKey;
-        public readonly int Count;
+        public readonly IReadOnlyList<TKey> Keys;
 
         public PrecompiledDictionary(Func<TKey, TValue> lookupKey, IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
         {
@@ -20,7 +20,7 @@ namespace Light.DataStructures
             keyValuePairs.MustNotBeNull();
 
             _lookupKey = lookupKey;
-            Count = keyValuePairs.Count();
+            Keys = keyValuePairs.Select(kvp => kvp.Key).ToArray();
             // ReSharper restore PossibleMultipleEnumeration
         }
 
@@ -34,7 +34,7 @@ namespace Light.DataStructures
             throw new NotImplementedException();
         }
 
-        int IReadOnlyCollection<KeyValuePair<TKey, TValue>>.Count => Count;
+        public int Count => Keys.Count;
 
         public bool ContainsKey(TKey key)
         {
@@ -48,7 +48,7 @@ namespace Light.DataStructures
 
         public TValue this[TKey key] => _lookupKey(key);
 
-        public IEnumerable<TKey> Keys { get; }
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
         public IEnumerable<TValue> Values { get; }
     }
 

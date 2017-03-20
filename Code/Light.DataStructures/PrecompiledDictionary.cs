@@ -14,6 +14,7 @@ namespace Light.DataStructures
         private readonly Func<TKey, TValue> _lookupKey;
         public readonly IReadOnlyList<TKey> Keys;
         public readonly IReadOnlyList<TValue> Values;
+        private readonly IEnumerable<KeyValuePair<TKey, TValue>> _keyValuePairs;
 
         public PrecompiledDictionary(Func<TKey, TValue> lookupKey,
                                      Func<TKey, bool> containsKey,
@@ -26,6 +27,7 @@ namespace Light.DataStructures
 
             _lookupKey = lookupKey;
             _containsKey = containsKey;
+            _keyValuePairs = keyValuePairs;
             Keys = keyValuePairs.Select(kvp => kvp.Key).ToArray();
             Values = keyValuePairs.Select(kvp => kvp.Value).ToArray();
             // ReSharper restore PossibleMultipleEnumeration
@@ -38,7 +40,7 @@ namespace Light.DataStructures
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return _keyValuePairs.GetEnumerator();
         }
 
         public int Count => Keys.Count;

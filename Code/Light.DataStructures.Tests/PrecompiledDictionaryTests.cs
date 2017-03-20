@@ -73,6 +73,15 @@ namespace Light.DataStructures.Tests
             actualResult.Should().Be(expected);
         }
 
+        [Theory]
+        [MemberData(nameof(DifferentHashCodesData))]
+        public void GetEnumerator(KeyValuePair<int, object>[] keyValuePairs)
+        {
+            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+
+            dictionary.ShouldAllBeEquivalentTo(keyValuePairs);
+        }
+
         public static readonly TestData ContainsKeyData =
             new[]
             {

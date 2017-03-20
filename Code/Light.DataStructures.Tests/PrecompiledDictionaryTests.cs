@@ -45,6 +45,15 @@ namespace Light.DataStructures.Tests
             dictionary.Keys.ShouldAllBeEquivalentTo(keyValuePairs.Select(kvp => kvp.Key));
         }
 
+        [Theory]
+        [MemberData(nameof(DifferentHashCodesData))]
+        public void ValuesMustBeAccessible(KeyValuePair<int, object>[] keyValuePairs)
+        {
+            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+
+            dictionary.Values.ShouldAllBeEquivalentTo(keyValuePairs.Select(kvp => kvp.Value));
+        }
+
         public static readonly TestData DifferentHashCodesData =
             new[]
             {

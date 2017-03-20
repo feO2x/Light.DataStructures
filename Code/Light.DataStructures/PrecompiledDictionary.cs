@@ -12,6 +12,7 @@ namespace Light.DataStructures
     {
         private readonly Func<TKey, TValue> _lookupKey;
         public readonly IReadOnlyList<TKey> Keys;
+        public readonly IReadOnlyList<TValue> Values;
 
         public PrecompiledDictionary(Func<TKey, TValue> lookupKey, IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
         {
@@ -21,6 +22,7 @@ namespace Light.DataStructures
 
             _lookupKey = lookupKey;
             Keys = keyValuePairs.Select(kvp => kvp.Key).ToArray();
+            Values = keyValuePairs.Select(kvp => kvp.Value).ToArray();
             // ReSharper restore PossibleMultipleEnumeration
         }
 
@@ -49,7 +51,7 @@ namespace Light.DataStructures
         public TValue this[TKey key] => _lookupKey(key);
 
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
-        public IEnumerable<TValue> Values { get; }
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
     }
 
     public static class PrecompiledDictionary

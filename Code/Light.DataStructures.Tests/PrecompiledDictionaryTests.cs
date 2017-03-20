@@ -61,5 +61,53 @@ namespace Light.DataStructures.Tests
                 new object[] { new[] { new KeyValuePair<int, object>(1, new object()), new KeyValuePair<int, object>(2, new object()) } },
                 new object[] { new[] { new KeyValuePair<int, object>(-44, new object()), new KeyValuePair<int, object>(1995, new object()), new KeyValuePair<int, object>(-585854, new object()) } }
             };
+
+        [Theory]
+        [MemberData(nameof(ContainsKeyData))]
+        public void ContainsKey(KeyValuePair<string, object>[] keyValuePairs, string requestedKey, bool expected)
+        {
+            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+
+            var actualResult = dictionary.ContainsKey(requestedKey);
+
+            actualResult.Should().Be(expected);
+        }
+
+        public static readonly TestData ContainsKeyData =
+            new[]
+            {
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<string, object>("Foo", new object()),
+                        new KeyValuePair<string, object>("Bar", new object())
+                    },
+                    "Foo",
+                    true
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<string, object>("Foo", new object()),
+                        new KeyValuePair<string, object>("Bar", new object())
+                    },
+                    "Bar",
+                    true
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<string, object>("Foo", new object()),
+                        new KeyValuePair<string, object>("Bar", new object()),
+                        new KeyValuePair<string, object>("Baz", new object()),
+                        new KeyValuePair<string, object>("Qux", new object())
+                    },
+                    "Quux",
+                    false
+                }
+            };
     }
 }

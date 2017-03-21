@@ -21,8 +21,10 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
 
         public PrecompiledDictionary<TKey, TValue> Create<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs, IEqualityComparer<TKey> equalityComparer)
         {
+            // ReSharper disable PossibleMultipleEnumeration
             var lookupFunction = _compiler.CompileDynamicLookupFunction(keyValuePairs, equalityComparer);
             return new PrecompiledDictionary<TKey, TValue>(lookupFunction, keyValuePairs);
+            // ReSharper restore PossibleMultipleEnumeration
         }
     }
 }

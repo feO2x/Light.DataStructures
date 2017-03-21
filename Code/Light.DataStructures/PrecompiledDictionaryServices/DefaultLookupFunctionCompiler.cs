@@ -14,15 +14,44 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
             var valueExpression = Expression.Parameter(typeof(TValue).MakeByRefType(), "value");
             var keyComparerExpression = Expression.Constant(keyComparer);
             var getHashCodeMethodInfo = keyComparer.GetType().GetRuntimeMethod(nameof(IEqualityComparer<TKey>.GetHashCode), new[] { keyType });
+            var equalsMethodInfo = keyComparer.GetType().GetRuntimeMethod(nameof(IEqualityComparer<TKey>.Equals), new[] { keyType, keyType });
             var hashCodeExpression = Expression.Variable(typeof(int), "hashCode");
             var resultExpression = Expression.Variable(typeof(bool), "result");
             var trueExpression = Expression.Constant(true);
 
-            var switchCases = keyValuePairs.Select(kvp => Expression.SwitchCase(Expression.Block(Expression.Assign(valueExpression, Expression.Constant(kvp.Value)),
+            var switchCases = keyValuePairs
+                .GroupBy(kvp => keyComparer.GetHashCode(kvp.Key))
+                .Select(hashCodeGroup =>
+                        {
+                            Expression caseBody;
+                            if (hashCodeGroup.Count() == 1)
+                            {
+                                var keyValuePair = hashCodeGroup.First();
+                                caseBody = Expression.Block(Expression.Assign(valueExpression, Expression.Constant(keyValuePair.Value)),
+                                                            Expression.Assign(resultExpression, trueExpression));
+                            }
+                            else
+                            {
+                                Expression lastIfStatement = null;
+                                foreach (var keyValuePair in hashCodeGroup)
+                                {
+                                    if (lastIfStatement == null)
+                                        lastIfStatement = Expression.IfThen(Expression.Call(keyComparerExpression, equalsMethodInfo, keyExpression, Expression.Constant(keyValuePair.Key)),
+                                                                            Expression.Block(Expression.Assign(valueExpression, Expression.Constant(keyValuePair.Value)),
+                                                                                             Expression.Assign(resultExpression, trueExpression)));
+                                    else
+                                        lastIfStatement = Expression.IfThenElse(Expression.Call(keyComparerExpression, equalsMethodInfo, keyExpression, Expression.Constant(keyValuePair.Key)),
+                                                                                Expression.Block(Expression.Assign(valueExpression, Expression.Constant(keyValuePair.Value)),
                                                                                                  Expression.Assign(resultExpression, trueExpression)),
-                                                                                Expression.Constant(keyComparer.GetHashCode(kvp.Key))))
-                                           .ToArray();
+                                                                                lastIfStatement);
+                                }
+                                caseBody = lastIfStatement;
+                            }
 
+                            return Expression.SwitchCase(caseBody,
+                                                         Expression.Constant(hashCodeGroup.Key));
+                        })
+                .ToArray();
 
             var body = Expression.Block(new[] { hashCodeExpression, resultExpression },
                                         Expression.Assign(hashCodeExpression, Expression.Call(keyComparerExpression, getHashCodeMethodInfo, keyExpression)),

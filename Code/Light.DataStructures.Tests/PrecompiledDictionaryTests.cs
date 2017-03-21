@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Light.DataStructures.PrecompiledDictionaryServices;
@@ -219,10 +220,55 @@ namespace Light.DataStructures.Tests
                     false
                 }
             };
+    
+
+        [Fact]
+        public void SameHashValues()
+        {
+            var keyValuePairs = new []
+            {
+                new KeyValuePair<CollisionKey, string>(new CollisionKey(42, 42), "Foo"),
+                new KeyValuePair<CollisionKey, string>(new CollisionKey(87, 42), "Bar") 
+            };
+            var dictionary = CreateTestTarget(keyValuePairs);
+
+            dictionary[new CollisionKey(87, 42)].Should().Be("Bar");
+        }
+
 
         public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValuePairs)
         {
             return new PrecompiledDictionaryFactory(new DefaultLookupFunctionCompiler()).Create(keyValuePairs);
+        }
+
+    }
+
+    public struct CollisionKey : IEquatable<CollisionKey>
+    {
+        public readonly int Id;
+        public readonly int HashCode;
+
+        public CollisionKey(int id, int hashCode)
+        {
+            Id = id;
+            HashCode = hashCode;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(obj, null))
+                return false;
+            return obj is CollisionKey && Equals((CollisionKey)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode;
+        }
+
+        public bool Equals(CollisionKey other)
+        {
+            return other.Id == Id;
         }
     }
 }

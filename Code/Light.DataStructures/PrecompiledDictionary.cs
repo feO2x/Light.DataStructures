@@ -109,7 +109,8 @@ namespace Light.DataStructures
             {
                 if (key == null) throw new ArgumentNullException(nameof(key));
                      
-                _lookup(key, out TValue value);
+                if (_lookup(key, out TValue value) == false)
+                    throw new KeyNotFoundException($"There is no value for key \"{key}\".");
                 return value;
             }
         }

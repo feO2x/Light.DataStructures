@@ -220,16 +220,16 @@ namespace Light.DataStructures.Tests
                     false
                 }
             };
-    
+
 
         [Fact]
         public void SameHashValues()
         {
-            var keyValuePairs = new []
-            {
-                new KeyValuePair<CollisionKey, string>(new CollisionKey(42, 42), "Foo"),
-                new KeyValuePair<CollisionKey, string>(new CollisionKey(87, 42), "Bar") 
-            };
+            var keyValuePairs = new[]
+                                {
+                                    new KeyValuePair<CollisionKey, string>(new CollisionKey(42, 42), "Foo"),
+                                    new KeyValuePair<CollisionKey, string>(new CollisionKey(87, 42), "Bar")
+                                };
             var dictionary = CreateTestTarget(keyValuePairs);
 
             dictionary[new CollisionKey(87, 42)].Should().Be("Bar");
@@ -250,7 +250,7 @@ namespace Light.DataStructures.Tests
             {
                 if (ReferenceEquals(obj, null))
                     return false;
-                return obj is CollisionKey && Equals((CollisionKey)obj);
+                return obj is CollisionKey && Equals((CollisionKey) obj);
             }
 
             public override int GetHashCode()
@@ -269,7 +269,10 @@ namespace Light.DataStructures.Tests
         {
             var dictionary = CreateTestTarget(new KeyValuePair<string, string>("Foo", "Bar"));
 
-            Action act = () => { var value = dictionary[null]; };
+            Action act = () =>
+                         {
+                             var value = dictionary[null];
+                         };
 
             act.ShouldThrow<ArgumentNullException>()
                .And.ParamName.Should().Be("key");
@@ -284,12 +287,23 @@ namespace Light.DataStructures.Tests
                .And.Message.Should().Contain("One of the keys of the key-value-pairs is null.");
         }
 
+        [Fact]
+        public void KeyNotFound()
+        {
+            var dictionary = CreateTestTarget(new KeyValuePair<string, string>("Foo", "Bar"));
+
+            Action act = () =>
+                         {
+                             var value = dictionary["Baz"];
+                         };
+
+            act.ShouldThrow<KeyNotFoundException>()
+               .And.Message.Should().Contain("There is no value for key \"Baz\".");
+        }
+
         public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValuePairs)
         {
             return new PrecompiledDictionaryFactory(new DefaultLookupFunctionCompiler()).Create(keyValuePairs);
         }
-
     }
-
-    
 }

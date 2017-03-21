@@ -235,6 +235,35 @@ namespace Light.DataStructures.Tests
             dictionary[new CollisionKey(87, 42)].Should().Be("Bar");
         }
 
+        public struct CollisionKey : IEquatable<CollisionKey>
+        {
+            public readonly int Id;
+            public readonly int HashCode;
+
+            public CollisionKey(int id, int hashCode)
+            {
+                Id = id;
+                HashCode = hashCode;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(obj, null))
+                    return false;
+                return obj is CollisionKey && Equals((CollisionKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode;
+            }
+
+            public bool Equals(CollisionKey other)
+            {
+                return other.Id == Id;
+            }
+        }
+
 
         public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValuePairs)
         {
@@ -243,32 +272,5 @@ namespace Light.DataStructures.Tests
 
     }
 
-    public struct CollisionKey : IEquatable<CollisionKey>
-    {
-        public readonly int Id;
-        public readonly int HashCode;
-
-        public CollisionKey(int id, int hashCode)
-        {
-            Id = id;
-            HashCode = hashCode;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(obj, null))
-                return false;
-            return obj is CollisionKey && Equals((CollisionKey)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode;
-        }
-
-        public bool Equals(CollisionKey other)
-        {
-            return other.Id == Id;
-        }
-    }
+    
 }

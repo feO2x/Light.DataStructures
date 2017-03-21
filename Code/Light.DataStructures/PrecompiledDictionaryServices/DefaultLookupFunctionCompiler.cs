@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Light.GuardClauses;
 
 namespace Light.DataStructures.PrecompiledDictionaryServices
 {
@@ -9,6 +11,10 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
     {
         public LookupDelegate<TKey, TValue> CompileDynamicLookupFunction<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs, IEqualityComparer<TKey> keyComparer)
         {
+            // ReSharper disable once PossibleMultipleEnumeration
+            keyValuePairs.MustNotBeNull();
+            keyComparer.MustNotBeNull();
+
             var keyType = typeof(TKey);
             var keyExpression = Expression.Parameter(keyType, "key");
             var valueExpression = Expression.Parameter(typeof(TValue).MakeByRefType(), "value");
@@ -19,6 +25,7 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
             var resultExpression = Expression.Variable(typeof(bool), "result");
             var trueExpression = Expression.Constant(true);
 
+            // ReSharper disable once PossibleMultipleEnumeration
             var switchCases = keyValuePairs
                 .GroupBy(kvp => keyComparer.GetHashCode(kvp.Key))
                 .Select(hashCodeGroup =>
@@ -27,6 +34,7 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
                             if (hashCodeGroup.Count() == 1)
                             {
                                 var keyValuePair = hashCodeGroup.First();
+                                EnsureKeyIsNotNull(keyValuePair);   
                                 caseBody = Expression.Block(Expression.Assign(valueExpression, Expression.Constant(keyValuePair.Value)),
                                                             Expression.Assign(resultExpression, trueExpression));
                             }
@@ -35,6 +43,7 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
                                 Expression lastIfStatement = null;
                                 foreach (var keyValuePair in hashCodeGroup)
                                 {
+                                    EnsureKeyIsNotNull(keyValuePair);
                                     if (lastIfStatement == null)
                                         lastIfStatement = Expression.IfThen(Expression.Call(keyComparerExpression, equalsMethodInfo, keyExpression, Expression.Constant(keyValuePair.Key)),
                                                                             Expression.Block(Expression.Assign(valueExpression, Expression.Constant(keyValuePair.Value)),
@@ -61,5 +70,12 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
 
             return Expression.Lambda<LookupDelegate<TKey, TValue>>(body, keyExpression, valueExpression).Compile();
         }
+
+        private static void EnsureKeyIsNotNull<TKey, TValue>(KeyValuePair<TKey, TValue> kvp)
+        {
+            if (kvp.Key == null)
+                throw new ArgumentException("One of the keys of the key-value-pairs is null.");
+        }
+
     }
 }

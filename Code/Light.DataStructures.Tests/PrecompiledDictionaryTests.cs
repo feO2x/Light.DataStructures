@@ -275,6 +275,14 @@ namespace Light.DataStructures.Tests
                .And.ParamName.Should().Be("key");
         }
 
+        [Fact]
+        public void NoKeyMustBeNullWhenCompilingTheLookupFunction()
+        {
+            Action act = () => CreateTestTarget(new KeyValuePair<string, string>(null, "Foo"));
+
+            act.ShouldThrow<ArgumentException>()
+               .And.Message.Should().Contain("One of the keys of the key-value-pairs is null.");
+        }
 
         public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValuePairs)
         {

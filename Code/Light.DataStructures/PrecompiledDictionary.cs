@@ -107,6 +107,8 @@ namespace Light.DataStructures
         {
             get
             {
+                if (key == null) throw new ArgumentNullException(nameof(key));
+                     
                 _lookup(key, out TValue value);
                 return value;
             }

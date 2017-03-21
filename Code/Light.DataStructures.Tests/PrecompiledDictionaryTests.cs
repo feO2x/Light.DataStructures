@@ -264,6 +264,17 @@ namespace Light.DataStructures.Tests
             }
         }
 
+        [Fact]
+        public void KeyMustNotBeNullWhenCallingIndexer()
+        {
+            var dictionary = CreateTestTarget(new KeyValuePair<string, string>("Foo", "Bar"));
+
+            Action act = () => { var value = dictionary[null]; };
+
+            act.ShouldThrow<ArgumentNullException>()
+               .And.ParamName.Should().Be("key");
+        }
+
 
         public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValuePairs)
         {

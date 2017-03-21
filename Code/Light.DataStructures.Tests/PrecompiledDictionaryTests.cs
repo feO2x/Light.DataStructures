@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Light.DataStructures.PrecompiledDictionaryServices;
 using Xunit;
 using TestData = System.Collections.Generic.IEnumerable<object[]>;
 
@@ -19,7 +20,7 @@ namespace Light.DataStructures.Tests
         [MemberData(nameof(DifferentHashCodesData))]
         public void RetrieveItemsWithDifferentHashCodes(KeyValuePair<int, object>[] keyValuePairs)
         {
-            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+            var dictionary = CreateTestTarget(keyValuePairs);
 
             foreach (var keyValuePair in keyValuePairs)
             {
@@ -31,7 +32,7 @@ namespace Light.DataStructures.Tests
         [MemberData(nameof(DifferentHashCodesData))]
         public void CountMustBeSameAsNumberOfKvps(KeyValuePair<int, object>[] keyValuePairs)
         {
-            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+            var dictionary = CreateTestTarget(keyValuePairs);
 
             dictionary.Count.Should().Be(keyValuePairs.Length);
         }
@@ -40,7 +41,7 @@ namespace Light.DataStructures.Tests
         [MemberData(nameof(DifferentHashCodesData))]
         public void KeysMustBeAccessible(KeyValuePair<int, object>[] keyValuePairs)
         {
-            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+            var dictionary = CreateTestTarget(keyValuePairs);
 
             dictionary.Keys.ShouldAllBeEquivalentTo(keyValuePairs.Select(kvp => kvp.Key));
         }
@@ -49,7 +50,7 @@ namespace Light.DataStructures.Tests
         [MemberData(nameof(DifferentHashCodesData))]
         public void ValuesMustBeAccessible(KeyValuePair<int, object>[] keyValuePairs)
         {
-            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+            var dictionary = CreateTestTarget(keyValuePairs);
 
             dictionary.Values.ShouldAllBeEquivalentTo(keyValuePairs.Select(kvp => kvp.Value));
         }
@@ -66,7 +67,7 @@ namespace Light.DataStructures.Tests
         [MemberData(nameof(ContainsKeyData))]
         public void ContainsKey(KeyValuePair<string, object>[] keyValuePairs, string requestedKey, bool expected)
         {
-            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+            var dictionary = CreateTestTarget(keyValuePairs);
 
             var actualResult = dictionary.ContainsKey(requestedKey);
 
@@ -77,7 +78,7 @@ namespace Light.DataStructures.Tests
         [MemberData(nameof(DifferentHashCodesData))]
         public void GetEnumerator(KeyValuePair<int, object>[] keyValuePairs)
         {
-            var dictionary = PrecompiledDictionary.CreateFrom(keyValuePairs);
+            var dictionary = CreateTestTarget(keyValuePairs);
 
             dictionary.ShouldAllBeEquivalentTo(keyValuePairs);
         }
@@ -118,5 +119,10 @@ namespace Light.DataStructures.Tests
                     false
                 }
             };
+
+        public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
+        {
+            return new PrecompiledDictionaryFactory(new DefaultLookupFunctionCompiler()).Create(keyValuePairs);
+        }
     }
 }

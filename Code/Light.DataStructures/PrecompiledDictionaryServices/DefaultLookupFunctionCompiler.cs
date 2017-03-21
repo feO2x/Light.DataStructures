@@ -19,7 +19,7 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
             var trueExpression = Expression.Constant(true);
 
             var switchCases = keyValuePairs.Select(kvp => Expression.SwitchCase(Expression.Block(Expression.Assign(valueExpression, Expression.Constant(kvp.Value)),
-                                                                                                 Expression.Assign(resultExpression, trueExpression)), 
+                                                                                                 Expression.Assign(resultExpression, trueExpression)),
                                                                                 Expression.Constant(keyComparer.GetHashCode(kvp.Key))))
                                            .ToArray();
 
@@ -27,7 +27,7 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
             var body = Expression.Block(new[] { hashCodeExpression, resultExpression },
                                         Expression.Assign(hashCodeExpression, Expression.Call(keyComparerExpression, getHashCodeMethodInfo, keyExpression)),
                                         Expression.Assign(resultExpression, Expression.Constant(false)),
-                                        Expression.Switch(hashCodeExpression, Expression.Assign(valueExpression, Expression.Constant(default(TValue))) , switchCases),
+                                        Expression.Switch(typeof(void), hashCodeExpression, Expression.Assign(valueExpression, Expression.Constant(default(TValue))), null, switchCases),
                                         resultExpression);
 
             return Expression.Lambda<LookupDelegate<TKey, TValue>>(body, keyExpression, valueExpression).Compile();

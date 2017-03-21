@@ -53,14 +53,14 @@ namespace Light.DataStructures
             return _lookup(key, out value);
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            throw CreateNotSupportedException();
         }
 
-        public void Clear()
+        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
         {
-            throw new NotImplementedException();
+            throw CreateNotSupportedException();
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -73,27 +73,27 @@ namespace Light.DataStructures
             _keyValuePairs.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            throw CreateNotSupportedException();
         }
 
-        public bool IsReadOnly => true;
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => true;
 
-        public void Add(TKey key, TValue value)
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
-            throw new NotImplementedException();
+            throw CreateNotSupportedException();
         }
 
-        public bool Remove(TKey key)
+        bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
-            throw new NotImplementedException();
+            throw CreateNotSupportedException();
         }
 
         TValue IDictionary<TKey, TValue>.this[TKey key]
         {
             get { return this[key]; }
-            set { throw new NotSupportedException("The precompiled dictionary is read-only."); }
+            set { throw CreateNotSupportedException(); }
         }
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
@@ -110,5 +110,10 @@ namespace Light.DataStructures
 
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
+
+        private static Exception CreateNotSupportedException()
+        {
+            return new NotSupportedException("The PrecompiledDictionary is read-only.");
+        }
     }
 }

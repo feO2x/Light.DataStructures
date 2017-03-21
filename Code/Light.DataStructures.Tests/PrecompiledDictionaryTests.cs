@@ -169,7 +169,9 @@ namespace Light.DataStructures.Tests
         [Fact]
         public void IsReadOnlyMustAlwaysBeTrue()
         {
-            CreateTestTarget(new KeyValuePair<int, string>(42, "Foo")).IsReadOnly.Should().BeTrue();
+            ICollection<KeyValuePair<int, string>> dictionary = CreateTestTarget(new KeyValuePair<int, string>(42, "Foo"));
+
+            dictionary.IsReadOnly.Should().BeTrue();
         }
 
         public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValuePairs)

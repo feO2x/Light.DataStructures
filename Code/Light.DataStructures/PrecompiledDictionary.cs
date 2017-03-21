@@ -97,7 +97,7 @@ namespace Light.DataStructures
         }
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
-        ICollection<TValue> IDictionary<TKey, TValue>.Values { get; }
+        ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
 
         public TValue this[TKey key]
         {

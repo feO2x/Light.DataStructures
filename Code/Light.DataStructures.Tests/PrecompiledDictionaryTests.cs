@@ -174,6 +174,52 @@ namespace Light.DataStructures.Tests
             dictionary.IsReadOnly.Should().BeTrue();
         }
 
+        [Theory]
+        [MemberData(nameof(ContainsData))]
+        public void Contains(KeyValuePair<int, string>[] items, KeyValuePair<int, string> seekedItem, bool expected)
+        {
+            var dictionary = CreateTestTarget(items);
+
+            var actual = dictionary.Contains(seekedItem);
+
+            actual.Should().Be(expected);
+        }
+
+        public static readonly TestData ContainsData =
+            new[]
+            {
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<int, string>(42, "Foo"),
+                        new KeyValuePair<int, string>(87, "Bar")
+                    },
+                    new KeyValuePair<int, string>(87, "Bar"),
+                    true
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<int, string>(1289398, "Baz"),
+                        new KeyValuePair<int, string>(-2344, "Qux")
+                    },
+                    new KeyValuePair<int, string>(0, "Qux"),
+                    false
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<int, string>(1289398, "Baz"),
+                        new KeyValuePair<int, string>(-2344, "Qux")
+                    },
+                    new KeyValuePair<int, string>(-2344, "Quux"),
+                    false
+                }
+            };
+
         public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValuePairs)
         {
             return new PrecompiledDictionaryFactory(new DefaultLookupFunctionCompiler()).Create(keyValuePairs);

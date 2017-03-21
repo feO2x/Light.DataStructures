@@ -12,17 +12,21 @@ namespace Light.DataStructures
     {
         private readonly IList<KeyValuePair<TKey, TValue>> _keyValuePairs;
         private readonly LookupDelegate<TKey, TValue> _lookup;
+        private readonly IEqualityComparer<TValue> _valueComparer;
         public readonly ReadOnlyCollection<TKey> Keys;
         public readonly ReadOnlyCollection<TValue> Values;
 
         public PrecompiledDictionary(LookupDelegate<TKey, TValue> lookup,
-                                     IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
+                                     IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs,
+                                     IEqualityComparer<TValue> valueComparer)
         {
             lookup.MustNotBeNull();
+            valueComparer.MustNotBeNull();
             // ReSharper disable PossibleMultipleEnumeration
             keyValuePairs.MustNotBeNull();
 
             _lookup = lookup;
+            _valueComparer = valueComparer;
             _keyValuePairs = keyValuePairs.ToArray();
             // ReSharper restore PossibleMultipleEnumeration
             Keys = new ReadOnlyCollection<TKey>(_keyValuePairs.Select(kvp => kvp.Key).ToArray());
@@ -65,7 +69,7 @@ namespace Light.DataStructures
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            return _lookup(item.Key, out var value) && _valueComparer.Equals(item.Value, value);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)

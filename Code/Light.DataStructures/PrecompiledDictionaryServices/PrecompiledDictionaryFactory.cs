@@ -14,16 +14,16 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
             _compiler = compiler;
         }
 
-        public PrecompiledDictionary<TKey, TValue> Create<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
+        public PrecompiledDictionary<TKey, TValue> Create<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs,
+                                                                        IEqualityComparer<TKey> keyComparer = null,
+                                                                        IEqualityComparer<TValue> valueComparer = null)
         {
-            return Create(keyValuePairs, EqualityComparer<TKey>.Default);
-        }
+            keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
+            valueComparer = valueComparer ?? EqualityComparer<TValue>.Default;
 
-        public PrecompiledDictionary<TKey, TValue> Create<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs, IEqualityComparer<TKey> equalityComparer)
-        {
             // ReSharper disable PossibleMultipleEnumeration
-            var lookupFunction = _compiler.CompileDynamicLookupFunction(keyValuePairs, equalityComparer);
-            return new PrecompiledDictionary<TKey, TValue>(lookupFunction, keyValuePairs);
+            var lookupFunction = _compiler.CompileDynamicLookupFunction(keyValuePairs, keyComparer);
+            return new PrecompiledDictionary<TKey, TValue>(lookupFunction, keyValuePairs, valueComparer);
             // ReSharper restore PossibleMultipleEnumeration
         }
     }

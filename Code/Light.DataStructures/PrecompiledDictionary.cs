@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,7 +8,7 @@ using Light.GuardClauses;
 
 namespace Light.DataStructures
 {
-    public sealed class PrecompiledDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
+    public sealed class PrecompiledDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
         private readonly IList<KeyValuePair<TKey, TValue>> _keyValuePairs;
         private readonly LookupDelegate<TKey, TValue> _lookup;
@@ -51,6 +52,52 @@ namespace Light.DataStructures
         {
             return _lookup(key, out value);
         }
+
+        public void Add(KeyValuePair<TKey, TValue> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            _keyValuePairs.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(KeyValuePair<TKey, TValue> item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsReadOnly { get; }
+
+        public void Add(TKey key, TValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(TKey key)
+        {
+            throw new NotImplementedException();
+        }
+
+        TValue IDictionary<TKey, TValue>.this[TKey key]
+        {
+            get { return this[key]; }
+            set { throw new NotSupportedException("The precompiled dictionary is read-only."); }
+        }
+
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
+        ICollection<TValue> IDictionary<TKey, TValue>.Values { get; }
 
         public TValue this[TKey key]
         {

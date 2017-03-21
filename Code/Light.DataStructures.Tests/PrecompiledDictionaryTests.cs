@@ -16,6 +16,12 @@ namespace Light.DataStructures.Tests
             typeof(PrecompiledDictionary<string, string>).Should().Implement<IReadOnlyDictionary<string, string>>();
         }
 
+        [Fact]
+        public void DicionaryShouldImplementIDictionary()
+        {
+            typeof(PrecompiledDictionary<string, int>).Should().Implement<IDictionary<string, int>>();
+        }
+
         [Theory]
         [MemberData(nameof(DifferentHashCodesData))]
         public void RetrieveItemsWithDifferentHashCodes(KeyValuePair<int, object>[] keyValuePairs)

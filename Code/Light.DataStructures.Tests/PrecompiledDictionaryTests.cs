@@ -166,7 +166,13 @@ namespace Light.DataStructures.Tests
                 }
             };
 
-        public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
+        [Fact]
+        public void IsReadOnlyMustAlwaysBeTrue()
+        {
+            CreateTestTarget(new KeyValuePair<int, string>(42, "Foo")).IsReadOnly.Should().BeTrue();
+        }
+
+        public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValuePairs)
         {
             return new PrecompiledDictionaryFactory(new DefaultLookupFunctionCompiler()).Create(keyValuePairs);
         }

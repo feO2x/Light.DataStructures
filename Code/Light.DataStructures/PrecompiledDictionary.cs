@@ -78,7 +78,7 @@ namespace Light.DataStructures
             throw new NotImplementedException();
         }
 
-        public bool IsReadOnly { get; }
+        public bool IsReadOnly => true;
 
         public void Add(TKey key, TValue value)
         {

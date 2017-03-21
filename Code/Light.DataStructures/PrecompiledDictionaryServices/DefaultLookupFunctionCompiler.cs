@@ -27,7 +27,7 @@ namespace Light.DataStructures.PrecompiledDictionaryServices
             var body = Expression.Block(new[] { hashCodeExpression, resultExpression },
                                         Expression.Assign(hashCodeExpression, Expression.Call(keyComparerExpression, getHashCodeMethodInfo, keyExpression)),
                                         Expression.Assign(resultExpression, Expression.Constant(false)),
-                                        Expression.Switch(typeof(void), hashCodeExpression, Expression.Assign(valueExpression, Expression.Constant(default(TValue))), null, switchCases),
+                                        Expression.Switch(typeof(void), hashCodeExpression, Expression.Assign(valueExpression, Expression.Constant(default(TValue), typeof(TValue))), null, switchCases),
                                         resultExpression);
 
             return Expression.Lambda<LookupDelegate<TKey, TValue>>(body, keyExpression, valueExpression).Compile();

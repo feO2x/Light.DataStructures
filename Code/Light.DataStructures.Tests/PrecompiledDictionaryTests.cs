@@ -120,6 +120,46 @@ namespace Light.DataStructures.Tests
                 }
             };
 
+        [Theory]
+        [MemberData(nameof(TryGetValueData))]
+        public void TryGetValue(KeyValuePair<int, string>[] keyValuePairs, int key, bool expectedResult, string expectedValue)
+        {
+            var dictionary = CreateTestTarget(keyValuePairs);
+
+            var actualResult = dictionary.TryGetValue(key, out var actualValue);
+
+            actualResult.Should().Be(expectedResult);
+            actualValue.Should().Be(expectedValue);
+        }
+
+        public static readonly TestData TryGetValueData =
+            new[]
+            {
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<int, string>(42, "Foo"),
+                        new KeyValuePair<int, string>(43, "Bar")
+                    },
+                    43,
+                    true,
+                    "Bar"
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        new KeyValuePair<int, string>(-1, "Foo"),
+                        new KeyValuePair<int, string>(2, "Bar"),
+                        new KeyValuePair<int, string>(-8, "Baz")
+                    },
+                    5,
+                    false,
+                    null
+                }
+            };
+
         public static PrecompiledDictionary<TKey, TValue> CreateTestTarget<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
         {
             return new PrecompiledDictionaryFactory(new DefaultLookupFunctionCompiler()).Create(keyValuePairs);

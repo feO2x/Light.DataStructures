@@ -271,6 +271,7 @@ namespace Light.DataStructures.Tests
 
             Action act = () =>
                          {
+                             // ReSharper disable once UnusedVariable
                              var value = dictionary[null];
                          };
 
@@ -294,6 +295,7 @@ namespace Light.DataStructures.Tests
 
             Action act = () =>
                          {
+                             // ReSharper disable once UnusedVariable
                              var value = dictionary["Baz"];
                          };
 

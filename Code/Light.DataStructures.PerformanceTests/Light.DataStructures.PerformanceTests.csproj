@@ -136,12 +136,12 @@
   <ItemGroup>
     <Compile Include="FileNames.cs" />
     <Compile Include="IntegerSequences.cs" />
-    <Compile Include="MultiThreadedAddTest.cs" />
-    <Compile Include="MultiThreadedReadAndAddTest.cs" />
-    <Compile Include="MultiThreadedReadTest.cs" />
+    <Compile Include="LockFreeArrayBasedDictionaryTests\MultiThreadedAddTest.cs" />
+    <Compile Include="LockFreeArrayBasedDictionaryTests\MultiThreadedReadAndAddTest.cs" />
+    <Compile Include="LockFreeArrayBasedDictionaryTests\MultiThreadedReadTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SingleThreadedAddTest.cs" />
+    <Compile Include="LockFreeArrayBasedDictionaryTests\SingleThreadedAddTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="10000 items seed 9673754.json">

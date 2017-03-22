@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json;
 
-namespace Light.DataStructures.PerformanceTests
+namespace Light.DataStructures.PerformanceTests.LockFreeArrayBasedDictionaryTests
 {
     public class MultiThreadedAddTest
     {

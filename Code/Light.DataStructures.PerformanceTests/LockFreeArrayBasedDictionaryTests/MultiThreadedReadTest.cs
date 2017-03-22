@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
+using Light.GuardClauses;
 using Newtonsoft.Json;
 
-namespace Light.DataStructures.PerformanceTests
+namespace Light.DataStructures.PerformanceTests.LockFreeArrayBasedDictionaryTests
 {
-    public class MultiThreadedReadAndAddTest
+    public class MultiThreadedReadTest
     {
         private readonly ConcurrentDictionary<int, object> _concurrentDictionary = new ConcurrentDictionary<int, object>();
         private readonly Dictionary<int, object> _dictionary = new Dictionary<int, object>();
@@ -43,7 +44,7 @@ namespace Light.DataStructures.PerformanceTests
             }
         }
 
-        [Benchmark(OperationsPerInvoke = 1)]
+        [Benchmark]
         public Dictionary<int, object> DictionaryWithLockedReadAccess()
         {
             Parallel.ForEach(_perThreadKeys, kvp =>
@@ -54,10 +55,7 @@ namespace Light.DataStructures.PerformanceTests
                                                      {
                                                          var result = _dictionary.TryGetValue(key, out object value);
                                                          if (result)
-                                                             continue;
-
-                                                         value = new object();
-                                                         _dictionary.Add(key, value);
+                                                             value.MustNotBeNull();
                                                      }
                                                  }
                                              });
@@ -65,7 +63,7 @@ namespace Light.DataStructures.PerformanceTests
             return _dictionary;
         }
 
-        [Benchmark(OperationsPerInvoke = 1)]
+        [Benchmark]
         public ConcurrentDictionary<int, object> ConcurrentDictionary()
         {
             Parallel.ForEach(_perThreadKeys, kvp =>
@@ -74,16 +72,13 @@ namespace Light.DataStructures.PerformanceTests
                                                  {
                                                      var result = _concurrentDictionary.TryGetValue(key, out object value);
                                                      if (result)
-                                                         continue;
-
-                                                     value = new object();
-                                                     _concurrentDictionary.TryAdd(key, value);
+                                                         value.MustNotBeNull();
                                                  }
                                              });
             return _concurrentDictionary;
         }
 
-        [Benchmark(OperationsPerInvoke = 1)]
+        [Benchmark]
         public LockFreeArrayBasedDictionary<int, object> LockFreeArrayBasedDictionary()
         {
             Parallel.ForEach(_perThreadKeys, kvp =>
@@ -92,10 +87,7 @@ namespace Light.DataStructures.PerformanceTests
                                                  {
                                                      var result = _lockFreeDictionary.TryGetValue(key, out object value);
                                                      if (result)
-                                                         continue;
-
-                                                     value = new object();
-                                                     _lockFreeDictionary.TryAdd(key, value);
+                                                         value.MustNotBeNull();
                                                  }
                                              });
             return _lockFreeDictionary;

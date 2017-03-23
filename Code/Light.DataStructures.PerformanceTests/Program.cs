@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
-using Light.DataStructures.PerformanceTests.LockFreeArrayBasedDictionaryTests;
+using Light.DataStructures.PerformanceTests.PrecompiledDictionaryTests;
 
 namespace Light.DataStructures.PerformanceTests
 {
@@ -7,7 +7,7 @@ namespace Light.DataStructures.PerformanceTests
     {
         public static void Main()
         {
-            BenchmarkRunner.Run<MultiThreadedReadAndAddTest>();
+            BenchmarkRunner.Run<T4TemplateGeneratedDictionaryReadTest>();
         }
     }
 }
